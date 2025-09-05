@@ -1,4 +1,4 @@
 I made this game in school, it's not a good game.
 
-Play it from the command line by right-clicking the file and opening it with Python.
-You might want to have it in a folder, because it creates a JSON savefile.
+Play the game by right-clicking the file and opening it with Python.
+Your game is saved on a JSON file so editing it should be a piece of cake.
