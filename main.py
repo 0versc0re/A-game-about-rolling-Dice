@@ -14,7 +14,10 @@ upgradeExpo = 1.05
 moreDice = 50
 moreExpo = 1.2
 
-hundoDice = 0
+hundoDiceAmount = 0
+rollLuck = 1
+upgradeLuck = 200
+luckExpo = 1.1
 
 def clear():
     os.system("cls")
@@ -31,7 +34,10 @@ def save():
         "upgradeExpo": upgradeExpo,
         "moreDice": moreDice,
         "moreExpo": moreExpo,
-        "hundoDice": hundoDice
+        "hundoDiceAmount": hundoDiceAmount,
+        "rollLuck": rollLuck,
+        "upgradeLuck": upgradeLuck,
+        "luckExpo": luckExpo
     }
     
     with open("save.json", "w") as f:
@@ -46,7 +52,7 @@ def main():
     
     global diceSides, diceAmount, points, pointsMult, pointsMultExpo
     global upgradeDice, upgradeExpo, moreDice, moreExpo
-    global hundoDice
+    global hundoDiceAmount, rollLuck, upgradeLuck, luckExpo
     
     while Run:
     
@@ -79,7 +85,10 @@ def main():
                     upgradeExpo = data["upgradeExpo"]
                     moreDice = data["moreDice"]
                     moreExpo = data["moreExpo"]
-                    hundoDice = data["hundoDice"]
+                    hundoDiceAmount = data["hundoDiceAmount"]
+                    rollLuck = data["rollLuck"]
+                    upgradeLuck = data["upgradeLuck"]
+                    luckExpo = data["luckExpo"]
                         
                     Menu = False
                     Play = True
@@ -98,17 +107,18 @@ def main():
             
             print(f"Your current Dice are {diceSides} sided.")
             print(f"You have {diceAmount} Dice.")
-            print(f"You have {hundoDice} a 100 sided Dice.")
+            print(f"You have {hundoDiceAmount} 100 sided Dice.")
             print()
             print(f"Your points: {round(points, 3)}")
             print(f"Your multiplier: {round(pointsMult, 3)}")
+            print(f"How lucky you are: {round(rollLuck, 3)}")
             if points >= 1000 ** pointsMult:
                 print("You have enough points to upgrade your multiplier!")
             print()
             print("1 - Roll Dice")
             print("2 - Dice store")
             print("3 - Upgrade Multiplier")
-            if hundoDice > 0:
+            if hundoDiceAmount > 0:
                 print("4 - Roll the 100 sided Dice")
             print("0 - Save and Exit")
             
@@ -125,7 +135,10 @@ def main():
                 total = 0
                 
                 for roll in range(diceAmount):
-                    roll = randint(1, diceSides)
+                    if rollLuck < diceSides:
+                        roll = randint(rollLuck, diceSides)
+                    else:
+                        roll = diceSides
                     points += roll * pointsMult
                     print(f"You rolled a {roll}!")
                     rollList.append(roll)
@@ -172,7 +185,10 @@ def main():
                         moreDice = 50
                         moreExpo = 1.2
                         
-                        hundoDice = 0
+                        hundoDiceAmount = 0
+                        rollLuck = 1
+                        upgradeLuck = 200
+                        luckExpo = 1.1
                         
                         print()
                         print("Wise choice.")
@@ -188,13 +204,13 @@ def main():
             
             elif choice == "4":
                     
-                    if hundoDice > 0:
+                    if hundoDiceAmount > 0:
                     
                         print()
                         rollList = []
                         total = 0
                         
-                        for roll in range(hundoDice):
+                        for roll in range(hundoDiceAmount):
                             roll = randint(1, 100)
                             points += roll * pointsMult
                             print(f"You rolled a {roll}!")
@@ -209,7 +225,7 @@ def main():
                         input("> ")
             
             else:
-                print("Invalid input!")
+                print("Invalid choice!")
                 input("> ")
                 
         while Store:
@@ -218,15 +234,17 @@ def main():
             clear()
             
             hundoPairs = {
-                (100, 1), (10, 10), (2, 50), (50, 2),
-                (4, 25), (25, 4), (5, 20), (20, 5)
+                (1, 98), (98, 1), (2, 49), (49, 2), (7, 14), (14, 7),                       # 98 total
+                (100, 1), (10, 10), (2, 50), (50, 2), (4, 25), (25, 4), (5, 20), (20, 5),   # 100 total
+                (1, 102), (102, 1), (2, 51), (51, 2), (3, 34), (34, 3), (6, 17), (17, 6)    # 102 total
             }
             
             print(f"Your current Dice are {diceSides} sided.")
             print(f"You have {diceAmount} Dice.")
-            print(f"You have {hundoDice} a 100 sided Dice.")
+            print(f"You have {hundoDiceAmount} a 100 sided Dice.")
             print()
             print(f"You have {round(points, 3)} points.")
+            print(f"How lucky you are: {round(rollLuck, 3)}")
             if (diceAmount, diceSides) in hundoPairs:
                 print()
                 print("You can now get the ELUSIVE 100 sided Die (or another)")
@@ -236,6 +254,7 @@ def main():
             print(f"2 - Buy more Dice: {round(moreDice * 1.5, 3)} points")
             if (diceAmount, diceSides) in hundoPairs:
                 print("3 - Get the 100 sided Die")
+            print(f"4 - Buy a Lucky Amulet: {round(upgradeLuck, 3)} points")
             print("0 - Exit Store")
             
             choice = input("> ")
@@ -283,7 +302,7 @@ def main():
                     
                     if (diceAmount, diceSides) in hundoPairs:
                         
-                        hundoDice += 1
+                        hundoDiceAmount += 1
                         diceSides = 4
                         diceAmount = 1
                         
@@ -303,7 +322,20 @@ def main():
                     continue
                 
                 else:
-                    print("Invalid input!")
+                    print("Invalid choice!")
+                    input("> ")
+            
+            elif choice == "4":
+                
+                if points >= upgradeLuck:
+                    points -= upgradeLuck
+                    upgradeLuck = upgradeLuck ** luckExpo
+                    rollLuck += 1
+                    print("You feel luckier!")
+                    input("> ")
+                    
+                else:
+                    print("You don't have enough points!")
                     input("> ")
             
             elif choice == "0":
