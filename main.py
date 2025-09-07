@@ -110,17 +110,27 @@ def main():
             save()
             clear()
             
+            # DICE DISPLAY
             print(f"Your current Dice are {diceSides} sided.")
             print(f"You have {diceAmount} Dice.")
             print(f"You have {hundoDiceAmount} 100 sided Dice.")
             if thundoDiceAmount > 0:
                 print(f"You have {thundoDiceAmount} 1000 sided Dice")
+            
+            # POINTS DISPLAY
             print()
-            print(f"Your points: {round(points, 3)}")
-            print(f"Your multiplier: {round(pointsMult, 3)}")
-            print(f"How lucky you are: {round((rollLuck / diceSides) * 100, 3)}%")
+            if points < 1000000:
+                print(f"Your points: {round(points, 2)}")
+            else:
+                print(f"Your points: {round(points / 1000000, 2)}M")
+            
+            # MULTIPLIER AND LUCK DISPLAY
+            print(f"Your multiplier: {round(pointsMult, 2)}")
+            print(f"How lucky you are: {round((rollLuck / diceSides) * 100, 2)}%")
             if points >= 1000 ** pointsMult:
                 print("You have enough points to upgrade your multiplier!")
+
+            # OPTIONS DISPLAY
             print()
             print("1 - Roll Dice")
             print("2 - Dice store")
@@ -163,10 +173,10 @@ def main():
                     print(f"You rolled your Dice {diceAmount} times!")
                 
                 print()
-                print(f"Your multiplier is {round(pointsMult, 3)}.")
+                print(f"Your multiplier is {round(pointsMult, 2)}.")
                 for roll in rollList:
                     total += roll
-                print(f"You now have {round(total * pointsMult, 3)} more points.")
+                print(f"You now have {round(total * pointsMult, 2)} more points.")
                 input("> ")
             
             elif choice == "2":         # DICE STORE
@@ -181,8 +191,11 @@ def main():
                 print("DICE AND POINTS BACK TO 1 AND 0")
                 print("STORE PRICES ARE ALSO RESET")
                 print()
-                print(f"Your current multiplier: {round(pointsMult, 3)}")
-                print(f"You need {round(1000 ** pointsMult, 3)} points to upgrade your Multiplier.")
+                print(f"Your current multiplier: {round(pointsMult, 2)}")
+                if 1000 ** pointsMult < 1000000:
+                    print(f"You need {round(1000 ** pointsMult, 2)} points to upgrade your Multiplier.")
+                else:
+                    print(f"You need {round(1000 ** pointsMult / 1000000, 2)}M points to upgrade your Multiplier.")
                 print(f"1 - Upgrade Multiplier")
                 print(f"0 - I don't want to")
                 
@@ -244,10 +257,10 @@ def main():
                         print(f"You rolled your Dice {hundoDiceAmount} times!")
                     
                     print()
-                    print(f"Your multiplier is {round(pointsMult, 3)}.")
+                    print(f"Your multiplier is {round(pointsMult, 2)}.")
                     for roll in rollList:
                         total += roll
-                    print(f"You now have {round(total * pointsMult, 3)} more points.")
+                    print(f"You now have {round(total * pointsMult, 2)} more points.")
                     input("> ")
             
             elif choice == "5":         # ROLL THUNDO
@@ -272,10 +285,10 @@ def main():
                         print(f"You rolled your Dice {thundoDiceAmount} times!")
                     
                     print()
-                    print(f"Your multiplier is {round(pointsMult, 3)}.")
+                    print(f"Your multiplier is {round(pointsMult, 2)}.")
                     for roll in rollList:
                         total += roll
-                    print(f"You now have {round(total * pointsMult, 3)} more points.")
+                    print(f"You now have {round(total * pointsMult, 2)} more points.")
                     input("> ")
             
             else:                       # INVALID
@@ -293,14 +306,22 @@ def main():
                 (1, 102), (102, 1), (2, 51), (51, 2), (3, 34), (34, 3), (6, 17), (17, 6)    # 102 total
             }
             
+            # DICE DISPLAY
             print(f"Your current Dice are {diceSides} sided.")
             print(f"You have {diceAmount} Dice.")
             print(f"You have {hundoDiceAmount} 100 sided Dice.")
             if thundoDiceAmount > 0:
                 print(f"You have {thundoDiceAmount} 1000 sided Dice")
+                
+            # POINTS AND LUCK DISPLAY
             print()
-            print(f"You have {round(points, 3)} points.")
-            print(f"How lucky you are: {round((rollLuck / diceSides) * 100, 3)}%")
+            if points < 1000000:
+                print(f"You have {round(points, 2)} points.")
+            else:
+                print(f"You have {round(points / 1000000, 2)}M points.")
+            print(f"How lucky you are: {round((rollLuck / diceSides) * 100, 2)}%")
+            
+            # HUNDO AND THUNDO DISPLAY
             if ((diceAmount, diceSides) in hundoPairs) or (points >= 12000):
                 print()
                 print("You can now get an ELUSIVE 100 sided Die")
@@ -311,10 +332,12 @@ def main():
                 print("You can now get the ADORED 1000 sided Die")
                 print("By trading off 10 of your 100 sided Die!")
                 print("Or by paying 120000 points for it!")
+            
+            # OPTIONS DISPLAY
             print()
-            print(f"1 - Upgrade Dice: {round(upgradeDice * diceAmount, 3)} points")
-            print(f"2 - Buy more Dice: {round(moreDice * 1.5, 3)} points")
-            print(f"3 - Buy a Lucky Amulet: {round(upgradeLuck, 3)} points")
+            print(f"1 - Upgrade Dice: {round(upgradeDice * diceAmount, 2)} points")
+            print(f"2 - Buy more Dice: {round(moreDice * 1.5, 2)} points")
+            print(f"3 - Buy a Lucky Amulet: {round(upgradeLuck, 2)} points")
             if ((diceAmount, diceSides) in hundoPairs) or (points >= 12000):
                 print("4 - Get a 100 sided Die")
             if hundoDiceAmount >= 10 or points >= 120000:
@@ -403,7 +426,7 @@ def main():
                             print("You don't have enough Dice!")
                             input("> ")
                     
-                    if choice == "2":           # ENOUGH POINTS
+                    elif choice == "2":         # ENOUGH POINTS
                         
                         if points >= 12000:
                             
