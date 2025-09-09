@@ -693,6 +693,7 @@ def main():
                     print("2 - Trade off my 1000 sided Dice")
                     print("3 - Pay for the Die")
                     print("4 - I want 10 of those")
+                    print("5 - I want 100 of those")
                     print("0 - I don't want to")
                     
                     choice = input("> ")
@@ -741,12 +742,26 @@ def main():
                     
                     elif choice == "4":     # BILLION POINTS x10
                         
-                        if points >= 120_000_000_000:
+                        if points >= 12_000_000_000:
                             
                             mundoDiceAmount += 10
-                            points -= 120_000_000_000
+                            points -= 12_000_000_000
                             
                             print("Do a moneyspread.")
+                            input("> ")
+                            
+                        else:
+                            print("You don't have enough points!")
+                            input("> ")
+                    
+                    elif choice == "5":     # BILLION POINT x100
+                        
+                        if points >= 120_000_000_000:
+                            
+                            mundoDiceAmount += 100
+                            points -= 120_000_000_000
+                            
+                            print("You are the richest person ever!")
                             input("> ")
                             
                         else:
@@ -780,8 +795,14 @@ def main():
             
             elif choice == "64":        # GET MUNDO DICE WITH POINTS x10
                 
-                if points >= 120_000_000_000:
+                if points >= 12_000_000_000:
                     mundoDiceAmount += 10
+                    points -= 12_000_000_000
+            
+            elif choice == "65":        # GET MUNDO DICE WITH POINTS x100
+                
+                if points >= 120_000_000_000:
+                    mundoDiceAmount += 100
                     points -= 120_000_000_000
             
             else:                       # INVALID
