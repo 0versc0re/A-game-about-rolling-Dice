@@ -354,7 +354,7 @@ def main():
             clear()
             
             hundoPairs = {
-                (1, 96),  (2, 48),  (3, 32), (32, 3), (4, 24), (24, 4), (6, 16), (16, 6), (12, 8),  (8, 12),     # total 96
+                (1, 96),  (2, 48),  (3, 32), (32, 3), (4, 24), (24, 4), (6, 16), (16, 6), (12, 8),  (8, 12),    # total 96
                 (1, 97),  (97, 1),  (1, 98), (98, 1), (2, 49), (49, 2), (7, 14), (14, 7),                       # total 97 98
                 (1, 99),  (99, 1),  (3, 33), (33, 3), (9, 11), (11, 9),                                         # total 99
                 (100, 1), (10, 10), (2, 50), (50, 2), (4, 25), (25, 4), (5, 20), (20, 5), (1, 101), (101, 1),   # total 100 101
@@ -386,7 +386,7 @@ def main():
                 print("You can now get an ADORED 1000 sided Die")
                 print("by trading off 10 of your 100 sided Die!")
                 print("Or by paying 120000 points for it!")
-            if thundoDiceAmount >= 1000 or hundoDiceAmount >= 10_000 or points >= 1_200_000_000:
+            if thundoDiceAmount >= 1000 or hundoDiceAmount >= 10_000 or points >= 120_000_000:
                 print()
                 print("You can now get the Million sided Die")
                 print("by trading off your Dice!")
@@ -408,7 +408,7 @@ def main():
                 
             if ((diceAmount, diceSides) in hundoPairs) or (points >= 12_000): print("4 - Get a 100 sided Die")                          # GET YOURSELF A 100  SIDED DIE
             if hundoDiceAmount >= 10 or points >= 120_000: print("5 - Get a 1000 sided Die")                                            # GET YOURSELF A 1000 SIDED DIE
-            if thundoDiceAmount >= 1000 or hundoDiceAmount >= 10_000 or points >= 1_200_000_000: print("6 - Get a Million sided Die")   # GET YOURSELF A Million SIDED DIE
+            if thundoDiceAmount >= 1000 or hundoDiceAmount >= 10_000 or points >= 120_000_000: print("6 - Get a Million sided Die")     # GET YOURSELF A Million SIDED DIE
             print("0 - Exit Store")
             
             choice = input("> ")
@@ -682,12 +682,12 @@ def main():
             
             elif choice == "6":         # GET MUNDO DICE
                 
-                if thundoDiceAmount >= 1000 or hundoDiceAmount >= 10_000 or points >= 1_200_000_000:
+                if thundoDiceAmount >= 1000 or hundoDiceAmount >= 10_000 or points >= 120_000_000:
                     
                     print()
                     print("WARNING!")
                     print("YOU'RE ABOUT TO TRADE OFF YOUR DICE")
-                    print("OR PAY 1.2 Billion POINTS FOR A Million SIDED DIE")
+                    print("OR PAY 120 Million POINTS FOR A Million SIDED DIE")
                     print()
                     print("1 - Trade off my 100 sided Dice")
                     print("2 - Trade off my 1000 sided Dice")
@@ -726,12 +726,12 @@ def main():
                             print("You don't have enough Dice!")
                             input("> ")
                     
-                    elif choice == "3":     # BILLION POINTS
+                    elif choice == "3":     # ENOUGH POINTS
                         
-                        if points >= 1_200_000_000:
+                        if points >= 120_000_000:
                             
                             mundoDiceAmount += 1
-                            points -= 1_200_000_000
+                            points -= 120_000_000
                             
                             print("Scrooge McDuck over here.")
                             input("> ")
@@ -740,12 +740,12 @@ def main():
                             print("You don't have enough points!")
                             input("> ")
                     
-                    elif choice == "4":     # BILLION POINTS x10
+                    elif choice == "4":     # ENOUGH POINTS x10
                         
-                        if points >= 12_000_000_000:
+                        if points >= 1_200_000_000:
                             
                             mundoDiceAmount += 10
-                            points -= 12_000_000_000
+                            points -= 1_200_000_000
                             
                             print("Do a moneyspread.")
                             input("> ")
@@ -754,12 +754,12 @@ def main():
                             print("You don't have enough points!")
                             input("> ")
                     
-                    elif choice == "5":     # BILLION POINT x100
+                    elif choice == "5":     # ENOUGH POINTS x100
                         
-                        if points >= 120_000_000_000:
+                        if points >= 12_000_000_000:
                             
                             mundoDiceAmount += 100
-                            points -= 120_000_000_000
+                            points -= 12_000_000_000
                             
                             print("You are the richest person ever!")
                             input("> ")
@@ -775,13 +775,13 @@ def main():
                         print("Invalid choice!")
                         input("> ")
             
-            elif choice == "61":        # GET MUNDO DICE WITH 100
+            elif choice == "61":        # GET MUNDO DICE WITH 100 DICE
                 
                 if hundoDiceAmount >= 10_000:
                     mundoDiceAmount += 1
                     hundoDiceAmount -= 10_000
             
-            elif choice == "62":        # GET MUNDO DICE WITH 1000
+            elif choice == "62":        # GET MUNDO DICE WITH 1000 DICE
                 
                 if thundoDiceAmount >= 1000:
                     mundoDiceAmount += 1
@@ -789,21 +789,21 @@ def main():
             
             elif choice == "63":        # GET MUNDO DICE WITH POINTS
                 
-                if points >= 1_200_000_000:
+                if points >= 120_000_000:
                     mundoDiceAmount += 1
-                    points -= 1_200_000_000
+                    points -= 120_000_000
             
             elif choice == "64":        # GET MUNDO DICE WITH POINTS x10
                 
-                if points >= 12_000_000_000:
+                if points >= 1_200_000_000:
                     mundoDiceAmount += 10
-                    points -= 12_000_000_000
+                    points -= 1_200_000_000
             
             elif choice == "65":        # GET MUNDO DICE WITH POINTS x100
                 
-                if points >= 120_000_000_000:
+                if points >= 12_000_000_000:
                     mundoDiceAmount += 100
-                    points -= 120_000_000_000
+                    points -= 12_000_000_000
             
             else:                       # INVALID
                 print("Invalid choice!")
