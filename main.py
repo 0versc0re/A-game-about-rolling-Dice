@@ -143,15 +143,17 @@ def main():
                         
             # POINTS DISPLAY
             print()
-            if points < 900_000: print(f"You have {round(points, 2)} points.")                            # LESS THAN MILLION
-            elif points < 900_000_000: print(f"You have {round(points / 1_000_000, 2)}M points.")         # LESS THAN BILLION
-            elif points < 900_000_000_000: print(f"You have {round(points / 1_000_000_000, 2)}B points.") # LESS THAN TRILLION
-            else: print(f"You have {round(points / 1_000_000_000_000, 2)}T points.")                      # MORE THAN TRILLION
+            if points < 900_000: print(f"You have {round(points, 2)} points.")                                 # LESS THAN MILLION
+            elif points < 900_000_000: print(f"You have {round(points / 1_000_000, 2)}M points.")              # LESS THAN BILLION
+            elif points < 900_000_000_000: print(f"You have {round(points / 1_000_000_000, 2)}B points.")      # LESS THAN TRILLION
+            elif points < 900_000_000_000_000: print(f"You have {round(points / 1_000_000_000_000)}T points.") # LESS THAN QUADRILLION
+            else: print(f"You have {round(points / 1_000_000_000_000_000, 2)}Qd points.")                      # MORE THAN QUADRILLION
             
             # LUCK AND MULTIPLIER DISPLAY
             print(f"How lucky you are: {round((rollLuck / diceSides) * 100, 2)}%")
             print(f"Your current multiplier: {round(pointsMult, 2)}")
             if points >= 1000 ** pointsMult: print("You have enough points to upgrade your multiplier!")
+            if pointsMult >= 10: print("You have enough Multiplier to upgrade it's scaling!")
 
             # OPTIONS DISPLAY
             print()
@@ -161,6 +163,7 @@ def main():
             if hundoDiceAmount > 0: print("- 4 - Roll the 100 sided Dice")
             if thundoDiceAmount > 0: print("- 5 - Roll the 1000 sided Dice")
             if mundoDiceAmount > 0: print("- 6 - Roll the Million sided Dice")
+            if pointsMult >= 10: print("- 7 - Upgrade Multiplier scaling")
             print("- 0 - Save and Exit")
             
             choice = input("> ")
@@ -215,13 +218,14 @@ def main():
                 print()
                 print(f"Your current multiplier: {round(pointsMult, 2)}")
                 
-                if 1000 ** pointsMult < 900_000: print(f"You need {round(1000 ** pointsMult, 2)} points to upgrade your Multiplier.")                               # LESS THAN MILLION
-                elif 1000 ** pointsMult < 900_000_000: print(f"You need {round(1000 ** pointsMult / 1_000_000, 2)}M points to upgrade your Multiplier.")            # LESS THAN BILLION
-                elif 1000 ** pointsMult < 900_000_000_000: print(f"You need {round(1000 ** pointsMult / 1_000_000_000, 2)}B points to upgrade your Multiplier.")    # LESS THAN TRILLION
-                else: print(f"You need {round(1000 ** pointsMult / 1_000_000_000_000, 2)}T points to upgrade your Multiplier.")                                     # MORE THAN TRILLION
+                if 1000 ** pointsMult < 900_000: print(f"You need {round(1000 ** pointsMult, 2)} points to upgrade your Multiplier.")                                    # LESS THAN MILLION
+                elif 1000 ** pointsMult < 900_000_000: print(f"You need {round(1000 ** pointsMult / 1_000_000, 2)}M points to upgrade your Multiplier.")                 # LESS THAN BILLION
+                elif 1000 ** pointsMult < 900_000_000_000: print(f"You need {round(1000 ** pointsMult / 1_000_000_000, 2)}B points to upgrade your Multiplier.")         # LESS THAN TRILLION
+                elif 1000 ** pointsMult < 900_000_000_000_000: print(f"You need {round(1000 ** pointsMult / 1_000_000_000_000, 2)}T points to upgrade your Multiplier.") # LESS THAN QUADRILLION
+                else: print(f"You need {round(1000 ** pointsMult / 1_000_000_000_000_000, 2)}Qd points to upgrade your Multiplier.")                                     # MORE THAN QUADRILLION
                 
-                print(f"- 1 - Upgrade Multiplier")
-                print(f"- 0 - I don't want to")
+                print("- 1 - Upgrade Multiplier")
+                print("- 0 - I don't want to")
                 
                 choice = input("> ")
                 
@@ -229,7 +233,7 @@ def main():
                     
                     if points >= 1000 ** pointsMult:
                         points -= 1000 ** pointsMult
-                        pointsMult = pointsMult * pointsMultExpo
+                        pointsMult *= pointsMultExpo
                         
                         diceSides = 4
                         diceAmount = 1
@@ -259,7 +263,11 @@ def main():
                 
                 elif choice == "0":         # NO
                     continue
-            
+                
+                else:                       # INVALID
+                    print("Invalid choice!")
+                    input("> ")
+                
             elif choice == "4":         # ROLL HUNDO
                     
                 if hundoDiceAmount > 0:
@@ -348,6 +356,54 @@ def main():
                     else: print(f"You now have {round(total * pointsMult / 1_000_000_000, 2)}B more points.")
                     input("> ")
             
+            elif choice == "7":         # UPGRADE MULTIPLIER SCALING
+                
+                if pointsMult >= 10:
+                
+                    print()
+                    print("WARNING!")
+                    print("UPGRADING YOUR MULTIPLIER'S SCALING RESETS")
+                    print("EVERYTHING BUT YOUR MULTIPLIER BACK TO 1")
+                    print()
+                    print("- 1 - Upgrade Multiplier scaling")
+                    print("- 0 - I don't want to")
+                    
+                    choice == input("> ")
+                    
+                    if choice == "1":       # YES
+                        
+                        pointsMult -= 10
+                        pointsMultExpo += 0.15
+                            
+                        diceSides = 4
+                        diceAmount = 1
+                        points = 0
+
+                        upgradeDice = 50
+                        upgradeExpo = 1.05
+                        moreDice = 50
+                        moreExpo = 1.2
+                            
+                        hundoDiceAmount = 0
+                        thundoDiceAmount = 0
+                        mundoDiceAmount = 0
+                            
+                        rollLuck = 1
+                        upgradeLuck = 200
+                        luckExpo = 1.1
+                            
+                        print()
+                        print("Great choice!")
+                        print(f"Your new multiplier: {round(pointsMult, 2)}")
+                        input("> ")
+
+                    elif choice == "0":     # NO
+                        continue
+                
+                    else:                   # INVALID
+                        print("Invalid choice!")
+                        input("> ")
+                
             else:                       # INVALID
                 print("Invalid choice!")
                 input("> ")
@@ -374,10 +430,11 @@ def main():
                 
             # POINTS AND LUCK DISPLAY
             print()
-            if points < 900_000: print(f"You have {round(points, 2)} points.")                            # LESS THAN MILLION
-            elif points < 900_000_000: print(f"You have {round(points / 1_000_000, 2)}M points.")         # LESS THAN BILLION
-            elif points < 900_000_000_000: print(f"You have {round(points / 1_000_000_000, 2)}B points.") # LESS THAN TRILLION
-            else: print(f"You have {round(points / 1_000_000_000_000, 2)}T points.")                      # MORE THAN TRILLION
+            if points < 900_000: print(f"You have {round(points, 2)} points.")                                 # LESS THAN MILLION
+            elif points < 900_000_000: print(f"You have {round(points / 1_000_000, 2)}M points.")              # LESS THAN BILLION
+            elif points < 900_000_000_000: print(f"You have {round(points / 1_000_000_000, 2)}B points.")      # LESS THAN TRILLION
+            elif points < 900_000_000_000_000: print(f"You have {round(points / 1_000_000_000_000)}T points.") # LESS THAN QUADRILLION
+            else: print(f"You have {round(points / 1_000_000_000_000_000, 2)}Qd points.")                      # MORE THAN QUADRILLION
             print(f"How lucky you are: {round((rollLuck / diceSides) * 100, 2)}%")
             
             # BIG DICE DISPLAY
@@ -474,8 +531,10 @@ def main():
                     print()
                     print("- 1 - Trade off my Dice")
                     print("- 2 - Pay for the Die")
-                    print("- 3 - I want 10 of those")
-                    print("- 4 - I want 100 of those")
+                    if points >= 120_000: print("- 3 - I want 10 of those")
+                    if points >= 1_200_000: print("- 4 - I want 100 of those")
+                    if points >= 12_000_000: print("- 5 - I want 1000 of those")
+                    if points >= 120_000_000: print("- 6 - I want 10000 of those")
                     print("- 0 - I don't want to")
                     
                     choice = input("> ")
@@ -542,6 +601,34 @@ def main():
                             print("You don't have enough points!")
                             input("> ")
                     
+                    elif choice == "5":         # 1000 WITH POINTS
+                        
+                        if points >= 12_000_000:
+                            
+                            hundoDiceAmount += 1000
+                            points -= 12_000_000
+                                
+                            print("You do you I guess.")
+                            input("> ")
+                            
+                        else:
+                            print("You don't have enough points!")
+                            input("> ")
+                    
+                    elif choice == "6":         # 10000 WITH POINTS
+                        
+                        if points >= 120_000_000:
+                            
+                            hundoDiceAmount += 1000
+                            points -= 120_000_000
+                                
+                            print("This is just dumb.")
+                            input("> ")
+                            
+                        else:
+                            print("You don't have enough points!")
+                            input("> ")
+                    
                     elif choice == "0":         # NOTHING
                         continue
                     
@@ -580,6 +667,18 @@ def main():
                     hundoDiceAmount += 100
                     points -= 1_200_000
             
+            elif choice == "45":        # GET HUNDO DICE WITH POINTS x1000
+                
+                if points >= 12_000_000:
+                    hundoDiceAmount += 1000
+                    points -= 120_000_000
+                    
+            elif choice == "46":        # GET HUNDO DICE WITH POINTS x10000
+                
+                if points >= 120_000_000:
+                    hundoDiceAmount += 10000
+                    points -= 120_000_000
+            
             elif choice == "5":         # GET THUNDO DICE
                 
                 if hundoDiceAmount >= 10 or points >= 120_000:
@@ -592,8 +691,9 @@ def main():
                     print()
                     print("- 1 - Trade off my Dice")
                     print("- 2 - Pay for the Die")
-                    print("- 3 - I want 10 of those")
-                    print("- 4 - I want 100 of those")
+                    if points >= 1_200_000: print("- 3 - I want 10 of those")
+                    if points >= 12_000_000: print("- 4 - I want 100 of those")
+                    if points >= 120_000_000: print("- 5 - I want 1000 of those")
                     print("- 0 - I don't want to")
                     
                     choice = input("> ")
@@ -654,6 +754,19 @@ def main():
                             print("You don't have enough points!")
                             input("> ")
                     
+                    elif choice == "5":         # 1000 WITH POINTS
+                        
+                        if points >= 120_000_000:
+                            
+                            thundoDiceAmount += 1000
+                            points -= 120_000_000
+                            
+                            print("JUST GET A MILLION SIDED DIE!")
+                            input("> ")
+                            
+                        else:
+                            print("You don't have enough points!")
+                    
                     elif choice == "0":         # NOTHING
                         continue
                     
@@ -685,6 +798,12 @@ def main():
                     thundoDiceAmount += 100
                     points -= 12_000_000
             
+            elif choice == "55":        # GET THUNDO DICE WITH POINTS x1000
+                
+                if points >= 120_000_000:
+                    thundoDiceAmount += 1000
+                    points -= 120_000_000
+            
             elif choice == "6":         # GET MUNDO DICE
                 
                 if thundoDiceAmount >= 1000 or hundoDiceAmount >= 10_000 or points >= 120_000_000:
@@ -697,8 +816,9 @@ def main():
                     print("- 1 - Trade off my 100 sided Dice")
                     print("- 2 - Trade off my 1000 sided Dice")
                     print("- 3 - Pay for the Die")
-                    print("- 4 - I want 10 of those")
-                    print("- 5 - I want 100 of those")
+                    if points >= 1_200_000_000: print("- 4 - I want 10 of those")
+                    if points >= 12_000_000_000: print("- 5 - I want 100 of those")
+                    if points >= 120_000_000_000: print("- 6 - I want 1000 of those")
                     print("- 0 - I don't want to")
                     
                     choice = input("> ")
@@ -772,6 +892,21 @@ def main():
                         else:
                             print("You don't have enough points!")
                             input("> ")
+                            
+                    elif choice == "6":     # ENOUGH POINTS x1000
+                        
+                        if points >= 120_000_000_000:
+                            
+                            mundoDiceAmount += 1000
+                            points -= 120_000_000_000
+                            
+                            print("Who's could be calling me at this hour?")
+                            print("Money's calling.")
+                            input("> ")
+                            
+                        else:
+                            print("You don't have enough points!")
+                            input("> ")
                     
                     elif choice == "0":     # NOTHING
                         continue
@@ -809,6 +944,12 @@ def main():
                 if points >= 12_000_000_000:
                     mundoDiceAmount += 100
                     points -= 12_000_000_000
+            
+            elif choice == "66":        # GET MUNDO DICE WITH POINTS x1000
+                
+                if points >= 120_000_000_000:
+                    mundoDiceAmount += 1000
+                    points -= 120_000_000_000
             
             else:                       # INVALID
                 print("Invalid choice!")
