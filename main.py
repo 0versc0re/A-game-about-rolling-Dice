@@ -582,10 +582,6 @@ def main():
                             
                             print("Just get a 1000 sided Die.")
                             input("> ")
-                        
-                        else:
-                            print("You don't have enough points!")
-                            input("> ")
                             
                     elif choice == "4":         # 100 WITH POINTS
                         
@@ -595,10 +591,6 @@ def main():
                             points -= 1_200_000
                             
                             print("I don't get why you would buy this.")
-                            input("> ")
-                        
-                        else:
-                            print("You don't have enough points!")
                             input("> ")
                     
                     elif choice == "5":         # 1000 WITH POINTS
@@ -610,11 +602,7 @@ def main():
                                 
                             print("You do you I guess.")
                             input("> ")
-                            
-                        else:
-                            print("You don't have enough points!")
-                            input("> ")
-                    
+
                     elif choice == "6":         # 10000 WITH POINTS
                         
                         if points >= 120_000_000:
@@ -624,11 +612,7 @@ def main():
                                 
                             print("This is just dumb.")
                             input("> ")
-                            
-                        else:
-                            print("You don't have enough points!")
-                            input("> ")
-                    
+
                     elif choice == "0":         # NOTHING
                         continue
                     
@@ -735,10 +719,6 @@ def main():
                             
                             print("Detected motion at front door.")
                             input("> ")
-                        
-                        else:
-                            print("You don't have enough points!")
-                            input("> ")
                     
                     elif choice == "4":         # 100 WITH POINTS
                         
@@ -749,11 +729,7 @@ def main():
                             
                             print("Detected motion at front door.")
                             input("> ")
-                        
-                        else:
-                            print("You don't have enough points!")
-                            input("> ")
-                    
+
                     elif choice == "5":         # 1000 WITH POINTS
                         
                         if points >= 120_000_000:
@@ -763,9 +739,6 @@ def main():
                             
                             print("JUST GET A MILLION SIDED DIE!")
                             input("> ")
-                            
-                        else:
-                            print("You don't have enough points!")
                     
                     elif choice == "0":         # NOTHING
                         continue
@@ -874,10 +847,6 @@ def main():
                             
                             print("Do a moneyspread.")
                             input("> ")
-                            
-                        else:
-                            print("You don't have enough points!")
-                            input("> ")
                     
                     elif choice == "5":     # ENOUGH POINTS x100
                         
@@ -889,10 +858,6 @@ def main():
                             print("You are the richest person ever!")
                             input("> ")
                             
-                        else:
-                            print("You don't have enough points!")
-                            input("> ")
-                            
                     elif choice == "6":     # ENOUGH POINTS x1000
                         
                         if points >= 120_000_000_000:
@@ -902,10 +867,6 @@ def main():
                             
                             print("Who's could be calling me at this hour?")
                             print("Money's calling.")
-                            input("> ")
-                            
-                        else:
-                            print("You don't have enough points!")
                             input("> ")
                     
                     elif choice == "0":     # NOTHING
