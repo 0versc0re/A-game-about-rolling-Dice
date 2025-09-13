@@ -200,35 +200,27 @@ def main():
                 sys.exit()
                 
             elif choice == "1":         # ROLL DICE
-                
+
                 print()
-                rollList = []
-                total = 0
+                totalRolls = round(diceAmount * diceAmountOffset)
                 
-                if round(diceAmount * diceAmountOffset) < 5:
-                    for roll in range(round(diceAmount * diceAmountOffset)):
-                        if rollLuck < diceSides:
-                            roll = randint(rollLuck, diceSides)
-                        else:
-                            roll = diceSides
-                        points += roll * pointsMult
-                        rollList.append(roll)
+                if totalRolls < 5:
+                    for _ in range(totalRolls):
+                        roll = randint(rollLuck, diceSides) if rollLuck < diceSides else roll = diceSides
+                        total += roll
                         print(f"You rolled a {roll}!")
                 else:
-                    for roll in range(round(diceAmount * diceAmountOffset)):
-                        if rollLuck < diceSides:
-                            roll = randint(rollLuck, diceSides)
-                        else:
-                            roll = diceSides
-                        points += roll * pointsMult
-                        rollList.append(roll)
+                    for _ in range(totalRolls):
+                        roll = randint(rollLuck, diceSides) if rollLuck < diceSides else roll = diceSides
+                        total += roll
                     print(f"You rolled your Dice {bigNumber(round(diceAmount * diceAmountOffset))} times!")
+                    
+                totalPoints = total * pointsMult
+                points += totalPoints
                 
                 print()
-                print(f"Your current multiplier: {round(pointsMult, 2)}")
-                for roll in rollList:
-                    total += roll
-                print(f"You now have {bigNumber(total * pointsMult)} more points.")
+                print(f"Your current Multiplier: {round(pointsMult, 2)}")
+                print(f"You now have {bigNumber(totalPoints)} more points.")
                 input("> ")
             
             elif choice == "2":         # DICE STORE
@@ -295,27 +287,25 @@ def main():
                 if hundoDiceAmount > 0:
                     
                     print()
-                    rollList = []
-                    total = 0
+                    totalRolls = round(hundoDiceAmount * diceAmountOffset)
                     
-                    if round(hundoDiceAmount * diceAmountOffset) < 5:
-                        for roll in range(round(hundoDiceAmount * diceAmountOffset)):
+                    if totalRolls < 5:
+                        for _ in range(totalRolls):
                             roll = randint(1, 100)
-                            points += roll * pointsMult
-                            rollList.append(roll)
+                            total += roll
                             print(f"You rolled a {roll}!")
                     else:
-                        for roll in range(round(hundoDiceAmount * diceAmountOffset)):
+                        for _ in range(totalRolls):
                             roll = randint(1, 100)
-                            points += roll * pointsMult
-                            rollList.append(roll)
+                            total += roll
                         print(f"You rolled your Dice {bigNumber(round(hundoDiceAmount * diceAmountOffset))} times!")
+                        
+                    totalPoints = total * pointsMult
+                    points += totalPoints
                     
                     print()
-                    print(f"Your current multiplier: {round(pointsMult, 2)}")
-                    for roll in rollList:
-                        total += roll
-                    print(f"You now have {bigNumber(total * pointsMult)} more points.")
+                    print(f"Your current Multiplier: {round(pointsMult, 2)}")
+                    print(f"You now have {bigNumber(totalPoints)} more points.")
                     input("> ")
             
             elif choice == "5":         # ROLL THUNDO
@@ -323,27 +313,25 @@ def main():
                 if thundoDiceAmount > 0:
                     
                     print()
-                    rollList = []
-                    total = 0
+                    totalRolls = round(thundoDiceAmount * diceAmountOffset)
                     
-                    if round(thundoDiceAmount * diceAmountOffset) < 5:
-                        for roll in range(round(thundoDiceAmount * diceAmountOffset)):
-                            roll = randint(1, 1000)
-                            points += roll * pointsMult
-                            rollList.append(roll)
+                    if totalRolls < 5:
+                        for _ in range(totalRolls):
+                            roll = randint(1, 1_000)
+                            total += roll
                             print(f"You rolled a {roll}!")
                     else:
-                        for roll in range(round(thundoDiceAmount * diceAmountOffset)):
-                            roll = randint(1, 1000)
-                            points += roll * pointsMult
-                            rollList.append(roll)
+                        for _ in range(totalRolls):
+                            roll = randint(1, 1_000)
+                            total += roll
                         print(f"You rolled your Dice {bigNumber(round(thundoDiceAmount * diceAmountOffset))} times!")
+                        
+                    totalPoints = total * pointsMult
+                    points += totalPoints
                     
                     print()
-                    print(f"Your current multiplier: {round(pointsMult, 2)}")
-                    for roll in rollList:
-                        total += roll
-                    print(f"You now have {bigNumber(total * pointsMult)} more points.")
+                    print(f"Your current Multiplier: {round(pointsMult, 2)}")
+                    print(f"You now have {bigNumber(totalPoints)} more points.")
                     input("> ")
             
             elif choice == "6":         # ROLL MUNDO
@@ -351,27 +339,25 @@ def main():
                 if mundoDiceAmount > 0:
                     
                     print()
-                    rollList = []
-                    total = 0
+                    totalRolls = round(mundoDiceAmount * diceAmountOffset)
                     
-                    if round(mundoDiceAmount * diceAmountOffset) < 5:
-                        for roll in range(round(mundoDiceAmount * diceAmountOffset)):
+                    if totalRolls < 5:
+                        for _ in range(totalRolls):
                             roll = randint(1, 1_000_000)
-                            points += roll * pointsMult
-                            rollList.append(roll)
+                            total += roll
                             print(f"You rolled a {roll}!")
                     else:
-                        for roll in range(round(mundoDiceAmount * diceAmountOffset)):
+                        for _ in range(totalRolls):
                             roll = randint(1, 1_000_000)
-                            points += roll * pointsMult
-                            rollList.append(roll)
+                            total += roll
                         print(f"You rolled your Dice {bigNumber(round(mundoDiceAmount * diceAmountOffset))} times!")
+                        
+                    totalPoints = total * pointsMult
+                    points += totalPoints
                     
                     print()
-                    print(f"Your current multiplier: {round(pointsMult, 2)}")
-                    for roll in rollList:
-                        total += roll
-                    print(f"You now have {bigNumber(total * pointsMult)} more points.")
+                    print(f"Your current Multiplier: {round(pointsMult, 2)}")
+                    print(f"You now have {bigNumber(totalPoints)} more points.")
                     input("> ")
             
             elif choice == "7":         # UPGRADE MULTIPLIER SCALING
@@ -457,22 +443,23 @@ def main():
             print(f"You have {bigNumber(points)} points.")
             print(f"How lucky you are: {round((rollLuck / diceSides) * 100, 2)}%")
             
-            # BIG DICE DISPLAY
-            if ((diceAmount, diceSides) in hundoPairs) or (points >= 12_000):
-                print()
-                print("You can now get an ELUSIVE 100 sided Die")
-                print("by merging your all of your Dice together!")
-                print("Or by paying 12000 points for it!")
-            if hundoDiceAmount >= 10 or points >= 120_000:
-                print()
-                print("You can now get an ADORED 1000 sided Die")
-                print("by trading off 10 of your 100 sided Die!")
-                print("Or by paying 120000 points for it!")
-            if thundoDiceAmount >= 1000 or hundoDiceAmount >= 10_000 or points >= 120_000_000:
-                print()
-                print("You can now get the Million sided Die")
-                print("by trading off your Dice!")
-                print("Or by paying 120 Million points for it!")
+            # BIG DICE DISPLAY ONLY IF NO MUNDO
+            if mundoDiceAmount < 0:
+                if ((diceAmount, diceSides) in hundoPairs) or (points >= 12_000):
+                    print()
+                    print("You can now get an ELUSIVE 100 sided Die")
+                    print("by merging your all of your Dice together!")
+                    print("Or by paying 12000 points for it!")
+                if hundoDiceAmount >= 10 or points >= 120_000:
+                    print()
+                    print("You can now get an ADORED 1000 sided Die")
+                    print("by trading off 10 of your 100 sided Die!")
+                    print("Or by paying 120000 points for it!")
+                if thundoDiceAmount >= 1000 or hundoDiceAmount >= 10_000 or points >= 120_000_000:
+                    print()
+                    print("You can now get the Million sided Die")
+                    print("by trading off your Dice!")
+                    print("Or by paying 120 Million points for it!")
             
             # OPTIONS DISPLAY
             print()
@@ -1017,8 +1004,7 @@ def main():
                 choice = input("> ")
                 
                 if choice == "0":       # EXIT
-                    Tree = False
-                    Tree = True
+                    continue
                 
                 elif choice == "1":     # BETTER PRICES
                     
