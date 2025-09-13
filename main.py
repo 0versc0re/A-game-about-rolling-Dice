@@ -68,14 +68,14 @@ def bigNumber(number):
     numberSuffix = ["M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "D",
                     "Ud", "Dd", "Td", "Qad", "Qid", "Sxd", "Spd", "Ocd", "Nod"]
     
-    if number < 9e5:
+    if number < 1_000_000:
         return str(round(number, 2))
 
     for i, suffix in enumerate(numberSuffix, start=2):
-        if number < 9 * (10 ** ((i + 1) * 3)):
-            return str(round(number / (10 ** (i * 3)), 2)) + suffix
+        if number < 1000 ** (i + 1):
+            return str(round(number / (1000 ** i), 2)) + suffix
 
-    return str(round(number / (10 ** ((len(numberSuffix) + 1) * 3)), 2)) + numberSuffix[-1]
+    return str(round(number / (1000 ** len(numberSuffix)), 2)) + numberSuffix[-1]
 
 def main():
     
