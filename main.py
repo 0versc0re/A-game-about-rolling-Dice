@@ -206,12 +206,12 @@ def main():
                 
                 if totalRolls < 5:
                     for _ in range(totalRolls):
-                        roll = randint(rollLuck, diceSides) if rollLuck < diceSides else roll = diceSides
+                        roll = randint(rollLuck, diceSides) if rollLuck < diceSides else diceSides
                         total += roll
                         print(f"You rolled a {roll}!")
                 else:
                     for _ in range(totalRolls):
-                        roll = randint(rollLuck, diceSides) if rollLuck < diceSides else roll = diceSides
+                        roll = randint(rollLuck, diceSides) if rollLuck < diceSides else diceSides
                         total += roll
                     print(f"You rolled your Dice {bigNumber(round(diceAmount * diceAmountOffset))} times!")
                     
