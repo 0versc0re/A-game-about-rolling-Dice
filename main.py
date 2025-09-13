@@ -59,7 +59,7 @@ def bigNumber(number):
     
     if number < 9e5: return str(round(number, 2))
     elif number < 9e8: return str(round(number / 1e6, 2)) + numberSuffix[0]
-    elif number < 9e11: return str(round(number / 1e, 2)) + numberSuffix[1]
+    elif number < 9e11: return str(round(number / 1e9, 2)) + numberSuffix[1]
     elif number < 9e14: return str(round(number / 1e12, 2)) + numberSuffix[2]
     elif number < 9e17: return str(round(number / 1e15, 2)) + numberSuffix[3]
     elif number < 9e20: return str(round(number / 1e18, 2)) + numberSuffix[4]
@@ -954,4 +954,5 @@ def main():
                 input("> ")
 
 if __name__ == "__main__":
+
     main()
