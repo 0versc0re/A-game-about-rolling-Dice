@@ -203,6 +203,7 @@ def main():
 
                 print()
                 totalRolls = round(diceAmount * diceAmountOffset)
+                total = 0
                 
                 if totalRolls < 5:
                     for _ in range(totalRolls):
@@ -288,6 +289,7 @@ def main():
                     
                     print()
                     totalRolls = round(hundoDiceAmount * diceAmountOffset)
+                    total = 0
                     
                     if totalRolls < 5:
                         for _ in range(totalRolls):
@@ -314,6 +316,7 @@ def main():
                     
                     print()
                     totalRolls = round(thundoDiceAmount * diceAmountOffset)
+                    total = 0
                     
                     if totalRolls < 5:
                         for _ in range(totalRolls):
@@ -340,6 +343,7 @@ def main():
                     
                     print()
                     totalRolls = round(mundoDiceAmount * diceAmountOffset)
+                    total = 0
                     
                     if totalRolls < 5:
                         for _ in range(totalRolls):
