@@ -1,4 +1,4 @@
-Play the game by right-clicking the file and opening it with Python.\n
+Play the game by right-clicking the file and opening it with Python.</br>
 Your game is saved on a JSON file so editing it should be a piece of cake.\n
 Any suggestions on making this abomination better is appreciated.\n
 \nBE WARNED\n
