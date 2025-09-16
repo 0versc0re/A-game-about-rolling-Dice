@@ -346,6 +346,7 @@ def main():
                         hundoDiceAmount = 0
                         thundoDiceAmount = 0
                         mundoDiceAmount = 0
+                        trundoDiceAmount = 0
                             
                         rollLuck = 1
                         upgradeLuck = 200
