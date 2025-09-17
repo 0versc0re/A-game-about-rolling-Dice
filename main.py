@@ -40,26 +40,34 @@ def clearScreen():
 def saveGame():
     
     saveData = {
-        "diceSides":        diceSides,
-        "diceAmount":       diceAmount,
-        "points":           points,
-        "pointsMult":       pointsMult,
-        "pointsMultExpo":   pointsMultExpo,
-        "upgradeDice":      upgradeDice,
-        "upgradeExpo":      upgradeExpo,
-        "moreDice":         moreDice,
-        "moreExpo":         moreExpo,
-        "hundoDiceAmount":  hundoDiceAmount,
-        "thundoDiceAmount": thundoDiceAmount,
-        "mundoDiceAmount":  mundoDiceAmount,
-        "trundoDiceAmount": trundoDiceAmount,
-        "rollLuck":         rollLuck,
-        "upgradeLuck":      upgradeLuck,
-        "luckExpo":         luckExpo,
-        "storePriceOffset": storePriceOffset,
-        "diceAmountOffset": diceAmountOffset,
-        "luckOffset":       luckOffset,
-        "multiplierOffset": multiplierOffset
+        "dice": {
+            "diceSides":        diceSides,
+            "diceAmount":       diceAmount,
+            "hundoDiceAmount":  hundoDiceAmount,
+            "thundoDiceAmount": thundoDiceAmount,
+            "mundoDiceAmount":  mundoDiceAmount,
+            "trundoDiceAmount": trundoDiceAmount
+        },
+        "points": {
+            "points":           points,
+            "pointsMult":       pointsMult,
+            "pointsMultExpo":   pointsMultExpo
+        },
+        "store": {
+            "upgradeDice":      upgradeDice,
+            "upgradeExpo":      upgradeExpo,
+            "moreDice":         moreDice,
+            "moreExpo":         moreExpo,
+            "rollLuck":         rollLuck,
+            "upgradeLuck":      upgradeLuck,
+            "luckExpo":         luckExpo
+        },
+        "offset": {
+            "storePriceOffset": storePriceOffset,
+            "diceAmountOffset": diceAmountOffset,
+            "luckOffset":       luckOffset,
+            "multiplierOffset": multiplierOffset
+        },
     }
     
     with open("save.json", "w") as f:
@@ -188,27 +196,34 @@ def main():
                     
                     with open("save.json", "r") as f:
                         data = json.load(f)
-                        
-                    diceSides =        data["diceSides"]
-                    diceAmount =       data["diceAmount"]
-                    points =           data["points"]
-                    pointsMult =       data["pointsMult"]
-                    pointsMultExpo =   data["pointsMultExpo"]
-                    upgradeDice =      data["upgradeDice"]
-                    upgradeExpo =      data["upgradeExpo"]
-                    moreDice =         data["moreDice"]
-                    moreExpo =         data["moreExpo"]
-                    hundoDiceAmount =  data["hundoDiceAmount"]
-                    thundoDiceAmount = data["thundoDiceAmount"]
-                    mundoDiceAmount =  data["mundoDiceAmount"]
-                    trundoDiceAmount = data["trundoDiceAmount"]
-                    rollLuck =         data["rollLuck"]
-                    upgradeLuck =      data["upgradeLuck"]
-                    luckExpo =         data["luckExpo"]
-                    storePriceOffset = data["storePriceOffset"]
-                    diceAmountOffset = data["diceAmountOffset"]
-                    luckOffset =       data["luckOffset"]
-                    multiplierOffset = data["multiplierOffset"]
+                    
+                    # DICE
+                    diceSides =        data["dice"]["diceSides"]
+                    diceAmount =       data["dice"]["diceAmount"]
+                    hundoDiceAmount =  data["dice"]["hundoDiceAmount"]
+                    thundoDiceAmount = data["dice"]["thundoDiceAmount"]
+                    mundoDiceAmount =  data["dice"]["mundoDiceAmount"]
+                    trundoDiceAmount = data["dice"]["trundoDiceAmount"]
+                    
+                    # POINTS
+                    points =         data["points"]["points"]
+                    pointsMult =     data["points"]["pointsMult"]
+                    pointsMultExpo = data["points"]["pointsMultExpo"]
+                    
+                    # STORE
+                    upgradeDice = data["store"]["upgradeDice"]
+                    upgradeExpo = data["store"]["upgradeExpo"]
+                    moreDice =    data["store"]["moreDice"]
+                    moreExpo =    data["store"]["moreExpo"]
+                    rollLuck =    data["store"]["rollLuck"]
+                    upgradeLuck = data["store"]["upgradeLuck"]
+                    luckExpo =    data["store"]["luckExpo"]
+                    
+                    # OFFSET
+                    storePriceOffset = data["offset"]["storePriceOffset"]
+                    diceAmountOffset = data["offset"]["diceAmountOffset"]
+                    luckOffset =       data["offset"]["luckOffset"]
+                    multiplierOffset = data["offset"]["multiplierOffset"]
                         
                     Menu = False
                     Play = True
@@ -410,7 +425,7 @@ def main():
             }
             
             # DICE DISPLAY
-            print(f"You have {diceAmount} {diceSides} sided Dice.")                                                                 # NOT SECRET
+            print(f"You have {round(diceAmount * diceAmountOffset)} {diceSides} sided Dice.")                                                                 # NOT SECRET
             print(f"You have {bigNumber(round(hundoDiceAmount * diceAmountOffset))} Hundred sided Dice.")                               # NOT SECRET
             if thundoDiceAmount > 0: print(f"You have {bigNumber(round(thundoDiceAmount * diceAmountOffset))} Thousand sided Dice")     # SECRET
             if mundoDiceAmount > 0: print(f"You have {bigNumber(round(mundoDiceAmount * diceAmountOffset))} Million sided Dice")    # SECRET
