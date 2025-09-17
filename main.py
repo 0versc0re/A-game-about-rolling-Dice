@@ -1,5 +1,5 @@
 # IMPORTS
-from random import *
+from random import randint
 import json
 import os, sys
 
@@ -115,7 +115,7 @@ def rollDice(amount, sides, offset, mult, luck):
     
     return totalPoints
 
-def chooseDiceAmount(points, amount, name: str, price):
+def chooseDiceAmount(points, name: str, price):
     
     maxAmount = points // price
     
@@ -140,31 +140,28 @@ def chooseDiceAmount(points, amount, name: str, price):
         input("> ")
         return 0, 0
     
-    amount += choice
-    print(f"You now have {bigNumber(amount)} {name} sided Dice.")
+    print(f"You now have {choice} more {name} sided Dice.")
     input("> ")
     return choice, choice * price
 
 def main():
-    
+
     # BOOLEANS
     Run = True
     Menu = True
     Play = False
     Store = False
     Tree = False
-    
+
     # GLOBAL VARIABLES
     global diceSides, diceAmount, points, pointsMult, pointsMultExpo
     global upgradeDice, upgradeExpo, moreDice, moreExpo, rollLuck, upgradeLuck, luckExpo
     global hundoDiceAmount, thundoDiceAmount, mundoDiceAmount, trundoDiceAmount
     global storePriceOffset, diceAmountOffset, luckOffset, multiplierOffset
-    
-    # GAME RUNNING
-    while Run:
-    
-        # GAME MENU
-        while Menu:
+
+    while Run:          # GAME RUN
+
+        while Menu:     # GAME MENU
             
             clearScreen()
             print("- 0 - New Game")
@@ -234,17 +231,16 @@ def main():
             
             elif choice == "2":         # EXIT GAME
                 sys.exit()
-        
-        # GAME PLAY
-        while Play:
+
+        while Play:     # GAME PLAY
             
             saveGame()
             clearScreen()
             
             # DICE DISPLAY
-            print(f"You have {diceAmount} {diceSides} sided Dice.")                                                                 # NOT SECRET
-            print(f"You have {bigNumber(round(hundoDiceAmount * diceAmountOffset))} Hundred sided Dice.")                               # NOT SECRET
-            if thundoDiceAmount > 0: print(f"You have {bigNumber(round(thundoDiceAmount * diceAmountOffset))} Thousand sided Dice")     # SECRET
+            print(f"You have {round(diceAmount * diceAmountOffset)} {diceSides} sided Dice.")                                       # NOT SECRET
+            print(f"You have {bigNumber(round(hundoDiceAmount * diceAmountOffset))} Hundred sided Dice.")                           # NOT SECRET
+            if thundoDiceAmount > 0: print(f"You have {bigNumber(round(thundoDiceAmount * diceAmountOffset))} Thousand sided Dice") # SECRET
             if mundoDiceAmount > 0: print(f"You have {bigNumber(round(mundoDiceAmount * diceAmountOffset))} Million sided Dice")    # SECRET
             if trundoDiceAmount > 0: print(f"You have {bigNumber(round(trundoDiceAmount * diceAmountOffset))} Trillion sided Dice") # SECRET
                         
@@ -410,24 +406,26 @@ def main():
             else:                       # INVALID
                 print("Invalid choice!")
                 input("> ")
-        
-        # GAME STORE     
-        while Store:
+   
+        while Store:    # GAME STORE
             
             saveGame()
             clearScreen()
             
             hundoPairs = {
-                (1, 97),  (97, 1),  (1, 98), (98, 1), (2, 49), (49, 2), (7, 14), (14, 7),                     # total 97 98
+                (1, 97),  (97, 1),                                                                            # total 97
+                (1, 98),  (98, 1),  (2, 49), (49, 2), (7, 14), (14, 7),                                       # total 98
                 (1, 99),  (99, 1),  (3, 33), (33, 3), (9, 11), (11, 9),                                       # total 99
-                (100, 1), (10, 10), (2, 50), (50, 2), (4, 25), (25, 4), (5, 20), (20, 5), (1, 101), (101, 1), # total 100 101
-                (1, 102), (102, 1), (2, 51), (51, 2), (3, 34), (34, 3), (6, 17), (17, 6), (1, 103), (103, 1)  # total 102 103
+                (1, 100), (10, 10), (2, 50), (50, 2), (4, 25), (25, 4), (5, 20), (20, 5),                     # total 100
+                (1, 101), (101, 1),                                                                           # total 101
+                (1, 102), (102, 1), (2, 51), (51, 2), (3, 34), (34, 3), (6, 17), (17, 6),                     # total 102
+                (1, 103), (103, 1)                                                                            # total 103
             }
             
             # DICE DISPLAY
-            print(f"You have {round(diceAmount * diceAmountOffset)} {diceSides} sided Dice.")                                                                 # NOT SECRET
-            print(f"You have {bigNumber(round(hundoDiceAmount * diceAmountOffset))} Hundred sided Dice.")                               # NOT SECRET
-            if thundoDiceAmount > 0: print(f"You have {bigNumber(round(thundoDiceAmount * diceAmountOffset))} Thousand sided Dice")     # SECRET
+            print(f"You have {round(diceAmount * diceAmountOffset)} {diceSides} sided Dice.")                                       # NOT SECRET
+            print(f"You have {bigNumber(round(hundoDiceAmount * diceAmountOffset))} Hundred sided Dice.")                           # NOT SECRET
+            if thundoDiceAmount > 0: print(f"You have {bigNumber(round(thundoDiceAmount * diceAmountOffset))} Thousand sided Dice") # SECRET
             if mundoDiceAmount > 0: print(f"You have {bigNumber(round(mundoDiceAmount * diceAmountOffset))} Million sided Dice")    # SECRET
             if trundoDiceAmount > 0: print(f"You have {bigNumber(round(trundoDiceAmount * diceAmountOffset))} Trillion sided Dice") # SECRET
                 
@@ -477,7 +475,7 @@ def main():
                     points -= upgradeDice * diceAmount
                     upgradeDice = upgradeDice ** upgradeExpo
                     diceSides += 1
-                    print(f"You now have {diceAmount} dice with {diceSides} sides each.")
+                    print(f"You now have {round(diceAmount * diceAmountOffset)} dice with {diceSides} sides each.")
                     input("> ")
                     
                 else:
@@ -562,7 +560,7 @@ def main():
                     
                     elif choice == "3":         # CHOOSE HOW MANY DICE
                         
-                        dice, spent = chooseDiceAmount(points, hundoDiceAmount, "Hundred", 12_000)
+                        dice, spent = chooseDiceAmount(points, "Hundred", 12_000)
                         hundoDiceAmount += dice
                         points -= spent
 
@@ -618,7 +616,7 @@ def main():
 
                     elif choice == "3":         # CHOOSE HOW MANY DICE
 
-                        dice, spent = chooseDiceAmount(points, thundoDiceAmount, "Thousand", 120_000)
+                        dice, spent = chooseDiceAmount(points, "Thousand", 120_000)
                         thundoDiceAmount += dice
                         points -= spent
 
@@ -688,7 +686,7 @@ def main():
                     
                     elif choice == "4":     # CHOOSE HOW MANY DICE
 
-                        dice, spent = chooseDiceAmount(points, mundoDiceAmount, "Million", 120_000_000)
+                        dice, spent = chooseDiceAmount(points, "Million", 120_000_000)
                         mundoDiceAmount += dice
                         points -= spent
                     
@@ -742,7 +740,7 @@ def main():
                             
                     elif choice == "3":     # CHOOSE HOW MANY DICE
 
-                        dice, spent = chooseDiceAmount(points, trundoDiceAmount, "Trillion", 120e12)
+                        dice, spent = chooseDiceAmount(points, "Trillion", 120e12)
                         trundoDiceAmount += dice
                         points -= spent
                     
@@ -757,8 +755,7 @@ def main():
                 print("Invalid choice!")
                 input("> ")
 
-        # GAME TREE
-        while Tree:
+        while Tree:     # GAME TREE
             
             saveGame()
             clearScreen()
@@ -797,10 +794,11 @@ def main():
                 
                 elif choice == "1":     # BETTER PRICES
                     
-                    if points >= 1e15:
+                    price = 1e15 * storePriceOffset
+                    if points >= price:
                         
                         storePriceOffset += 0.2
-                        points -= 1e15
+                        points -= price
                         
                         print("Store Prices are now cheaper!")
                         input("> ")
@@ -811,10 +809,11 @@ def main():
                 
                 elif choice == "2":     # MORE DICE
                     
-                    if points >= 1e15:
+                    price = 1e15 * diceAmountOffset
+                    if points >= price:
                         
-                        points -= 1e15
                         diceAmountOffset += 0.2
+                        points -= price
                         
                         print("You magically have more dice!")
                         input("> ")
@@ -825,10 +824,11 @@ def main():
                 
                 elif choice == "3":     # MORE LUCK
                     
-                    if points >= 1e18:
+                    price = 1e18 * luckOffset
+                    if points >= price:
                         
-                        points -= 1e18
                         luckOffset += 0.2
+                        points -= price
                         
                         print("You feel even luckier!")
                         input("> ")
@@ -839,10 +839,11 @@ def main():
                 
                 elif choice == "4":     # MORE MULTIPLIER
                     
-                    if points >= 1e21:
+                    price = 1e21 * multiplierOffset
+                    if points >= price:
                         
-                        points -= 1e21
                         multiplierOffset += 0.2
+                        points -= price
                         
                         print("The Multiplier already feels stronger!")
                         input("> ")
@@ -858,6 +859,6 @@ def main():
             else:                   # INVALID
                 print("Invalid choice!")
                 input("> ")
-
+        
 if __name__ == "__main__":
     main()
