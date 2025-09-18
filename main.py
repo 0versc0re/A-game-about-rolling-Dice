@@ -1,7 +1,10 @@
 # IMPORTS
 from random import randint
 import json
-import os, sys
+import sys
+import curses
+from curses import wrapper
+from curses.textpad import Textbox
 
 
 # DICE VARIABLES
@@ -33,9 +36,6 @@ storePriceOffset = 1.0
 diceAmountOffset = 1.0
 luckOffset = 1.0
 multiplierOffset = 1.0
-
-def clearScreen():
-    os.system("cls")
 
 def saveGame():
     
@@ -90,43 +90,52 @@ def bigNumber(number):
 
     return str(round(number / (1000 ** len(numberSuffix)), 2)) + numberSuffix[-1]
 
-def rollDice(amount, sides, offset, mult, luck):
+def rollDice(stdscr, amount, sides, offset, mult, luck):
     
-    print()
     totalRolls = round(amount * offset)
     total = 0
-
-    if totalRolls < 5:
-        for _ in range(totalRolls):
-            roll = randint(luck, sides) if luck < sides else sides
-            total += roll
-            print(f"You rolled {roll}!")
-    else:
-        for _ in range(totalRolls):
-            roll = randint(luck, sides) if luck < sides else sides
-            total += roll
-        print(f"You rolled your Dice {bigNumber(round(amount * offset))} times!")
+    
+    for _ in range(totalRolls):
+        roll = randint(luck, sides) if luck < sides else sides
+        total += roll
+    stdscr.addstr(13, 60, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+    stdscr.addstr(14, 60, f"| You rolled your Dice {f'{bigNumber(round(amount * offset))} times!':<34}|")
 
     totalPoints = total * mult
 
-    print(f"\nYour current Multiplier: {round(mult, 2)} MP")
-    print(f"You now have {bigNumber(totalPoints)} more points.")
-    input("> ")
+    stdscr.addstr(15, 60, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+    stdscr.addstr(16, 60, f"| Your current Multiplier: {f'{round(mult, 2)} MP':<30}|")
+    stdscr.addstr(17, 60, f"| You now have {f'{bigNumber(totalPoints)} more points.':<42}|")
+    stdscr.addstr(18, 60, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+    stdscr.refresh()
+    stdscr.getch()
     
     return totalPoints
 
-def chooseDiceAmount(points, name: str, price):
+def chooseDiceAmount(stdscr, points, name: str, price):
     
     maxAmount = points // price
     
-    print(f"\nYou have {bigNumber(points)} points.")
-    print(f"With your points, you can get {bigNumber(maxAmount)} {name} sided Dice\n")
+    stdscr.addstr(29, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#~----~----~----~#")
+    stdscr.addstr(30, 0, f"| You have {f'{bigNumber(points)} points.':<63}|")
+    stdscr.addstr(31, 0, f"| With your points, you can get {f'{bigNumber(maxAmount)} {name} sided Dice':<42}|")
+    stdscr.addstr(32, 0, "| How many Dice do you want?                                              |")
+    stdscr.addstr(33, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#~----~----~----~#")
+    stdscr.addstr(34, 0, "| >                                                      |")
+    stdscr.addstr(35, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+    
+    stdscr.refresh()
+    
+    win = curses.newwin(1, 30, 34, 4)
+    box = Textbox(win)
     
     try:
-        choice = int(input("How many Dice do you want? > "))
+        box.edit()
+        choice = int(box.gather())
     except ValueError:
-        print(f"Please choose a number between 1 and {bigNumber(maxAmount)}.")
-        input("> ")
+        stdscr.addstr(37, 0, f"Please choose a number between 1 and {bigNumber(maxAmount)}.")
+        stdscr.refresh()
+        stdscr.getch()
         return 0, 0
     
     if not (1 <= choice <= maxAmount):
@@ -136,18 +145,20 @@ def chooseDiceAmount(points, name: str, price):
         else:
             msg = "You don't have enough points!"
             
-        print(msg)
-        input("> ")
+        stdscr.addstr(37, 0, msg)
+        stdscr.refresh()
+        stdscr.getch()
         return 0, 0
     
-    print(f"You now have {choice} more {name} sided Dice.")
-    input("> ")
+    stdscr.addstr(36, 0, f"| You now have {f'{choice} more {name} sided Dice.':<42}|")
+    stdscr.addstr(37, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+    stdscr.refresh()
+    stdscr.getch()
     return choice, choice * price
 
-def main():
-
+def main(stdscr):
+    
     # BOOLEANS
-    Run = True
     Menu = True
     Play = False
     Store = False
@@ -158,34 +169,48 @@ def main():
     global upgradeDice, upgradeExpo, moreDice, moreExpo, rollLuck, upgradeLuck, luckExpo
     global hundoDiceAmount, thundoDiceAmount, mundoDiceAmount, trundoDiceAmount
     global storePriceOffset, diceAmountOffset, luckOffset, multiplierOffset
-
-    while Run:          # GAME RUN
-
+    
+    # HIDE CURSOR
+    curses.curs_set(0)
+    
+    while True:
+        
         while Menu:     # GAME MENU
             
-            clearScreen()
-            print("- 0 - New Game")
-            print("- 1 - Load Game")
-            print("- 2 - Exit Game")
-            choice = input("> ")
+            stdscr.clear()
+            stdscr.addstr(0, 0, "#~-~-~-~-~-~-~-~-~-~-~-~-~-~#")
+            stdscr.addstr(1, 0, "|       0 - New  Game       |")
+            stdscr.addstr(2, 0, "|       1 - Load Game       |")
+            stdscr.addstr(3, 0, "|       2 - Exit Game       |")
+            stdscr.addstr(4, 0, "#~-~-~-~-~-~-~-~-~-~-~-~-~-~#")
+            stdscr.refresh()
+            
+            choice = stdscr.getkey()
             
             if choice == "0":           # NEW GAME
                 
-                print("\nAre you sure you want to start a New Game?")
-                print("- 1 - No  New Game")
-                print("- 0 - Yes New Game")
-                choice = input("> ")
+                stdscr.addstr(5, 0, "|       Are you sure?       |")
+                stdscr.addstr(6, 0, "#~-~-~-~-~-~-~-~-~-~-~-~-~-~#")
+                stdscr.addstr(7, 0, "|       0 - No              |")
+                stdscr.addstr(8, 0, "|       1 - Yes             |")
+                stdscr.addstr(9, 0, "#~-~-~-~-~-~-~-~-~-~-~-~-~-~#")
+                
+                choice = stdscr.getkey()
                 
                 if choice == "0":       # NO
-                    Menu = False
-                    Play = True
+                    continue
                     
                 elif choice == "1":     # YES
-                    continue
+                    stdscr.clear()
+                    stdscr.refresh()
+                    Menu = False
+                    Play = True
                 
                 else:                   # INVALID
-                    print("Invalid choice!")
-                    input("> ")
+                    stdscr.addstr(10, 0, "|       Invalid choice!     |")
+                    stdscr.addstr(11, 0, "#~-~-~-~-~-~-~-~-~-~-~-~-~-~#")
+                    stdscr.refresh()
+                    stdscr.getch()
                 
             elif choice == "1":         # LOAD GAME
                 
@@ -221,13 +246,20 @@ def main():
                     diceAmountOffset = data["offset"]["diceAmountOffset"]
                     luckOffset =       data["offset"]["luckOffset"]
                     multiplierOffset = data["offset"]["multiplierOffset"]
+                    
+                    stdscr.addstr(5, 0, "|       Welcome back!       |")
+                    stdscr.addstr(6, 0, "#~-~-~-~-~-~-~-~-~-~-~-~-~-~#")
+                    stdscr.refresh()
+                    stdscr.getch()
                         
                     Menu = False
                     Play = True
                         
                 except OSError:
-                    print("Corrupt or missing file!")
-                    input("> ")
+                    stdscr.addstr(5, 0, "| Corrupt or missing file!  |")
+                    stdscr.addstr(6, 0, "#~-~-~-~-~-~-~-~-~-~-~-~-~-~#")
+                    stdscr.refresh()
+                    stdscr.getch()
             
             elif choice == "2":         # EXIT GAME
                 sys.exit()
@@ -235,59 +267,80 @@ def main():
         while Play:     # GAME PLAY
             
             saveGame()
-            clearScreen()
+            stdscr.clear()
             
             # DICE DISPLAY
-            print(f"You have {round(diceAmount * diceAmountOffset)} {diceSides} sided Dice.")                                       # NOT SECRET
-            print(f"You have {bigNumber(round(hundoDiceAmount * diceAmountOffset))} Hundred sided Dice.")                           # NOT SECRET
-            if thundoDiceAmount > 0: print(f"You have {bigNumber(round(thundoDiceAmount * diceAmountOffset))} Thousand sided Dice") # SECRET
-            if mundoDiceAmount > 0: print(f"You have {bigNumber(round(mundoDiceAmount * diceAmountOffset))} Million sided Dice")    # SECRET
-            if trundoDiceAmount > 0: print(f"You have {bigNumber(round(trundoDiceAmount * diceAmountOffset))} Trillion sided Dice") # SECRET
-                        
+            stdscr.addstr(0, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+            stdscr.addstr(1, 0, f"| You have {f'{round(diceAmount * diceAmountOffset)} {diceSides} sided Dice':<46}|")
+            stdscr.addstr(2, 0, f"| You have {f'{bigNumber(round(hundoDiceAmount * diceAmountOffset))} Hundred sided Dice':<46}|")
+            if thundoDiceAmount > 0: stdscr.addstr(3, 0, f"| You have {f'{bigNumber(round(thundoDiceAmount * diceAmountOffset))} Thousand sided Dice':<46}|")
+            else: stdscr.addstr(3, 0, "|" + 56*" " +"|")
+            if mundoDiceAmount > 0: stdscr.addstr(4, 0, f"| You have {f'{bigNumber(round(mundoDiceAmount * diceAmountOffset))} Million sided Dice':<46}|")
+            else: stdscr.addstr(4, 0, "|" + 56*" " +"|")
+            if trundoDiceAmount > 0: stdscr.addstr(5, 0, f"| You have {f'{bigNumber(round(trundoDiceAmount * diceAmountOffset))} Trillion sided Dice':<46}|")
+            else: stdscr.addstr(5, 0, "|" + 56*" " +"|")
+            
             # POINTS DISPLAY
-            print(f"\nYou have {bigNumber(points)} points.")
+            stdscr.addstr(6, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+            stdscr.addstr(7, 0, f"| You have {f'{bigNumber(points)} points.':<46}|")
             
             # LUCK AND MULTIPLIER DISPLAY
-            print(f"How lucky you are: {round((rollLuck / diceSides) * 100, 2)}%")
-            print(f"Your current Multiplier: {round(pointsMult, 2)} MP")
-            if points >= 1000 ** pointsMult: print("You have enough points to upgrade your Multiplier!")
-            if pointsMult >= 10: print("You have enough Multiplier to upgrade it's scaling!")
+            stdscr.addstr(8, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+            stdscr.addstr(9, 0, f"| How lucky you are: {f'{round((rollLuck / diceSides) * 100, 2)}%':<36}|")
+            stdscr.addstr(10, 0, f"| Your current Multiplier: {f'{round(pointsMult, 2)} MP':<30}|")
+            if points >= 1000 ** pointsMult: stdscr.addstr(11, 0, "| You have enough points to upgrade your Multiplier!     |")
+            else: stdscr.addstr(11, 0, "|" + 56*" " +"|")
+            if pointsMult >= 10: stdscr.addstr(12, 0, "| You have enough Multiplier to upgrade it's scaling!    |")
+            else: stdscr.addstr(12, 0, "|" + 56*" " +"|")
+            
+            stdscr.addstr(13, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
 
             # OPTIONS DISPLAY
-            print("\n- 1 - Dice Store")
-            print("- 2 - Upgrade Multiplier")
-            if pointsMult >= 10: print("- 3 - Upgrade Multiplier scaling")
-            print("- 4 - Roll Dice")
-            if hundoDiceAmount > 0: print("- 5 - Roll the Hundred sided Dice")
-            if thundoDiceAmount > 0: print("- 6 - Roll the Thousand sided Dice")
-            if mundoDiceAmount > 0: print("- 7 - Roll the Million sided Dice")
-            if trundoDiceAmount > 0: print("- 8 - Roll the Trillion sided Dice")
-            if points >= 1e15: print("- 9 - Go to the Upgrade Tree")
-            print("- 0 - Save and Exit")
+            stdscr.addstr(14, 0, "| 1 - Dice Store                                         |")
+            stdscr.addstr(15, 0, "| 2 - Upgrade Multiplier                                 |")
+            if pointsMult >= 10: stdscr.addstr(16, 0, "| 3 - Upgrade Multiplier scaling                         |")
+            else: stdscr.addstr(16, 0, "|" + 56*" " +"|")
+            stdscr.addstr(17, 0, "| 4 - Roll Dice                                          |")
+            if hundoDiceAmount > 0: stdscr.addstr(18, 0, "| 5 - Roll the Hundred  sided Dice                       |")
+            else: stdscr.addstr(18, 0, "|" + 56*" " +"|")
+            if thundoDiceAmount > 0: stdscr.addstr(19, 0, "| 6 - Roll the Thousand sided Dice                       |")
+            else: stdscr.addstr(19, 0, "|" + 56*" " +"|")
+            if mundoDiceAmount > 0: stdscr.addstr(20, 0, "| 7 - Roll the Million  sided Dice                       |")
+            else: stdscr.addstr(20, 0, "|" + 56*" " +"|")
+            if trundoDiceAmount > 0: stdscr.addstr(21, 0, "| 8 - Roll the Trillion sided Dice                       |")
+            else: stdscr.addstr(21, 0, "|" + 56*" " +"|")
+            if points >= 1e15: stdscr.addstr(22, 0, "| 9 - Go to the Upgrade Tree                             |")
+            else: stdscr.addstr(22, 0, "|" + 56*" " +"|")
+            stdscr.addstr(23, 0, "| 0 - Save and Exit                                      |")
+            stdscr.addstr(24, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+            stdscr.refresh()
             
-            choice = input("> ")
+            choice = stdscr.getkey()
             
-            if choice == "0":           # SAVE AND EXIT
+            if choice == "0":       # SAVE AND EXIT
                 saveGame()
                 sys.exit()
             
-            elif choice == "1":         # DICE STORE
+            elif choice == "1":     # STORE
                 Store = True
                 Play = False
-            
-            elif choice == "2":         # UPGRADE MULTIPLIER
                 
-                print("\nWARNING!")
-                print("UPGRADING YOUR MULTIPLIER RESETS YOUR")
-                print("DICE AND POINTS BACK TO 1 AND 0")
-                print("STORE PRICES ARE ALSO RESET\n")
-                print(f"Your current multiplier: {round(pointsMult, 2)} MP")
-                print(f"You need {bigNumber(1000 ** pointsMult)} points to upgrade your Multiplier.")
+            elif choice == "2":     # UPGRADE MULTIPLIER
                 
-                print("- 1 - Upgrade Multiplier")
-                print("- 0 - I don't want to")
+                stdscr.addstr(0, 60, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                stdscr.addstr(1, 60, "| WARNING!                                               |")
+                stdscr.addstr(2, 60, "| UPGRADING YOUR MULTIPLIER RESETS YOUR                  |")
+                stdscr.addstr(3, 60, "| DICE AND POINTS BACK TO 1 AND 0                        |")
+                stdscr.addstr(4, 60, "| STORE PRICES ARE ALSO RESET                            |")
+                stdscr.addstr(5, 60, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                stdscr.addstr(6, 60, f"| Your current Multiplier: {f'{round(pointsMult, 2)} MP':<30}|")
+                stdscr.addstr(7, 60, f"| You need {f'{bigNumber(1000 ** pointsMult)} points to upgrade your Multiplier.':<46}|")
+                stdscr.addstr(8, 60, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                stdscr.addstr(9, 60, "| 1 - Upgrade Multiplier                                 |")
+                stdscr.addstr(10, 60, "| 0 - I don't want to                                    |")
+                stdscr.addstr(11, 60, "#~----~----~----~----~----~----~----~----~----~----~----~#")
                 
-                choice = input("> ")
+                choice = stdscr.getkey()
                 
                 if choice == "1":           # YES
                     
@@ -313,32 +366,39 @@ def main():
                         upgradeLuck = 200
                         luckExpo = 1.1
                         
-                        print("\nWise choice.")
-                        print(f"Your new multiplier: {round(pointsMult, 2)} MP")
-                        input("> ")
+                        stdscr.addstr(12, 60, "| Wise choice.                                           |")
+                        stdscr.addstr(13, 60, f"| Your current Multiplier: {f'{round(pointsMult, 2)} MP':<30}|")
+                        stdscr.addstr(14, 60, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                        stdscr.refresh()
+                        stdscr.getch()
                         
                     else:
-                        print("You don't have enough points!")
-                        input("> ")
+                        stdscr.addstr(13, 60, "You don't have enough points!")
+                        stdscr.refresh()
+                        stdscr.getch()
                 
                 elif choice == "0":         # NO
                     continue
                 
                 else:                       # INVALID
-                    print("Invalid choice!")
-                    input("> ")
+                    stdscr.addstr(13, 60, "Invalid choice!")
+                    stdscr.refresh()
+                    stdscr.getch()
             
-            elif choice == "3":         # UPGRADE MULTIPLIER SCALING
+            elif choice == "3":     # UPGRADE MULTIPLIER SCALING
                 
                 if pointsMult >= 10:
                 
-                    print("\nWARNING!")
-                    print("UPGRADING YOUR MULTIPLIER'S SCALING RESETS")
-                    print("EVERYTHING BUT YOUR MULTIPLIER BACK TO 1\n")
-                    print("- 1 - Upgrade Multiplier scaling")
-                    print("- 0 - I don't want to")
+                    stdscr.addstr(0, 60, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                    stdscr.addstr(1, 60, "| WARNING!                                               |")
+                    stdscr.addstr(2, 60, "| UPGRADING YOUR MULTIPLIER'S SCALING RESETS             |")
+                    stdscr.addstr(3, 60, "| EVERYTHING BUT YOUR MULTIPLIER BACK TO 1               |")
+                    stdscr.addstr(4, 60, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                    stdscr.addstr(5, 60, "| 0 - I don't want to                                    |")
+                    stdscr.addstr(6, 60, "| 1 - Upgrade Multiplier scaling                         |")
+                    stdscr.addstr(7, 60, "#~----~----~----~----~----~----~----~----~----~----~----~#")
                     
-                    choice == input("> ")
+                    choice = stdscr.getkey()
                     
                     if choice == "1":       # YES
                         
@@ -362,55 +422,54 @@ def main():
                         rollLuck = 1
                         upgradeLuck = 200
                         luckExpo = 1.1
-                            
-                        print("\nGreat choice!")
-                        print(f"Your new multiplier: {round(pointsMult, 2)} MP")
-                        input("> ")
+                        
+                        stdscr.addstr(8, 60, "| Great choice!                                          |")
+                        stdscr.addstr(9, 60, f"| Your current Multiplier: {f'{round(pointsMult, 2)} MP':<30}|")
+                        stdscr.addstr(10, 60, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                        stdscr.refresh()
+                        stdscr.getch()
 
                     elif choice == "0":     # NO
                         continue
                 
                     else:                   # INVALID
-                        print("Invalid choice!")
-                        input("> ")
+                        stdscr.addstr(9, 60, "Invalid choice!")
+                        stdscr.refresh()
+                        stdscr.getch()
             
-            elif choice == "4":         # ROLL DICE
-                
-                points += rollDice(diceAmount, diceSides, diceAmountOffset, pointsMult, rollLuck)
+            elif choice == "4":     # ROLL DICE
+                points += rollDice(stdscr, diceAmount, diceSides, diceAmountOffset, pointsMult, rollLuck)
             
-            elif choice == "5":         # ROLL HUNDO
-                    
+            elif choice == "5":     # ROLL HUNDO
                 if hundoDiceAmount > 0:
-                    points += rollDice(hundoDiceAmount, 100, diceAmountOffset, pointsMult, 1)
-        
-            elif choice == "6":         # ROLL THUNDO
-                
+                    points += rollDice(stdscr, hundoDiceAmount, 100, diceAmountOffset, pointsMult, 1)
+                    
+            elif choice == "6":     # ROLL THUNDO
                 if thundoDiceAmount > 0:
-                    points += rollDice(thundoDiceAmount, 1000, diceAmountOffset, pointsMult, 1)
+                    points += rollDice(stdscr, thundoDiceAmount, 1000, diceAmountOffset, pointsMult, 1)
             
-            elif choice == "7":         # ROLL MUNDO
-                
+            elif choice == "7":     # ROLL MUNDO
                 if mundoDiceAmount > 0:
-                    points += rollDice(mundoDiceAmount, 1_000_000, diceAmountOffset, pointsMult, 1)
-
-            elif choice == "8":         # ROLL TRUNDO
-                
+                    points += rollDice(stdscr, mundoDiceAmount, 1_000_000, diceAmountOffset, pointsMult, 1)
+                    
+            elif choice == "8":     # ROLL TRUND=
                 if trundoDiceAmount > 0:
-                    points += rollDice(trundoDiceAmount, 1e12, diceAmountOffset, pointsMult, 1)
-
-            elif choice == "9":         # UPGRADETREE
+                    points += rollDice(stdscr, trundoDiceAmount, 1e12, diceAmountOffset, pointsMult, 1)
+            
+            elif choice == "9":     # UPGRADE TREE
                 if points >= 1e15:
                     Tree = True
                     Play = False
             
-            else:                       # INVALID
-                print("Invalid choice!")
-                input("> ")
-   
+            else:                   # INVALID
+                stdscr.addstr(26, 0, "Invalid choice!")
+                stdscr.refresh()
+                stdscr.getch()
+
         while Store:    # GAME STORE
             
             saveGame()
-            clearScreen()
+            stdscr.clear()
             
             hundoPairs = {
                 (1, 97),  (97, 1),                                                                            # total 97
@@ -423,47 +482,65 @@ def main():
             }
             
             # DICE DISPLAY
-            print(f"You have {round(diceAmount * diceAmountOffset)} {diceSides} sided Dice.")                                       # NOT SECRET
-            print(f"You have {bigNumber(round(hundoDiceAmount * diceAmountOffset))} Hundred sided Dice.")                           # NOT SECRET
-            if thundoDiceAmount > 0: print(f"You have {bigNumber(round(thundoDiceAmount * diceAmountOffset))} Thousand sided Dice") # SECRET
-            if mundoDiceAmount > 0: print(f"You have {bigNumber(round(mundoDiceAmount * diceAmountOffset))} Million sided Dice")    # SECRET
-            if trundoDiceAmount > 0: print(f"You have {bigNumber(round(trundoDiceAmount * diceAmountOffset))} Trillion sided Dice") # SECRET
-                
+            stdscr.addstr(0, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+            stdscr.addstr(1, 0, f"| You have {f'{round(diceAmount * diceAmountOffset)} {diceSides} sided Dice':<46}|")
+            stdscr.addstr(2, 0, f"| You have {f'{bigNumber(round(hundoDiceAmount * diceAmountOffset))} Hundred sided Dice':<46}|")
+            if thundoDiceAmount > 0: stdscr.addstr(3, 0, f"| You have {f'{bigNumber(round(thundoDiceAmount * diceAmountOffset))} Thousand sided Dice':<46}|")
+            else: stdscr.addstr(3, 0, "|" + 56*" " +"|")
+            if mundoDiceAmount > 0: stdscr.addstr(4, 0, f"| You have {f'{bigNumber(round(mundoDiceAmount * diceAmountOffset))} Million sided Dice':<46}|")
+            else: stdscr.addstr(4, 0, "|" + 56*" " +"|")
+            if trundoDiceAmount > 0: stdscr.addstr(5, 0, f"| You have {f'{bigNumber(round(trundoDiceAmount * diceAmountOffset))} Trillion sided Dice':<46}|")
+            else: stdscr.addstr(5, 0, "|" + 56*" " +"|")
+            
             # POINTS AND LUCK DISPLAY
-            print(f"\nYou have {bigNumber(points)} points.")
-            print(f"How lucky you are: {round((rollLuck / diceSides) * 100, 2)}%")
+            stdscr.addstr(6, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+            stdscr.addstr(7, 0, f"| You have {f'{bigNumber(points)} points.':<46}|")
+            stdscr.addstr(8, 0, f"| How lucky you are: {f'{round((rollLuck / diceSides) * 100, 2)}%':<36}|")
+            stdscr.addstr(9, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
             
             # BIG DICE DISPLAY
             if ((diceAmount, diceSides) in hundoPairs) or (points >= 12_000):
-                print("\nYou can now get an ELUSIVE Hundred sided Die")
-                print("by merging your all of your Dice together!")
-                print("Or by paying 12000 points for it!")
+                stdscr.addstr(0, 60, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                stdscr.addstr(1, 60, "| You can now get an ELUSIVE Hundred sided Die           |")
+                stdscr.addstr(2, 60, "| By merging your all of your Dice together!             |")
+                stdscr.addstr(3, 60, "| Or by paying 12000 points for it!                      |")
+                stdscr.addstr(4, 60, "#~----~----~----~----~----~----~----~----~----~----~----~#")
             if hundoDiceAmount >= 10 or points >= 120_000:
-                print("\nYou can now get an ADORED Thousand sided Die")
-                print("by trading off 10 of your Hundred sided Die!")
-                print("Or by paying 120000 points for it!")
+                stdscr.addstr(4, 60, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                stdscr.addstr(5, 60, "| You can now get an ADORED Thousand sided Die           |")
+                stdscr.addstr(6, 60, "| By trading off 10 of your Hundred sided Die!           |")
+                stdscr.addstr(7, 60, "| Or by paying 120000 points for it!                     |")
+                stdscr.addstr(8, 60, "#~----~----~----~----~----~----~----~----~----~----~----~#")
             if thundoDiceAmount >= 1000 or hundoDiceAmount >= 10_000 or points >= 120_000_000:
-                print("\nYou can now get a Million sided Die")
-                print("by trading off your Dice!")
-                print("Or by paying 120 Million points for it!")
-
-            # TRILLION SIDED DICE
+                stdscr.addstr(8, 60, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                stdscr.addstr(9, 60, "| You can now get a Million sided Die                    |")
+                stdscr.addstr(10, 60, "| By trading off your Dice!                              |")
+                stdscr.addstr(11, 60, "| Or by paying 120 Million points for it!                |")
+                stdscr.addstr(12, 60, "#~----~----~----~----~----~----~----~----~----~----~----~#")
             if mundoDiceAmount >= 1_000_000 or points >= 120e12:
-                print("\nYou can now get a Trillion sided Die")
-                print("By trading off your Million sided Dice!")
-                print("Or by paying 120 Trillion points for it!")
-            
+                stdscr.addstr(12, 60, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                stdscr.addstr(13, 60, "| You can now get a Trillion sided Die                   |")
+                stdscr.addstr(14, 60, "| By trading off your Million sided Dice!                |")
+                stdscr.addstr(15, 60, "| Or by paying 120 Trillion points for it!               |")
+                stdscr.addstr(16, 60, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                
             # OPTIONS DISPLAY
-            print(f"\n- 1 - Upgrade Dice: {bigNumber((upgradeDice * diceAmount) / storePriceOffset)} points")
-            print(f"- 2 - Buy more Dice: {bigNumber((moreDice * 1.5) / storePriceOffset)} points")
-            print(f"- 3 - Buy a Lucky Amulet: {bigNumber(upgradeLuck / storePriceOffset)} points")
-            if ((diceAmount, diceSides) in hundoPairs) or (points >= 12_000): print("- 4 - Get a Hundred sided Die")
-            if hundoDiceAmount >= 10 or points >= 120_000: print("- 5 - Get a Thousand sided Die")
-            if thundoDiceAmount >= 1000 or hundoDiceAmount >= 10_000 or points >= 120_000_000: print("- 6 - Get a Million sided Die")
-            if mundoDiceAmount >= 1_000_000 or points >= 120e12: print("- 7 - Get a Trillion sided Die")
-            print("- 0 - Exit Store")
+            stdscr.addstr(10, 0, f"| 1 - Upgrade Dice: {f'{bigNumber((upgradeDice * diceAmount) / storePriceOffset)} points':<37}|")
+            stdscr.addstr(11, 0, f"| 2 - Buy more Dice: {f'{bigNumber((moreDice * 1.5) / storePriceOffset)} points':<36}|")
+            stdscr.addstr(12, 0, f"| 3 - Buy a Lucky Amulet: {f'{bigNumber(upgradeLuck / storePriceOffset)} points':<31}|")
+            if ((diceAmount, diceSides) in hundoPairs) or (points >= 12_000): stdscr.addstr(13, 0, "| 4 - Get a Hundred sided Die                            |")
+            else: stdscr.addstr(13, 0, "|" + 56*" " +"|")
+            if hundoDiceAmount >= 10 or points >= 120_000: stdscr.addstr(14, 0, "| 5 - Get a Thousand sided Die                           |")
+            else: stdscr.addstr(14, 0, "|" + 56*" " +"|")
+            if thundoDiceAmount >= 1000 or hundoDiceAmount >= 10_000 or points >= 120_000_000: stdscr.addstr(15, 0, "| 6 - Get a Million sided Die                            |")
+            else: stdscr.addstr(15, 0, "|" + 56*" " +"|")
+            if mundoDiceAmount >= 1_000_000 or points >= 120e12: stdscr.addstr(16, 0, "| 7 - Get a Trillion sided Die                           |")
+            else: stdscr.addstr(16, 0, "|" + 56*" " +"|")
+            stdscr.addstr(17, 0, "| 0 - Exit Store                                         |")
+            stdscr.addstr(18, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+            stdscr.refresh()
             
-            choice = input("> ")
+            choice = stdscr.getkey()
             
             if choice == "0":           # EXIT STORE
                 Play = True
@@ -475,12 +552,16 @@ def main():
                     points -= upgradeDice * diceAmount
                     upgradeDice = upgradeDice ** upgradeExpo
                     diceSides += 1
-                    print(f"You now have {round(diceAmount * diceAmountOffset)} dice with {diceSides} sides each.")
-                    input("> ")
+                    stdscr.addstr(19, 0, f"| You now have {f'{round(diceAmount * diceAmountOffset)} dice with {diceSides} sides each.':<42}|")
+                    stdscr.addstr(20, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                    stdscr.refresh()
+                    stdscr.getch()
                     
                 else:
-                    print("You don't have enough points!")
-                    input("> ")
+                    stdscr.addstr(19, 0, "| You don't have enough points!                          |")
+                    stdscr.addstr(20, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                    stdscr.refresh()
+                    stdscr.getch()
             
             elif choice == "2":         # BUY MORE DICE
                 
@@ -488,12 +569,16 @@ def main():
                     points -= moreDice * 1.5
                     moreDice = moreDice ** moreExpo
                     diceAmount += 1
-                    print(f"You now have {diceAmount} dice with {diceSides} sides each.")
-                    input("> ")
+                    stdscr.addstr(19, 0, f"| You now have {f'{diceAmount} dice with {diceSides} sides each.':<42}|")
+                    stdscr.addstr(20, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                    stdscr.refresh()
+                    stdscr.getch()
                     
                 else:
-                    print("You don't have enough points!")
-                    input("> ")
+                    stdscr.addstr(19, 0, "| You don't have enough points!                          |")
+                    stdscr.addstr(20, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                    stdscr.refresh()
+                    stdscr.getch()
             
             elif choice == "3":         # LUCKY AMULET
                 
@@ -501,28 +586,35 @@ def main():
                     points -= upgradeLuck
                     upgradeLuck = upgradeLuck ** luckExpo
                     rollLuck += 1 * luckOffset
-                    print("You feel luckier!")
-                    input("> ")
+                    stdscr.addstr(19, 0, "| You feel luckier!                                      |")
+                    stdscr.addstr(20, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                    stdscr.refresh()
+                    stdscr.getch()
                     
                 else:
-                    print("You don't have enough points!")
-                    input("> ")
+                    stdscr.addstr(19, 0, "| You don't have enough points!                          |")
+                    stdscr.addstr(20, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                    stdscr.refresh()
+                    stdscr.getch()
             
             elif choice == "4":         # GET HUNDO DICE
                 
                 if ((diceAmount, diceSides) in hundoPairs) or (points >= 12_000):
                 
-                    print("\nWARNING!")
-                    print("YOU'RE ABOUT TO TRADE OFF ALL OF YOUR DICE FOR A Hundred SIDED DIE")
-                    print("YOU'LL HAVE YOUR NEW Hundred SIDED DIE AND THE ORIGINAL 4 SIDED DIE")
-                    print("YOU WON'T LOSE YOUR DICE IF YOU PAY FOR THE Hundred SIDED DIE")
-                    print("(the Hundred sided Die doesn't persist between multiplier upgrades)\n")
-                    print("- 1 - Trade off my Dice")
-                    print("- 2 - Pay for the Die")
-                    print("- 3 - Choose how many Dice")
-                    print("- 0 - I don't want to")
+                    stdscr.addstr(18, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#~----~----~----~#")
+                    stdscr.addstr(19, 0, "| WARNING!                                                                |")
+                    stdscr.addstr(20, 0, "| YOU'RE ABOUT TO TRADE OFF ALL OF YOUR DICE FOR A Hundred SIDED DIE      |")
+                    stdscr.addstr(21, 0, "| YOU'LL HAVE YOUR NEW Hundred SIDED DIE AND THE ORIGINAL 4 SIDED DIE     |")
+                    stdscr.addstr(22, 0, "| YOU WON'T LOSE YOUR DICE IF YOU PAY FOR THE Hundred SIDED DIE           |")
+                    stdscr.addstr(23, 0, "| (the Hundred sided Die doesn't persist between multiplier upgrades)     |")
+                    stdscr.addstr(24, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#~----~----~----~#")
+                    stdscr.addstr(25, 0, "| 1 - Trade off my Dice                                                   |")
+                    stdscr.addstr(26, 0, "| 2 - Pay for the Die                                                     |")
+                    stdscr.addstr(27, 0, "| 3 - Choose how many Dice                                                |")
+                    stdscr.addstr(28, 0, "| 0 - I don't want to                                                     |")
+                    stdscr.addstr(29, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#~----~----~----~#")
                     
-                    choice = input("> ")
+                    choice = stdscr.getkey()
                     
                     if choice == "1":           # DICE AMOUNT
                         
@@ -537,12 +629,15 @@ def main():
                             moreDice = 50
                             moreExpo = 1.2
                             
-                            print("Welcome your new Hundred sided Die!")
-                            input("> ")
+                            stdscr.addstr(30, 0, "| Welcome your new Hundred sided Die!                    |")
+                            stdscr.addstr(31, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                            stdscr.refresh()
+                            stdscr.getch()
                             
                         else:
-                            print("You don't have enough Dice!")
-                            input("> ")
+                            stdscr.addstr(31, 0, "You don't have enough Dice!")
+                            stdscr.refresh()
+                            stdscr.getch()
                     
                     elif choice == "2":         # ENOUGH POINTS
                         
@@ -551,16 +646,19 @@ def main():
                             hundoDiceAmount += 1
                             points -= 12_000
                             
-                            print("Welcome your new Hundred sided Die!")
-                            input("> ")
+                            stdscr.addstr(30, 0, "| Welcome your new Hundred sided Die!                    |")
+                            stdscr.addstr(31, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                            stdscr.refresh()
+                            stdscr.getch()
                             
                         else:
-                            print("You don't have enough points!")
-                            input("> ")
+                            stdscr.addstr(31, 0, "You don't have enough points!")
+                            stdscr.refresh()
+                            stdscr.getch()
                     
                     elif choice == "3":         # CHOOSE HOW MANY DICE
                         
-                        dice, spent = chooseDiceAmount(points, "Hundred", 12_000)
+                        dice, spent = chooseDiceAmount(stdscr, points, "Hundred", 12_000)
                         hundoDiceAmount += dice
                         points -= spent
 
@@ -568,23 +666,28 @@ def main():
                         continue
                     
                     else:                       # INVALID
-                        print("Invalid choice!")
-                        input("> ")
+                        stdscr.addstr(31, 0, "Invalid choice!")
+                        stdscr.refresh()
+                        stdscr.getch()
 
             elif choice == "5":         # GET THUNDO DICE
                 
                 if hundoDiceAmount >= 10 or points >= 120_000:
+                
+                    stdscr.addstr(18, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#~----~----~----~#")
+                    stdscr.addstr(19, 0, "| WARNING!                                                                |")
+                    stdscr.addstr(20, 0, "| YOU'RE ABOUT TO TRADE OFF 10 OF YOUR Hundred SIDED DICE                 |")
+                    stdscr.addstr(21, 0, "| OR PAY 120,000 POINTS FOR AN INCREDIBLE Thousand SIDED DIE              |")
+                    stdscr.addstr(22, 0, "|                                                                         |")
+                    stdscr.addstr(23, 0, "| (this still doesn't persist between multiplier upgrades)                |")
+                    stdscr.addstr(24, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#~----~----~----~#")
+                    stdscr.addstr(25, 0, "| 1 - Trade off my Dice                                                   |")
+                    stdscr.addstr(26, 0, "| 2 - Pay for the Die                                                     |")
+                    stdscr.addstr(27, 0, "| 3 - Choose how many Dice                                                |")
+                    stdscr.addstr(28, 0, "| 0 - I don't want to                                                     |")
+                    stdscr.addstr(29, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#~----~----~----~#")
                     
-                    print("\nWARNING!")
-                    print("YOU'RE ABOUT TO TRADE OFF 10 OF YOUR Hundred SIDED DICE")
-                    print("OR PAY 120000 POINTS FOR AN INCREDIBLE Thousand SIDED DIE")
-                    print("(this still doesn't persist between multiplier upgrades)\n")
-                    print("- 1 - Trade off my Dice")
-                    print("- 2 - Pay for the Die")
-                    print("- 3 - Choose how many Dice")
-                    print("- 0 - I don't want to")
-                    
-                    choice = input("> ")
+                    choice = stdscr.getkey()
                     
                     if choice == "1":           # DICE AMOUNT
                         
@@ -593,12 +696,15 @@ def main():
                             thundoDiceAmount += 1
                             hundoDiceAmount -= 10
                             
-                            print("Stand ready for my arrival, worm.")
-                            input("> ")
-                        
+                            stdscr.addstr(30, 0, "| Stand ready for my arrival, worm.                      |")
+                            stdscr.addstr(31, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                            stdscr.refresh()
+                            stdscr.getch()
+                            
                         else:
-                            print("You don't have enough Dice!")
-                            input("> ")
+                            stdscr.addstr(31, 0, "You don't have enough Dice!")
+                            stdscr.refresh()
+                            stdscr.getch()
                     
                     elif choice == "2":         # ENOUGH POINTS
                         
@@ -607,16 +713,19 @@ def main():
                             thundoDiceAmount += 1
                             points -= 120_000
                             
-                            print("Stand ready for my arrival, worm.")
-                            input("> ")
-                        
+                            stdscr.addstr(30, 0, "| Stand ready for my arrival, worm.                      |")
+                            stdscr.addstr(31, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                            stdscr.refresh()
+                            stdscr.getch()
+                            
                         else:
-                            print("You don't have enough points!")
-                            input("> ")
-
+                            stdscr.addstr(31, 0, "You don't have enough points!")
+                            stdscr.refresh()
+                            stdscr.getch()
+                    
                     elif choice == "3":         # CHOOSE HOW MANY DICE
-
-                        dice, spent = chooseDiceAmount(points, "Thousand", 120_000)
+                        
+                        dice, spent = chooseDiceAmount(stdscr, points, "Thousand", 120_000)
                         thundoDiceAmount += dice
                         points -= spent
 
@@ -624,155 +733,190 @@ def main():
                         continue
                     
                     else:                       # INVALID
-                        print("Invalid choice!")
-                        input("> ")
+                        stdscr.addstr(31, 0, "Invalid choice!")
+                        stdscr.refresh()
+                        stdscr.getch()
 
             elif choice == "6":         # GET MUNDO DICE
                 
                 if thundoDiceAmount >= 1000 or hundoDiceAmount >= 10_000 or points >= 120_000_000:
+                
+                    stdscr.addstr(18, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                    stdscr.addstr(19, 0, "| WARNING!                                               |")
+                    stdscr.addstr(20, 0, "| YOU'RE ABOUT TO TRADE OFF YOUR DICE                    |")
+                    stdscr.addstr(21, 0, "| OR PAY 120 Million POINTS                              |")
+                    stdscr.addstr(22, 0, "| FOR A Million SIDED DIE                                |")
+                    stdscr.addstr(24, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                    stdscr.addstr(25, 0, "| 1 - Trade off my Hundred Sided Dice                    |")
+                    stdscr.addstr(23, 0, "| 2 - Trade off my Thousand Sided Dice                   |")
+                    stdscr.addstr(26, 0, "| 3 - Pay for the Die                                    |")
+                    stdscr.addstr(27, 0, "| 4 - Choose how many Dice                               |")
+                    stdscr.addstr(28, 0, "| 0 - I don't want to                                    |")
+                    stdscr.addstr(29, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
                     
-                    print("\nWARNING!")
-                    print("YOU'RE ABOUT TO TRADE OFF YOUR DICE")
-                    print("OR PAY 120 Million POINTS FOR A Million SIDED DIE\n")
-                    print("- 1 - Trade off my Hundred sided Dice")
-                    print("- 2 - Trade off my Thousand sided Dice")
-                    print("- 3 - Pay for the Die")
-                    print("- 4 - Choose how many Dice")
-                    print("- 0 - I don't want to")
+                    choice = stdscr.getkey()
                     
-                    choice = input("> ")
-                    
-                    if choice == "1":       # 100 SIDED TRADE
+                    if choice == "1":           # HUNDO TRADE
                         
                         if hundoDiceAmount >= 10_000:
                             
                             mundoDiceAmount += 1
                             hundoDiceAmount -= 10_000
                             
-                            print("Are you Mr. Beast?")
-                            input("> ")
+                            stdscr.addstr(30, 0, "| Are you Mr. Beast?                                     |")
+                            stdscr.addstr(31, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                            stdscr.refresh()
+                            stdscr.getch()
                             
                         else:
-                            print("You don't have enough Dice!")
-                            input("> ")
+                            stdscr.addstr(31, 0, "You don't have enough Dice!")
+                            stdscr.refresh()
+                            stdscr.getch()
                     
-                    elif choice == "2":     # 1000 SIDED TRADE
+                    elif choice == "2":         # THUNDO TRADE
                         
                         if thundoDiceAmount >= 1000:
                             
                             mundoDiceAmount += 1
                             thundoDiceAmount -= 1000
                             
-                            print("Are you Mr. Beast?")
-                            input("> ")
+                            stdscr.addstr(30, 0, "| Are you Mr. Beast?                                     |")
+                            stdscr.addstr(31, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                            stdscr.refresh()
+                            stdscr.getch()
                             
                         else:
-                            print("You don't have enough Dice!")
-                            input("> ")
+                            stdscr.addstr(31, 0, "You don't have enough Dice!")
+                            stdscr.refresh()
+                            stdscr.getch()
                     
-                    elif choice == "3":     # ENOUGH POINTS
+                    elif choice == "3":         # ENOUGH POINTS
                         
                         if points >= 120_000_000:
                             
                             mundoDiceAmount += 1
                             points -= 120_000_000
                             
-                            print("Are you Mr. Beast?")
-                            input("> ")
+                            stdscr.addstr(30, 0, "| Are you Mr. Beast?                                     |")
+                            stdscr.addstr(31, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                            stdscr.refresh()
+                            stdscr.getch()
                             
                         else:
-                            print("You don't have enough points!")
-                            input("> ")
+                            stdscr.addstr(31, 0, "You don't have enough points!")
+                            stdscr.refresh()
+                            stdscr.getch()
                     
-                    elif choice == "4":     # CHOOSE HOW MANY DICE
-
-                        dice, spent = chooseDiceAmount(points, "Million", 120_000_000)
-                        mundoDiceAmount += dice
+                    elif choice == "4":         # CHOOSE HOW MANY DICE
+                        
+                        dice, spent = chooseDiceAmount(stdscr, points, "Million", 120_000_000)
+                        thundoDiceAmount += dice
                         points -= spent
-                    
-                    elif choice == "0":     # NOTHING
+
+                    elif choice == "0":         # NOTHING
                         continue
                     
-                    else:                   # INVALID
-                        print("Invalid choice!")
-                        input("> ")
+                    else:                       # INVALID
+                        stdscr.addstr(31, 0, "Invalid choice!")
+                        stdscr.refresh()
+                        stdscr.getch()
 
             elif choice == "7":         # GET TRUNDO DICE
                 
                 if mundoDiceAmount >= 1_000_000 or points >= 120e12:
                 
-                    print("\nWARNING!")
-                    print("YOU'RE ABOUT TO TRADE OF YOUR DICE")
-                    print("OR PAY 120 Trillion POINTS FOR A Trillion SIDED DIE\n")
-                    print("- 1 - Trade off my Dice")
-                    print("- 2 - Pay for the Die")
-                    print("- 3 - Choose how many Dice")
-                    print("- 0 - I don't want to")
+                    stdscr.addstr(18, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                    stdscr.addstr(19, 0, "| WARNING!                                               |")
+                    stdscr.addstr(20, 0, "| YOU'RE ABOUT TO TRADE OFF YOUR DICE                    |")
+                    stdscr.addstr(21, 0, "| OR PAY 120 Trillion POINTS                             |")
+                    stdscr.addstr(22, 0, "| FOR A Trillion SIDED DIE                               |")
+                    stdscr.addstr(23, 0, "|                                                        |")
+                    stdscr.addstr(24, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                    stdscr.addstr(25, 0, "| 1 - Trade off my Dice                                  |")
+                    stdscr.addstr(26, 0, "| 2 - Pay for the Die                                    |")
+                    stdscr.addstr(27, 0, "| 3 - Choose how many Dice                               |")
+                    stdscr.addstr(28, 0, "| 0 - I don't want to                                    |")
+                    stdscr.addstr(29, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
                     
-                    choice = input("> ")
+                    choice = stdscr.getkey()
                     
-                    if choice == "1":       # TRADE OFF MUNDO
+                    if choice == "1":           # DICE AMOUNT
                         
                         if mundoDiceAmount >= 1_000_000:
                             
                             trundoDiceAmount += 1
                             mundoDiceAmount -= 1_000_000
                             
-                            print("This is quite big.")
-                            input("> ")
+                            stdscr.addstr(30, 0, "| This is quite the large Die.                           |")
+                            stdscr.addstr(31, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                            stdscr.refresh()
+                            stdscr.getch()
                             
                         else:
-                            print("You don't have enough dice!")
-                            
-                    elif choice == "2":     # PAY FOR TRUNDO
+                            stdscr.addstr(31, 0, "You don't have enough Dice!")
+                            stdscr.refresh()
+                            stdscr.getch()
+                    
+                    elif choice == "2":         # ENOUGH POINTS
                         
                         if points >= 120e12:
                             
                             trundoDiceAmount += 1
                             points -= 120e12
                             
-                            print("This is quite big.")
-                            input("> ")
+                            stdscr.addstr(30, 0, "| This is quite the large Die.                           |")
+                            stdscr.addstr(31, 0, "#~----~----~----~----~----~----~----~----~----~----~----~#")
+                            stdscr.refresh()
+                            stdscr.getch()
                             
                         else:
-                            print("You don't have enough points!")
-                            input("> ")
-                            
-                    elif choice == "3":     # CHOOSE HOW MANY DICE
-
-                        dice, spent = chooseDiceAmount(points, "Trillion", 120e12)
-                        trundoDiceAmount += dice
-                        points -= spent
+                            stdscr.addstr(31, 0, "You don't have enough points!")
+                            stdscr.refresh()
+                            stdscr.getch()
                     
-                    elif choice == "0":     # NOTHING
+                    elif choice == "3":         # CHOOSE HOW MANY DICE
+                        
+                        dice, spent = chooseDiceAmount(stdscr, points, "Trillin", 120e12)
+                        thundoDiceAmount += dice
+                        points -= spent
+
+                    elif choice == "0":         # NOTHING
                         continue
                     
-                    else:                   # INVALID
-                        print("Invalid choice!")
-                        input("> ")
+                    else:                       # INVALID
+                        stdscr.addstr(31, 0, "Invalid choice!")
+                        stdscr.refresh()
+                        stdscr.getch()
 
             else:                       # INVALID
-                print("Invalid choice!")
-                input("> ")
+                stdscr.addstr(20, 0, "Invalid choice!")
+                stdscr.refresh()
+                stdscr.getch()
 
         while Tree:     # GAME TREE
             
             saveGame()
-            clearScreen()
+            stdscr.clear()
             
-            print("Welcome to the Upgrade Tree!")
-            print("If you're here, it means that you've accumulated over 1 quadrillion points")
-            print("and you're wondering what this magical place could possibly be?")
-            print("(also these are PERMANENT, meaning upgrading Multiplier won't reset these)\n")
-            print("Well wait no further!")
-            print("Here you can upgrade anything you could ever think of!")
-            print("You want the Store prices to be cheaper? You got it!")
-            print("You want more Dice per Dice? You can have that!")
-            print("You can even have more Multiplier and better Scaling!\n")
-            print("- 1 - View possible Upgrades")
-            print("- 0 - Leave the Upgrade Tree")
+            stdscr.addstr(0, 0, "#~----~----~----~----~----~----~----~----~----~----~----~----~----~----~----~#")
+            stdscr.addstr(1, 0, "| Welcome to the Upgrade Tree!                                               |")
+            stdscr.addstr(2, 0, "| If you're here, it means that you've accumulated over 1 quadrillion points |")
+            stdscr.addstr(3, 0, "| and you're wondering what this magical place could possibly be?            |")
+            stdscr.addstr(4, 0, "| (also these are PERMANENT, meaning upgrading Multiplier won't reset these) |")
+            stdscr.addstr(5, 0, "#~----~----~----~----~----~----~----~----~----~----~----~----~----~----~----~#")
+            stdscr.addstr(6, 0, "| Well wait no further!                                                      |")
+            stdscr.addstr(7, 0, "|                                                                            |")
+            stdscr.addstr(8, 0, "| Here you can upgrade anything you could ever think of!                     |")
+            stdscr.addstr(9, 0, "| You want the Store prices to be cheaper? You got it!                       |")
+            stdscr.addstr(10, 0, "| You want more Dice per Dice? You can have that!                            |")
+            stdscr.addstr(11, 0, "| You can even have more Multiplier and better Scaling!                      |")
+            stdscr.addstr(12, 0, "#~----~----~----~----~----~----~----~----~----~----~----~----~----~----~----~#")
+            stdscr.addstr(13, 0, "| 1 - View possible Upgrades                                                 |")
+            stdscr.addstr(14, 0, "| 0 - Leave the Upgrade Tree                                                 |")
+            stdscr.addstr(15, 0, "#~----~----~----~----~----~----~----~----~----~----~----~----~----~----~----~#")
+            stdscr.refresh()
             
-            choice = input("> ")
+            choice = stdscr.getkey()
             
             if choice == "0":       # LEAVE
                 Tree = False
@@ -780,14 +924,17 @@ def main():
             
             elif choice == "1":     # POSSIBLE UPGRADES
                 
-                print(f"\nYou have {bigNumber(points)} points.\n")
-                print(f"- 1 - Better store prices: {bigNumber(1e15 * storePriceOffset)} points")
-                print(f"- 2 - More dice per dice: {bigNumber(1e15 * diceAmountOffset)} points")
-                print(f"- 3 - Get even luckier: {bigNumber(1e18 * luckOffset)} points")
-                print(f"- 4 - More Multiplier: {bigNumber(1e21 * multiplierOffset)} points")
-                print("- 0 - Exit to the Upgrade Tree")
+                stdscr.addstr(15, 0, "#~----~----~----~----~----~----~----~----~----~----~----~----~----~----~----~#")
+                stdscr.addstr(16, 0, f"| You have {f'{bigNumber(points)} points.':<66}|")
+                stdscr.addstr(17, 0, "#~----~----~----~----~----~----~----~----~----~----~----~----~----~----~----~#")
+                stdscr.addstr(18, 0, f"| 1 - Better store prices: {f'{bigNumber(1e15 * storePriceOffset)} points':<50}|")
+                stdscr.addstr(19, 0, f"| 2 - More dice per dice: {f'{bigNumber(1e15 * diceAmountOffset)} points':<51}|")
+                stdscr.addstr(20, 0, f"| 3 - Get even luckier: {f'{bigNumber(1e18 * luckOffset)} points':<53}|")
+                stdscr.addstr(21, 0, f"| 4 - More Multiplier: {f'{bigNumber(1e21 * multiplierOffset)} points':<54}|")
+                stdscr.addstr(22, 0, "| 0 - Exit to the Upgrade Tree                                               |")
+                stdscr.addstr(23, 0, "#~----~----~----~----~----~----~----~----~----~----~----~----~----~----~----~#")
                 
-                choice = input("> ")
+                choice = stdscr.getkey()
                 
                 if choice == "0":       # EXIT
                     continue
@@ -800,12 +947,15 @@ def main():
                         storePriceOffset += 0.2
                         points -= price
                         
-                        print("Store Prices are now cheaper!")
-                        input("> ")
+                        stdscr.addstr(24, 0, "| Store Prices are now cheaper!                                               ")
+                        stdscr.addstr(25, 0, "#~----~----~----~----~----~----~----~----~----~----~----~----~----~----~----~#")
+                        stdscr.refresh()
+                        stdscr.getch()
                         
                     else:
-                        print("You don't have enough points!")
-                        input("> ")
+                        stdscr.addstr(25, 0, "You don't have enough points!")
+                        stdscr.refresh()
+                        stdscr.getch()
                 
                 elif choice == "2":     # MORE DICE
                     
@@ -815,12 +965,15 @@ def main():
                         diceAmountOffset += 0.2
                         points -= price
                         
-                        print("You magically have more dice!")
-                        input("> ")
+                        stdscr.addstr(24, 0, "| You magically have more dice!                                              |")
+                        stdscr.addstr(25, 0, "#~----~----~----~----~----~----~----~----~----~----~----~----~----~----~----~#")
+                        stdscr.refresh()
+                        stdscr.getch()
                         
                     else:
-                        print("You don't have enough points!")
-                        input("> ")
+                        stdscr.addstr(25, 0, "You don't have enough points!")
+                        stdscr.refresh()
+                        stdscr.getch()
                 
                 elif choice == "3":     # MORE LUCK
                     
@@ -830,12 +983,15 @@ def main():
                         luckOffset += 0.2
                         points -= price
                         
-                        print("You feel even luckier!")
-                        input("> ")
+                        stdscr.addstr(24, 0, "| You feel even luckier!                                                     |")
+                        stdscr.addstr(25, 0, "#~----~----~----~----~----~----~----~----~----~----~----~----~----~----~----~#")
+                        stdscr.refresh()
+                        stdscr.getch()
                         
                     else:
-                        print("You don't have enough points!")
-                        input("> ")
+                        stdscr.addstr(25, 0, "You don't have enough points!")
+                        stdscr.refresh()
+                        stdscr.getch()
                 
                 elif choice == "4":     # MORE MULTIPLIER
                     
@@ -845,20 +1001,25 @@ def main():
                         multiplierOffset += 0.2
                         points -= price
                         
-                        print("The Multiplier already feels stronger!")
-                        input("> ")
+                        stdscr.addstr(24, 0, "| The Multiplier already feels stronger!                                     |")
+                        stdscr.addstr(25, 0, "#~----~----~----~----~----~----~----~----~----~----~----~----~----~----~----~#")
+                        stdscr.refresh()
+                        stdscr.getch()
                         
                     else:
-                        print("You don't have enough points!")
-                        input("> ")
+                        stdscr.addstr(25, 0, "You don't have enough points!")
+                        stdscr.refresh()
+                        stdscr.getch()
                 
                 else:                   # INVALID
-                    print("Invalid choice!")
-                    input("> ")
+                    stdscr.addstr(25, 0, "Invalid choice!")
+                    stdscr.refresh()
+                    stdscr.getch()
             
             else:                   # INVALID
-                print("Invalid choice!")
-                input("> ")
-        
-if __name__ == "__main__":
-    main()
+                stdscr.addstr(17, 0, "Invalid choice!")
+                stdscr.refresh()
+                stdscr.getch()
+
+
+wrapper(main)
