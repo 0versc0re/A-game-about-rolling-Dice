@@ -1,5 +1,8 @@
 # A game about rolling Dice
 
+Any feedback is appreciated, whether it be good or bad.</br>
+I'm not an excellent coder, and this is just a little passion project from me.
+
 ## Playing the game
 
 ### Prerequisities
