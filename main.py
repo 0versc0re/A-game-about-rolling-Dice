@@ -90,7 +90,7 @@ def bigNumber(number: float):
 
     return str(round(number / (1000 ** len(numberSuffix)), 2)) + numberSuffix[-1]
 
-def rollDice(stdscr, amount: int, sides: int, offset: float, mult: float, luck: float):
+def rollDice(stdscr, amount: int, sides: float, offset: float, mult: float, luck: float):
     
     _, WIDTH = stdscr.getmaxyx() # 156
     cent = lambda s: s.center(int(WIDTH/2 - 2))
@@ -99,7 +99,7 @@ def rollDice(stdscr, amount: int, sides: int, offset: float, mult: float, luck: 
     total = 0
     
     for _ in range(totalRolls):
-        roll = randint(int(luck), sides) if luck < sides else sides
+        roll = randint(int(luck), int(sides)) if luck < sides else sides
         total += roll
     stdscr.addstr(13, int(WIDTH/2 - 1), "#" + int(WIDTH/2 - 2) * "-" + "#")
     stdscr.addstr(14, int(WIDTH/2 - 1), "|" + cent(f"You rolled your Dice {bigNumber(round(amount * offset))} times!") + "|")
@@ -115,7 +115,7 @@ def rollDice(stdscr, amount: int, sides: int, offset: float, mult: float, luck: 
     
     return totalPoints
 
-def chooseDiceAmount(stdscr, points: float, name: str, price: int):
+def chooseDiceAmount(stdscr, points: float, name: str, price: float):
     
     _, WIDTH = stdscr.getmaxyx() # 156
     cent = lambda s: s.center(int(WIDTH/2 - 2))
@@ -132,6 +132,7 @@ def chooseDiceAmount(stdscr, points: float, name: str, price: int):
     
     stdscr.refresh()
     
+    curses.curs_set(1)
     win = curses.newwin(1, 30, 34, 4)
     box = Textbox(win)
     
@@ -140,24 +141,25 @@ def chooseDiceAmount(stdscr, points: float, name: str, price: int):
         choice = int(box.gather())
     except ValueError:
         stdscr.addstr(37, 0, f"Please choose a number between 1 and {bigNumber(maxAmount)}.")
+        curses.curs_set(0)
         stdscr.refresh()
         stdscr.getch()
         return 0, 0
     
     if not (1 <= choice <= maxAmount):
         
-        if choice <= 0:
-            msg = "You must buy at least 1 Die!"
-        else:
-            msg = "You don't have enough points!"
+        if choice <= 0: msg = "You must buy at least 1 Die!"
+        else:           msg = "You don't have enough points!"
             
         stdscr.addstr(37, 0, msg)
+        curses.curs_set(0)
         stdscr.refresh()
         stdscr.getch()
         return 0, 0
     
     stdscr.addstr(36, 0, "|" + cent(f"You now have {choice} more {name} sided Dice.") + "|")
     stdscr.addstr(37, 0, "#" + int(WIDTH/2 - 2) * "-" + "#")
+    curses.curs_set(0)
     stdscr.refresh()
     stdscr.getch()
     return choice, choice * price
@@ -461,7 +463,7 @@ def main(stdscr):
                 if mundoDiceAmount > 0:
                     points += rollDice(stdscr, mundoDiceAmount, 1_000_000, diceAmountOffset, pointsMult, 1)
                     
-            elif choice == "8":     # ROLL TRUND=
+            elif choice == "8":     # ROLL TRUNDO
                 if trundoDiceAmount > 0:
                     points += rollDice(stdscr, trundoDiceAmount, 1e12, diceAmountOffset, pointsMult, 1)
             
@@ -839,7 +841,7 @@ def main(stdscr):
                     stdscr.addstr(20, 0, "|" + cent("YOU'RE ABOUT TO TRADE OFF YOUR DICE") + "|")
                     stdscr.addstr(21, 0, "|" + cent("OR PAY 120 Trillion POINTS") + "|")
                     stdscr.addstr(22, 0, "|" + cent("FOR A Trillion SIDED DIE") + "|")
-                    stdscr.addstr(23, 0, int(WIDTH/2 - 2) * " " + "|")
+                    stdscr.addstr(23, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
                     stdscr.addstr(24, 0, "#" + int(WIDTH/2 - 2) * "-" + "#")
                     stdscr.addstr(25, 0, "|" + cent("1 - Trade off my Dice") + "|")
                     stdscr.addstr(26, 0, "|" + cent("2 - Pay for the Die") + "|")
