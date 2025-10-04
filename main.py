@@ -107,8 +107,8 @@ def rollDice(stdscr, amount: int, sides: int, offset: float, mult: float, luck: 
     totalPoints = total * mult
 
     stdscr.addstr(15, int(WIDTH/2 - 1), "#" + int(WIDTH/2 - 2) * "-" + "#")
-    stdscr.addstr(16, int(WIDTH/2 - 1), cent("|" + f"Your current Multiplier: {round(mult, 2)} MP") + "|")
-    stdscr.addstr(17, int(WIDTH/2 - 1), cent("|" + f"You now have {bigNumber(totalPoints)} more points.") + "|")
+    stdscr.addstr(16, int(WIDTH/2 - 1), "|" + cent(f"Your current Multiplier: {round(mult, 2)} MP") + "|")
+    stdscr.addstr(17, int(WIDTH/2 - 1), "|" + cent(f"You now have {bigNumber(totalPoints)} more points.") + "|")
     stdscr.addstr(18, int(WIDTH/2 - 1), "#" + int(WIDTH/2 - 2) * "-" + "#")
     stdscr.refresh()
     stdscr.getch()
