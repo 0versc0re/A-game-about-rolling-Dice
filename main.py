@@ -183,7 +183,8 @@ def main(stdscr):
     
     # MISC
     _, WIDTH = stdscr.getmaxyx() # 156
-    cent = lambda s: s.center(int(WIDTH/2 - 2))
+    cent     = lambda s: s.center(int(WIDTH/2 - 2))
+    centFull = lambda s: s.center(WIDTH - 2)
     
     while True:
         
@@ -559,8 +560,8 @@ def main(stdscr):
             
             elif choice == "1":         # UPGRADE DICE
                 
-                if points >= upgradeDice * diceAmount:
-                    points -= upgradeDice * diceAmount
+                if points >= (upgradeDice * diceAmount) / storePriceOffset:
+                    points -= (upgradeDice * diceAmount) / storePriceOffset
                     upgradeDice = upgradeDice ** upgradeExpo
                     diceSides += 1
                     stdscr.addstr(19, 0, "|" + cent(f"You now have {round(diceAmount * diceAmountOffset)} dice with {diceSides} sides each.") + "|")
@@ -576,11 +577,11 @@ def main(stdscr):
             
             elif choice == "2":         # BUY MORE DICE
                 
-                if points >= moreDice * 1.5:
-                    points -= moreDice * 1.5
+                if points >= (moreDice * 1.5) / storePriceOffset:
+                    points -= (moreDice * 1.5) / storePriceOffset
                     moreDice = moreDice ** moreExpo
                     diceAmount += 1
-                    stdscr.addstr(19, 0, "|" + cent(f"You now have {diceAmount} dice with {diceSides} sides each.") + "|")
+                    stdscr.addstr(19, 0, "|" + cent(f"You now have {round(diceAmount * diceAmountOffset)} dice with {diceSides} sides each.") + "|")
                     stdscr.addstr(20, 0, "#" + int(WIDTH/2 - 2) * "-" + "#")
                     stdscr.refresh()
                     stdscr.getch()
@@ -593,8 +594,8 @@ def main(stdscr):
             
             elif choice == "3":         # LUCKY AMULET
                 
-                if points >= upgradeLuck:
-                    points -= upgradeLuck
+                if points >= upgradeLuck / storePriceOffset:
+                    points -= upgradeLuck / storePriceOffset
                     upgradeLuck = upgradeLuck ** luckExpo
                     rollLuck += 1 * luckOffset
                     stdscr.addstr(19, 0, "|" + cent("You feel luckier!") + "|")
@@ -910,20 +911,20 @@ def main(stdscr):
             stdscr.clear()
             
             stdscr.addstr(0,  0, "#" + (WIDTH - 2) * "-" + "#")
-            stdscr.addstr(1,  0, "|" + cent("Welcome to the Upgrade Tree!") + "|")
-            stdscr.addstr(2,  0, "|" + cent("If you're here, it means that you've accumulated over 1 quadrillion points") + "|")
-            stdscr.addstr(3,  0, "|" + cent("and you're wondering what this magical place could possibly be?") + "|")
-            stdscr.addstr(4,  0, "|" + cent("(also these are PERMANENT, meaning upgrading Multiplier won't reset these)") + "|")
+            stdscr.addstr(1,  0, "|" + centFull("Welcome to the Upgrade Tree!") + "|")
+            stdscr.addstr(2,  0, "|" + centFull("If you're here, it means that you've accumulated over 1 quadrillion points") + "|")
+            stdscr.addstr(3,  0, "|" + centFull("and you're wondering what this magical place could possibly be?") + "|")
+            stdscr.addstr(4,  0, "|" + centFull("(also these are PERMANENT, meaning upgrading Multiplier won't reset these)") + "|")
             stdscr.addstr(5,  0, "#" + (WIDTH - 2) * "-" + "#")
-            stdscr.addstr(6,  0, "|" + cent("Well wait no further!") + "|")
+            stdscr.addstr(6,  0, "|" + centFull("Well wait no further!") + "|")
             stdscr.addstr(7,  0, "|" + (WIDTH - 2) * " " + "|")
-            stdscr.addstr(8,  0, "|" + cent("Here you can upgrade anything you could ever think of!") + "|")
-            stdscr.addstr(9,  0, "|" + cent("You want the Store prices to be cheaper? You got it!") + "|")
-            stdscr.addstr(10, 0, "|" + cent("You want more Dice per Dice? You can have that!") + "|")
-            stdscr.addstr(11, 0, "|" + cent("You can even have more Multiplier and better Scaling!") + "|")
+            stdscr.addstr(8,  0, "|" + centFull("Here you can upgrade anything you could ever think of!") + "|")
+            stdscr.addstr(9,  0, "|" + centFull("You want the Store prices to be cheaper? You got it!") + "|")
+            stdscr.addstr(10, 0, "|" + centFull("You want more Dice per Dice? You can have that!") + "|")
+            stdscr.addstr(11, 0, "|" + centFull("You can even have more Multiplier and better Scaling!") + "|")
             stdscr.addstr(12, 0, "#" + (WIDTH - 2) * "-" + "#")
-            stdscr.addstr(13, 0, "|" + cent("1 - View possible Upgrades") + "|")
-            stdscr.addstr(14, 0, "|" + cent("0 - Leave the Upgrade Tree") + "|")
+            stdscr.addstr(13, 0, "|" + centFull("1 - View possible Upgrades") + "|")
+            stdscr.addstr(14, 0, "|" + centFull("0 - Leave the Upgrade Tree") + "|")
             stdscr.addstr(15, 0, "#" + (WIDTH - 2) * "-" + "#")
             stdscr.refresh()
             
@@ -935,13 +936,13 @@ def main(stdscr):
             
             elif choice == "1":     # POSSIBLE UPGRADES
                 
-                stdscr.addstr(16, 0, "|" + cent(f"You have {bigNumber(points)} points.") + "|")
+                stdscr.addstr(16, 0, "|" + centFull(f"You have {bigNumber(points)} points.") + "|")
                 stdscr.addstr(17, 0, "#" + (WIDTH - 2) * "-" + "#")
-                stdscr.addstr(18, 0, "|" + cent(f"1 - Better store prices: {bigNumber(1e15 * storePriceOffset)} points") + "|")
-                stdscr.addstr(19, 0, "|" + cent(f"2 - More dice per dice: {bigNumber(1e15 * diceAmountOffset)} points") + "|")
-                stdscr.addstr(20, 0, "|" + cent(f"3 - Get even luckier: {bigNumber(1e18 * luckOffset)} points") + "|")
-                stdscr.addstr(21, 0, "|" + cent(f"4 - More Multiplier: {bigNumber(1e21 * multiplierOffset)} points") + "|")
-                stdscr.addstr(22, 0, "|" + cent("0 - Exit to the Upgrade Tree") + "|")
+                stdscr.addstr(18, 0, "|" + centFull(f"1 - Better store prices: {bigNumber(1e15 ** storePriceOffset)} points") + "|")
+                stdscr.addstr(19, 0, "|" + centFull(f"2 - More dice per dice: {bigNumber(1e15 ** diceAmountOffset)} points") + "|")
+                stdscr.addstr(20, 0, "|" + centFull(f"3 - Get even luckier: {bigNumber(1e18 ** luckOffset)} points") + "|")
+                stdscr.addstr(21, 0, "|" + centFull(f"4 - More Multiplier: {bigNumber(1e21 ** multiplierOffset)} points") + "|")
+                stdscr.addstr(22, 0, "|" + centFull("0 - Exit to the Upgrade Tree") + "|")
                 stdscr.addstr(23, 0, "#" + (WIDTH - 2) * "-" + "#")
                 
                 choice = stdscr.getkey()
@@ -957,7 +958,7 @@ def main(stdscr):
                         storePriceOffset += 0.2
                         points -= price
                         
-                        stdscr.addstr(24, 0, "|" + cent("Store Prices are now cheaper!") + "|")
+                        stdscr.addstr(24, 0, "|" + centFull("Store Prices are now cheaper!") + "|")
                         stdscr.addstr(25, 0, "#" + (WIDTH - 2) * "-" + "#")
                         stdscr.refresh()
                         stdscr.getch()
@@ -975,7 +976,7 @@ def main(stdscr):
                         diceAmountOffset += 0.2
                         points -= price
                         
-                        stdscr.addstr(24, 0, "|" + cent("You magically have more dice!") + "|")
+                        stdscr.addstr(24, 0, "|" + centFull("You magically have more dice!") + "|")
                         stdscr.addstr(25, 0, "#" + (WIDTH - 2) * "-" + "#")
                         stdscr.refresh()
                         stdscr.getch()
@@ -993,7 +994,7 @@ def main(stdscr):
                         luckOffset += 0.2
                         points -= price
                         
-                        stdscr.addstr(24, 0, "|" + cent("You feel even luckier!") + "|")
+                        stdscr.addstr(24, 0, "|" + centFull("You feel even luckier!") + "|")
                         stdscr.addstr(25, 0, "#" + (WIDTH - 2) * "-" + "#")
                         stdscr.refresh()
                         stdscr.getch()
@@ -1011,7 +1012,7 @@ def main(stdscr):
                         multiplierOffset += 0.2
                         points -= price
                         
-                        stdscr.addstr(24, 0, "|" + cent("The Multiplier already feels stronger!") + "|")
+                        stdscr.addstr(24, 0, "|" + centFull("The Multiplier already feels stronger!") + "|")
                         stdscr.addstr(25, 0, "#" + (WIDTH - 2) * "-" + "#")
                         stdscr.refresh()
                         stdscr.getch()
