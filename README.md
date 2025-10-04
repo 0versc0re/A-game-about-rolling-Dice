@@ -13,3 +13,7 @@ You also need the curses library. You can install it on Windows by typing this i
 Download **main.py** [from](https://github.com/0versc0re/A-game-about-rolling-Dice/releases/tag/v.1.6.1.3) and put it in a separate folder.</br>
 This is to make sure the save file doesn't get lost.</br>
 Play it by right clicking **main.py** and opening it with Python.
+
+## old_main.py
+
+**old_main.py** is a version without the curses library, I won't be updating it ever in the future.
