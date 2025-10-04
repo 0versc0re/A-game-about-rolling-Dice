@@ -1,3 +1,5 @@
+# A game about rolling Dice
+
 Play the game by right-clicking the file and opening it with Python.</br>
 Your game is saved on a JSON file so editing it should be a piece of cake.</br>
 Any suggestions on making this abomination better is appreciated.</br>
