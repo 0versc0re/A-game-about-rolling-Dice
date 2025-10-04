@@ -7,7 +7,7 @@ I'm not an excellent coder, and this is just a little passion project from me.
 
 ### Prerequisities
 
-You first need to install Python, this can by done from the official website or from the Microsoft store.</br>
+You first need to install Python, this can by done from the [official website](https://www.python.org/downloads/) or from the Microsoft store.</br>
 You also need the curses library. You can install it on Windows by typing this in the terminal:
 ```
 pip install windows-curses
