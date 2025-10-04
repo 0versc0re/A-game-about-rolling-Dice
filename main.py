@@ -310,11 +310,11 @@ def main(stdscr):
             if pointsMult >= 10: stdscr.addstr(16, 0, "|" + cent("3 - Upgrade Multiplier scaling") + "|")
             else: stdscr.addstr(16, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
             stdscr.addstr(17, 0, "|" + cent("4 - Roll Dice") + "|")
-            if hundoDiceAmount > 0: stdscr.addstr(18, 0, "|" + cent("5 - Roll the Hundred  sided Dice") + "|")
+            if hundoDiceAmount > 0: stdscr.addstr(18, 0, "|" + cent("5 - Roll the Hundred sided Dice") + "|")
             else: stdscr.addstr(18, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
             if thundoDiceAmount > 0: stdscr.addstr(19, 0, "|" + cent("6 - Roll the Thousand sided Dice") + "|")
             else: stdscr.addstr(19, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
-            if mundoDiceAmount > 0: stdscr.addstr(20, 0, "|" + cent("7 - Roll the Million  sided Dice") + "|")
+            if mundoDiceAmount > 0: stdscr.addstr(20, 0, "|" + cent("7 - Roll the Million sided Dice") + "|")
             else: stdscr.addstr(20, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
             if trundoDiceAmount > 0: stdscr.addstr(21, 0, "|" + cent("8 - Roll the Trillion sided Dice") + "|")
             else: stdscr.addstr(21, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
@@ -755,9 +755,9 @@ def main(stdscr):
                     stdscr.addstr(20, 0, "|" + cent("YOU'RE ABOUT TO TRADE OFF YOUR DICE") + "|")
                     stdscr.addstr(21, 0, "|" + cent("OR PAY 120 Million POINTS") + "|")
                     stdscr.addstr(22, 0, "|" + cent("FOR A Million SIDED DIE") + "|")
-                    stdscr.addstr(24, 0, "#" + int(WIDTH/2 - 2) * "-" + "#")
-                    stdscr.addstr(25, 0, "|" + cent("1 - Trade off my Hundred Sided Dice") + "|")
-                    stdscr.addstr(23, 0, "|" + cent("2 - Trade off my Thousand Sided Dice") + "|")
+                    stdscr.addstr(23, 0, "#" + int(WIDTH/2 - 2) * "-" + "#")
+                    stdscr.addstr(24, 0, "|" + cent("1 - Trade off my Hundred Sided Dice") + "|")
+                    stdscr.addstr(25, 0, "|" + cent("2 - Trade off my Thousand Sided Dice") + "|")
                     stdscr.addstr(26, 0, "|" + cent("3 - Pay for the Die") + "|")
                     stdscr.addstr(27, 0, "|" + cent("4 - Choose how many Dice") + "|")
                     stdscr.addstr(28, 0, "|" + cent("0 - I don't want to") + "|")
@@ -819,7 +819,7 @@ def main(stdscr):
                     elif choice == "4":         # CHOOSE HOW MANY DICE
                         
                         dice, spent = chooseDiceAmount(stdscr, points, "Million", 120_000_000)
-                        thundoDiceAmount += dice
+                        mundoDiceAmount += dice
                         points -= spent
 
                     elif choice == "0":         # NOTHING
@@ -886,7 +886,7 @@ def main(stdscr):
                     elif choice == "3":         # CHOOSE HOW MANY DICE
                         
                         dice, spent = chooseDiceAmount(stdscr, points, "Trillion", 120e12)
-                        thundoDiceAmount += dice
+                        trundoDiceAmount += dice
                         points -= spent
 
                     elif choice == "0":         # NOTHING
