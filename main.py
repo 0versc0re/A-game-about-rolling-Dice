@@ -45,7 +45,7 @@ hasTrundo = False
 hasTree = False
 
 # MISC
-gameVersion = "1.6.3"
+gameVersion = "1.6.3.1"
 
 def saveGame():
     
@@ -1094,4 +1094,5 @@ def main(stdscr):
 
 
 if __name__ == "__main__":
+
     wrapper(main)
