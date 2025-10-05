@@ -51,7 +51,7 @@ def saveGame():
     
     saveData = {
         "version_info": {
-            "gameVersion": "1.6.3"
+            "gameVersion": gameVersion
         },
         "dice": {
             "diceSides":        diceSides,
@@ -1096,3 +1096,4 @@ def main(stdscr):
 if __name__ == "__main__":
 
     wrapper(main)
+
