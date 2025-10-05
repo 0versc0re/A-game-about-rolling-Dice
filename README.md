@@ -15,7 +15,7 @@ pip install windows-curses
 
 ### Actually playing the game
 
-Download **main.py** from [here](https://github.com/0versc0re/A-game-about-rolling-Dice/releases/tag/v.1.6.2) and put it in a separate folder.</br>
+Download **main.py** from [here](https://github.com/0versc0re/A-game-about-rolling-Dice/releases/tag/v.1.6.3) and put it in a separate folder.</br>
 This is to make sure the save file doesn't get lost.</br>
 Play it by right clicking in the folder and clicking "Open in Terminal". Fullscreen the terminal with **F11** and then type this into the terminal:
 ```
@@ -25,6 +25,15 @@ python3 main.py
 ### old_main.py
 
 **old_main.py** is a version without the curses library, I won't be updating it ever in the future.
+
+### Save files
+
+***1.6.3*** save files are not compatible with save files from previous versions.</br>
+A way to convert old save files to new save files is:
++ Copy the old save
++ Start a new game
++ Copy save data from old save into new save
++ Load the new save
 
 ## Things I may add to this game in the future
 
