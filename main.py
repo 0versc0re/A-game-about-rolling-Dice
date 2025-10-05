@@ -37,9 +37,22 @@ diceAmountOffset = 1.0
 luckOffset = 1.0
 multiplierOffset = 1.0
 
+# HAS UNLOCKED
+hasHundo = False
+hasThundo = False
+hasMundo = False
+hasTrundo = False
+hasTree = False
+
+# MISC
+gameVersion = "1.6.3"
+
 def saveGame():
     
     saveData = {
+        "version_info": {
+            "gameVersion": "1.6.3"
+        },
         "dice": {
             "diceSides":        diceSides,
             "diceAmount":       diceAmount,
@@ -67,6 +80,13 @@ def saveGame():
             "diceAmountOffset": diceAmountOffset,
             "luckOffset":       luckOffset,
             "multiplierOffset": multiplierOffset
+        },
+        "has": {
+            "hasHundo": hasHundo,
+            "hasThundo": hasThundo,
+            "hasMundo": hasMundo,
+            "hasTrundo": hasTrundo,
+            "hasTree": hasTree
         },
     }
     
@@ -102,7 +122,7 @@ def rollDice(stdscr, amount: int, sides: float, offset: float, mult: float, luck
         roll = randint(int(luck), int(sides)) if luck < sides else sides
         total += roll
     stdscr.addstr(13, int(WIDTH/2 - 1), "#" + int(WIDTH/2 - 2) * "-" + "#")
-    stdscr.addstr(14, int(WIDTH/2 - 1), "|" + cent(f"You rolled your Dice {bigNumber(round(amount * offset))} times!") + "|")
+    stdscr.addstr(14, int(WIDTH/2 - 1), "|" + cent(f"You rolled your Dice {bigNumber(round(amount * offset))} ({round(amount)}) times!") + "|")
 
     totalPoints = total * mult
 
@@ -171,12 +191,14 @@ def main(stdscr):
     Play = False
     Store = False
     Tree = False
+    Info = False
 
     # GLOBAL VARIABLES
     global diceSides, diceAmount, points, pointsMult, pointsMultExpo
     global upgradeDice, upgradeExpo, moreDice, moreExpo, rollLuck, upgradeLuck, luckExpo
     global hundoDiceAmount, thundoDiceAmount, mundoDiceAmount, trundoDiceAmount
     global storePriceOffset, diceAmountOffset, luckOffset, multiplierOffset
+    global hasHundo, hasThundo, hasMundo, hasTrundo, hasTree, gameVersion
     
     # HIDE CURSOR
     curses.curs_set(0)
@@ -195,18 +217,19 @@ def main(stdscr):
             stdscr.addstr(1, 0, "|" + "0 - New  Game".center(WIDTH - 2) + "|")
             stdscr.addstr(2, 0, "|" + "1 - Load Game".center(WIDTH - 2) + "|")
             stdscr.addstr(3, 0, "|" + "2 - Exit Game".center(WIDTH - 2) + "|")
-            stdscr.addstr(4, 0, "#" + (WIDTH - 2) * "-" + "#")
+            stdscr.addstr(4, 0, "|" + "3 - Game info".center(WIDTH - 2) + "|")
+            stdscr.addstr(5, 0, "#" + (WIDTH - 2) * "-" + "#")
             stdscr.refresh()
             
             choice = stdscr.getkey()
             
             if choice == "0":           # NEW GAME
                 
-                stdscr.addstr(5, 0, "|" + "Are you sure?".center(WIDTH - 2) + "|")
-                stdscr.addstr(6, 0, "#" + (WIDTH - 2) * "-" + "#")
-                stdscr.addstr(7, 0, "|" + "0 - No ".center(WIDTH - 2) + "|")
-                stdscr.addstr(8, 0, "|" + "1 - Yes".center(WIDTH - 2) + "|")
-                stdscr.addstr(9, 0, "#" + (WIDTH - 2) * "-" + "#")
+                stdscr.addstr(6,  0, "|" + "Are you sure?".center(WIDTH - 2) + "|")
+                stdscr.addstr(7,  0, "#" + (WIDTH - 2) * "-" + "#")
+                stdscr.addstr(8,  0, "|" + "0 - No ".center(WIDTH - 2) + "|")
+                stdscr.addstr(9,  0, "|" + "1 - Yes".center(WIDTH - 2) + "|")
+                stdscr.addstr(10, 0, "#" + (WIDTH - 2) * "-" + "#")
                 
                 choice = stdscr.getkey()
                 
@@ -220,8 +243,8 @@ def main(stdscr):
                     Play = True
                 
                 else:                   # INVALID
-                    stdscr.addstr(10, 0, "|" + "Invalid choice!".center(WIDTH - 2) + "|")
-                    stdscr.addstr(11, 0, "#" + (WIDTH - 2) * "-" + "#")
+                    stdscr.addstr(11, 0, "|" + "Invalid choice!".center(WIDTH - 2) + "|")
+                    stdscr.addstr(12, 0, "#" + (WIDTH - 2) * "-" + "#")
                     stdscr.refresh()
                     stdscr.getch()
                 
@@ -231,6 +254,9 @@ def main(stdscr):
                     
                     with open("save.json", "r") as f:
                         data = json.load(f)
+                    
+                    # INFO
+                    gameVersion = data["version_info"]["gameVersion"]
                     
                     # DICE
                     diceSides =        data["dice"]["diceSides"]
@@ -260,8 +286,15 @@ def main(stdscr):
                     luckOffset =       data["offset"]["luckOffset"]
                     multiplierOffset = data["offset"]["multiplierOffset"]
                     
-                    stdscr.addstr(5, 0, "|" + "Welcome back!".center(WIDTH - 2) + "|")
-                    stdscr.addstr(6, 0, "#" + (WIDTH - 2) * "-" + "#")
+                    # HAS UNLOCKED
+                    hasHundo  = data["has"]["hasHundo"]
+                    hasThundo = data["has"]["hasThundo"]
+                    hasMundo  = data["has"]["hasMundo"]
+                    hasTrundo = data["has"]["hasTrundo"]
+                    hasTree   = data["has"]["hasTree"]
+                    
+                    stdscr.addstr(6, 0, "|" + "Welcome back!".center(WIDTH - 2) + "|")
+                    stdscr.addstr(7, 0, "#" + (WIDTH - 2) * "-" + "#")
                     stdscr.refresh()
                     stdscr.getch()
                         
@@ -269,13 +302,17 @@ def main(stdscr):
                     Play = True
                         
                 except OSError:
-                    stdscr.addstr(5, 0, "|" + "Corrupt or missing file!".center(WIDTH - 2) + "|")
-                    stdscr.addstr(6, 0, "#" + (WIDTH - 2) * "-" + "#")
+                    stdscr.addstr(6, 0, "|" + "Corrupt or missing file!".center(WIDTH - 2) + "|")
+                    stdscr.addstr(7, 0, "#" + (WIDTH - 2) * "-" + "#")
                     stdscr.refresh()
                     stdscr.getch()
             
             elif choice == "2":         # EXIT GAME
                 sys.exit()
+
+            elif choice == "3":         # GAME INFO
+                Info = True
+                Menu = False
 
         while Play:     # GAME PLAY
             
@@ -285,12 +322,13 @@ def main(stdscr):
             # DICE DISPLAY
             stdscr.addstr(0, 0, "#" + int(WIDTH/2 - 2) * "-" + "#")
             stdscr.addstr(1, 0, "|" + cent(f"You have {round(diceAmount * diceAmountOffset)} {diceSides} sided Dice") + "|")
-            stdscr.addstr(2, 0, "|" + cent(f"You have {bigNumber(round(hundoDiceAmount * diceAmountOffset))} Hundred sided Dice") + "|")
-            if thundoDiceAmount > 0: stdscr.addstr(3, 0, "|" + cent(f"You have {bigNumber(round(thundoDiceAmount * diceAmountOffset))} Thousand sided Dice") + "|")
+            if hasMundo: stdscr.addstr(2, 0, "|" + cent(f"You have {bigNumber(round(hundoDiceAmount * diceAmountOffset))} ({round(hundoDiceAmount)}) Hundred sided Dice") + "|")
+            else: stdscr.addstr(2, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
+            if thundoDiceAmount > 0 or hasThundo: stdscr.addstr(3, 0, "|" + cent(f"You have {bigNumber(round(thundoDiceAmount * diceAmountOffset))} ({round(thundoDiceAmount)}) Thousand sided Dice") + "|")
             else: stdscr.addstr(3, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
-            if mundoDiceAmount > 0: stdscr.addstr(4, 0, "|" + cent(f"You have {bigNumber(round(mundoDiceAmount * diceAmountOffset))} Million sided Dice") + "|")
+            if mundoDiceAmount > 0 or hasMundo: stdscr.addstr(4, 0, "|" + cent(f"You have {bigNumber(round(mundoDiceAmount * diceAmountOffset))} ({round(mundoDiceAmount)}) Million sided Dice") + "|")
             else: stdscr.addstr(4, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
-            if trundoDiceAmount > 0: stdscr.addstr(5, 0, "|" + cent(f"You have {bigNumber(round(trundoDiceAmount * diceAmountOffset))} Trillion sided Dice") + "|")
+            if trundoDiceAmount > 0 or hasTrundo: stdscr.addstr(5, 0, "|" + cent(f"You have {bigNumber(round(trundoDiceAmount * diceAmountOffset))} ({round(trundoDiceAmount)}) Trillion sided Dice") + "|")
             else: stdscr.addstr(5, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
             
             # POINTS DISPLAY
@@ -321,10 +359,11 @@ def main(stdscr):
             else: stdscr.addstr(20, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
             if trundoDiceAmount > 0: stdscr.addstr(21, 0, "|" + cent("8 - Roll the Trillion sided Dice") + "|")
             else: stdscr.addstr(21, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
-            if points >= 1e15: stdscr.addstr(22, 0, "|" + cent("9 - Go to the Upgrade Tree") + "|")
+            if points >= 1e15 or hasTree: stdscr.addstr(22, 0, "|" + cent("9 - Go to the Upgrade Tree") + "|")
             else: stdscr.addstr(22, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
             stdscr.addstr(23, 0, "|" + cent("0 - Save and Exit") + "|")
-            stdscr.addstr(24, 0, "#" + int(WIDTH/2 - 2) * "-" + "#")
+            stdscr.addstr(24, 0, "|" + cent("M - Back to Menu") + "|")
+            stdscr.addstr(25, 0, "#" + int(WIDTH/2 - 2) * "-" + "#")
             stdscr.refresh()
             
             choice = stdscr.getkey()
@@ -469,12 +508,17 @@ def main(stdscr):
                     points += rollDice(stdscr, trundoDiceAmount, 1e12, diceAmountOffset, pointsMult, 1)
             
             elif choice == "9":     # UPGRADE TREE
-                if points >= 1e15:
+                if points >= 1e15 or hasTree:
                     Tree = True
                     Play = False
+                    hasTree = True
+            
+            elif choice == "m":     # MENU
+                Play = False
+                Menu = True
             
             else:                   # INVALID
-                stdscr.addstr(26, 0, "Invalid choice!")
+                stdscr.addstr(27, 0, "Invalid choice!")
                 stdscr.refresh()
                 stdscr.getch()
 
@@ -496,12 +540,13 @@ def main(stdscr):
             # DICE DISPLAY
             stdscr.addstr(0, 0, "#" + int(WIDTH/2 - 2) * "-" + "#")
             stdscr.addstr(1, 0, "|" + cent(f"You have {round(diceAmount * diceAmountOffset)} {diceSides} sided Dice") + "|")
-            stdscr.addstr(2, 0, "|" + cent(f"You have {bigNumber(round(hundoDiceAmount * diceAmountOffset))} Hundred sided Dice") + "|")
-            if thundoDiceAmount > 0: stdscr.addstr(3, 0, "|" + cent(f"You have {bigNumber(round(thundoDiceAmount * diceAmountOffset))} Thousand sided Dice") + "|")
+            if hasMundo: stdscr.addstr(2, 0, "|" + cent(f"You have {bigNumber(round(hundoDiceAmount * diceAmountOffset))} ({round(hundoDiceAmount)}) Hundred sided Dice") + "|")
+            else: stdscr.addstr(2, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
+            if thundoDiceAmount > 0 or hasThundo: stdscr.addstr(3, 0, "|" + cent(f"You have {bigNumber(round(thundoDiceAmount * diceAmountOffset))} ({round(thundoDiceAmount)}) Thousand sided Dice") + "|")
             else: stdscr.addstr(3, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
-            if mundoDiceAmount > 0: stdscr.addstr(4, 0, "|" + cent(f"You have {bigNumber(round(mundoDiceAmount * diceAmountOffset))} Million sided Dice") + "|")
+            if mundoDiceAmount > 0 or hasMundo: stdscr.addstr(4, 0, "|" + cent(f"You have {bigNumber(round(mundoDiceAmount * diceAmountOffset))} ({round(mundoDiceAmount)}) Million sided Dice") + "|")
             else: stdscr.addstr(4, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
-            if trundoDiceAmount > 0: stdscr.addstr(5, 0, "|" + cent(f"You have {bigNumber(round(trundoDiceAmount * diceAmountOffset))} Trillion sided Dice") + "|")
+            if trundoDiceAmount > 0 or hasTrundo: stdscr.addstr(5, 0, "|" + cent(f"You have {bigNumber(round(trundoDiceAmount * diceAmountOffset))} ({round(trundoDiceAmount)}) Trillion sided Dice") + "|")
             else: stdscr.addstr(5, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
             
             # POINTS AND LUCK DISPLAY
@@ -1031,6 +1076,21 @@ def main(stdscr):
                 stdscr.addstr(17, 0, "Invalid choice!")
                 stdscr.refresh()
                 stdscr.getch()
+
+        while Info:     # GAME INFO
+            
+            stdscr.clear()
+            
+            stdscr.addstr(0, 0, "#" + (WIDTH - 2) * "-" + "#")
+            stdscr.addstr(1, 0, "|" + centFull(f"Game version: {gameVersion}") + "|")
+            stdscr.addstr(2, 0, "|" + (WIDTH - 2) * " " + "|")
+            stdscr.addstr(3, 0, "|" + centFull("Any - Back to Menu") + "|")
+            stdscr.addstr(4, 0, "#" + (WIDTH - 2) * "-" + "#")
+            
+            stdscr.refresh()
+            stdscr.getkey()
+            Info = False
+            Menu = True
 
 
 if __name__ == "__main__":
