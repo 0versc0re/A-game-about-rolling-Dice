@@ -322,13 +322,13 @@ def main(stdscr):
             # DICE DISPLAY
             stdscr.addstr(0, 0, "#" + int(WIDTH/2 - 2) * "-" + "#")
             stdscr.addstr(1, 0, "|" + cent(f"You have {round(diceAmount * diceAmountOffset)} {diceSides} sided Dice") + "|")
-            if hasMundo: stdscr.addstr(2, 0, "|" + cent(f"You have {bigNumber(round(hundoDiceAmount * diceAmountOffset))} ({round(hundoDiceAmount)}) Hundred sided Dice") + "|")
+            if hasMundo: stdscr.addstr(2, 0, "|" + cent(f"You have {bigNumber(round(hundoDiceAmount * diceAmountOffset))} ({bigNumber(round(hundoDiceAmount))}) Hundred sided Dice") + "|")
             else: stdscr.addstr(2, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
-            if thundoDiceAmount > 0 or hasThundo: stdscr.addstr(3, 0, "|" + cent(f"You have {bigNumber(round(thundoDiceAmount * diceAmountOffset))} ({round(thundoDiceAmount)}) Thousand sided Dice") + "|")
+            if thundoDiceAmount > 0 or hasThundo: stdscr.addstr(3, 0, "|" + cent(f"You have {bigNumber(round(thundoDiceAmount * diceAmountOffset))} ({bigNumber(round(thundoDiceAmount))}) Thousand sided Dice") + "|")
             else: stdscr.addstr(3, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
-            if mundoDiceAmount > 0 or hasMundo: stdscr.addstr(4, 0, "|" + cent(f"You have {bigNumber(round(mundoDiceAmount * diceAmountOffset))} ({round(mundoDiceAmount)}) Million sided Dice") + "|")
+            if mundoDiceAmount > 0 or hasMundo: stdscr.addstr(4, 0, "|" + cent(f"You have {bigNumber(round(mundoDiceAmount * diceAmountOffset))} ({bigNumber(round(mundoDiceAmount))}) Million sided Dice") + "|")
             else: stdscr.addstr(4, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
-            if trundoDiceAmount > 0 or hasTrundo: stdscr.addstr(5, 0, "|" + cent(f"You have {bigNumber(round(trundoDiceAmount * diceAmountOffset))} ({round(trundoDiceAmount)}) Trillion sided Dice") + "|")
+            if trundoDiceAmount > 0 or hasTrundo: stdscr.addstr(5, 0, "|" + cent(f"You have {bigNumber(round(trundoDiceAmount * diceAmountOffset))} ({bigNumber(round(trundoDiceAmount))}) Trillion sided Dice") + "|")
             else: stdscr.addstr(5, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
             
             # POINTS DISPLAY
@@ -540,13 +540,13 @@ def main(stdscr):
             # DICE DISPLAY
             stdscr.addstr(0, 0, "#" + int(WIDTH/2 - 2) * "-" + "#")
             stdscr.addstr(1, 0, "|" + cent(f"You have {round(diceAmount * diceAmountOffset)} {diceSides} sided Dice") + "|")
-            if hasMundo: stdscr.addstr(2, 0, "|" + cent(f"You have {bigNumber(round(hundoDiceAmount * diceAmountOffset))} ({round(hundoDiceAmount)}) Hundred sided Dice") + "|")
+            if hasMundo: stdscr.addstr(2, 0, "|" + cent(f"You have {bigNumber(round(hundoDiceAmount * diceAmountOffset))} ({bigNumber(round(hundoDiceAmount))}) Hundred sided Dice") + "|")
             else: stdscr.addstr(2, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
-            if thundoDiceAmount > 0 or hasThundo: stdscr.addstr(3, 0, "|" + cent(f"You have {bigNumber(round(thundoDiceAmount * diceAmountOffset))} ({round(thundoDiceAmount)}) Thousand sided Dice") + "|")
+            if thundoDiceAmount > 0 or hasThundo: stdscr.addstr(3, 0, "|" + cent(f"You have {bigNumber(round(thundoDiceAmount * diceAmountOffset))} ({bigNumber(round(thundoDiceAmount))}) Thousand sided Dice") + "|")
             else: stdscr.addstr(3, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
-            if mundoDiceAmount > 0 or hasMundo: stdscr.addstr(4, 0, "|" + cent(f"You have {bigNumber(round(mundoDiceAmount * diceAmountOffset))} ({round(mundoDiceAmount)}) Million sided Dice") + "|")
+            if mundoDiceAmount > 0 or hasMundo: stdscr.addstr(4, 0, "|" + cent(f"You have {bigNumber(round(mundoDiceAmount * diceAmountOffset))} ({bigNumber(round(mundoDiceAmount))}) Million sided Dice") + "|")
             else: stdscr.addstr(4, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
-            if trundoDiceAmount > 0 or hasTrundo: stdscr.addstr(5, 0, "|" + cent(f"You have {bigNumber(round(trundoDiceAmount * diceAmountOffset))} ({round(trundoDiceAmount)}) Trillion sided Dice") + "|")
+            if trundoDiceAmount > 0 or hasTrundo: stdscr.addstr(5, 0, "|" + cent(f"You have {bigNumber(round(trundoDiceAmount * diceAmountOffset))} ({bigNumber(round(trundoDiceAmount))}) Trillion sided Dice") + "|")
             else: stdscr.addstr(5, 0, "|" + int(WIDTH/2 - 2) * " " + "|")
             
             # POINTS AND LUCK DISPLAY
