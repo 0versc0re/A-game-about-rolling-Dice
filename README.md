@@ -28,7 +28,7 @@ python3 main.py
 
 ### Save files
 
-***1.6.3*** save files are not compatible with save files from previous versions.</br>
+Version ***1.6.3*** save files are not compatible with save files from previous versions.</br>
 A way to convert old save files to new save files is:
 + Copy the old save
 + Start a new game
