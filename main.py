@@ -254,10 +254,7 @@ def main(stdscr):
                     
                     with open("save.json", "r") as f:
                         data = json.load(f)
-                    
-                    # INFO
-                    gameVersion = data["version_info"]["gameVersion"]
-                    
+                        
                     # DICE
                     diceSides =        data["dice"]["diceSides"]
                     diceAmount =       data["dice"]["diceAmount"]
@@ -1116,4 +1113,5 @@ def main(stdscr):
 
 
 if __name__ == "__main__":
+
     wrapper(main)
