@@ -45,7 +45,7 @@ hasTrundo = False
 hasTree = False
 
 # MISC
-gameVersion = "1.7.0"
+gameVersion = "1.7.1"
 
 def saveGame():
     
@@ -105,7 +105,7 @@ def bigNumber(number: float):
         return str(round(number, 2))
 
     for i, suffix in enumerate(numberSuffix, start=2):
-        if number < 1000 ** (i + 1):
+        if number < 990 ** (i + 1):
             return str(round(number / (1000 ** i), 2)) + suffix
 
     return str(round(number / (1000 ** len(numberSuffix)), 2)) + numberSuffix[-1]
@@ -1028,11 +1028,10 @@ def main(stdscr):
                 
                 elif choice == "1":     # BETTER PRICES
                     
-                    price = 1e15 * storePriceOffset
-                    if points >= price:
+                    if points >= 1e15 ** storePriceOffset:
                         
+                        points -= 1e15 ** storePriceOffset
                         storePriceOffset += 0.2
-                        points -= price
                         
                         stdscr.addstr(24, 0, "|" + centFull("Store Prices are now cheaper!") + "|", GREEN)
                         stdscr.addstr(25, 0, "#" + (WIDTH - 2) * "-" + "#", GREEN)
@@ -1046,11 +1045,10 @@ def main(stdscr):
                 
                 elif choice == "2":     # MORE DICE
                     
-                    price = 1e15 * diceAmountOffset
-                    if points >= price:
+                    if points >= 1e15 ** diceAmountOffset:
                         
+                        points -= 1e15 ** diceAmountOffset
                         diceAmountOffset += 0.2
-                        points -= price
                         
                         stdscr.addstr(24, 0, "|" + centFull("You magically have more dice!") + "|", GREEN)
                         stdscr.addstr(25, 0, "#" + (WIDTH - 2) * "-" + "#", GREEN)
@@ -1064,11 +1062,10 @@ def main(stdscr):
                 
                 elif choice == "3":     # MORE LUCK
                     
-                    price = 1e18 * luckOffset
-                    if points >= price:
+                    if points >= 1e18 ** luckOffset:
                         
+                        points -= 1e18 ** luckOffset
                         luckOffset += 0.2
-                        points -= price
                         
                         stdscr.addstr(24, 0, "|" + centFull("You feel even luckier!") + "|", GREEN)
                         stdscr.addstr(25, 0, "#" + (WIDTH - 2) * "-" + "#", GREEN)
@@ -1082,11 +1079,10 @@ def main(stdscr):
                 
                 elif choice == "4":     # MORE MULTIPLIER
                     
-                    price = 1e21 * multiplierOffset
-                    if points >= price:
+                    if points >= 1e21 ** multiplierOffset:
                         
+                        points -= 1e21 ** multiplierOffset
                         multiplierOffset += 0.2
-                        points -= price
                         
                         stdscr.addstr(24, 0, "|" + centFull("The Multiplier already feels stronger!") + "|", GREEN)
                         stdscr.addstr(25, 0, "#" + (WIDTH - 2) * "-" + "#", GREEN)
