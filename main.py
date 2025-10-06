@@ -45,7 +45,7 @@ hasTrundo = False
 hasTree = False
 
 # MISC
-gameVersion = "1.6.3.1"
+gameVersion = "1.6.3.2"
 
 def saveGame():
     
@@ -686,6 +686,8 @@ def main(stdscr):
                             moreDice = 50
                             moreExpo = 1.2
                             
+                            hasHundo = True
+                            
                             stdscr.addstr(30, 0, "|" + cent("Welcome your new Hundred sided Die!") + "|")
                             stdscr.addstr(31, 0, "#" + int(WIDTH/2 - 2) * "-" + "#")
                             stdscr.refresh()
@@ -703,6 +705,8 @@ def main(stdscr):
                             hundoDiceAmount += 1
                             points -= 12_000
                             
+                            hasHundo = True
+                            
                             stdscr.addstr(30, 0, "|" + cent("Welcome your new Hundred sided Die!") + "|")
                             stdscr.addstr(31, 0, "#" + int(WIDTH/2 - 2) * "-" + "#")
                             stdscr.refresh()
@@ -718,6 +722,7 @@ def main(stdscr):
                         dice, spent = chooseDiceAmount(stdscr, points, "Hundred", 12_000)
                         hundoDiceAmount += dice
                         points -= spent
+                        hasHundo = True
 
                     elif choice == "0":         # NOTHING
                         continue
@@ -753,6 +758,8 @@ def main(stdscr):
                             thundoDiceAmount += 1
                             hundoDiceAmount -= 10
                             
+                            hasThundo = True
+                            
                             stdscr.addstr(30, 0, "|" + cent("Stand ready for my arrival, worm.") + "|")
                             stdscr.addstr(31, 0, "#" + int(WIDTH/2 - 2) * "-" + "#")
                             stdscr.refresh()
@@ -770,6 +777,8 @@ def main(stdscr):
                             thundoDiceAmount += 1
                             points -= 120_000
                             
+                            hasThundo = True
+                            
                             stdscr.addstr(30, 0, "|" + cent("Stand ready for my arrival, worm.") + "|")
                             stdscr.addstr(31, 0, "#" + int(WIDTH/2 - 2) * "-" + "#")
                             stdscr.refresh()
@@ -785,6 +794,7 @@ def main(stdscr):
                         dice, spent = chooseDiceAmount(stdscr, points, "Thousand", 120_000)
                         thundoDiceAmount += dice
                         points -= spent
+                        hasThundo = True
 
                     elif choice == "0":         # NOTHING
                         continue
@@ -820,6 +830,8 @@ def main(stdscr):
                             mundoDiceAmount += 1
                             hundoDiceAmount -= 10_000
                             
+                            hasMundo = True
+                            
                             stdscr.addstr(30, 0, "|" + cent("Are you Mr. Beast?") + "|")
                             stdscr.addstr(31, 0, "#" + int(WIDTH/2 - 2) * "-" + "#")
                             stdscr.refresh()
@@ -836,6 +848,8 @@ def main(stdscr):
                             
                             mundoDiceAmount += 1
                             thundoDiceAmount -= 1000
+                            
+                            hasMundo = True
                             
                             stdscr.addstr(30, 0, "|" + cent("Are you Mr. Beast?") + "|")
                             stdscr.addstr(31, 0, "#" + int(WIDTH/2 - 2) * "-" + "#")
@@ -854,6 +868,8 @@ def main(stdscr):
                             mundoDiceAmount += 1
                             points -= 120_000_000
                             
+                            hasMundo = True
+                            
                             stdscr.addstr(30, 0, "|" + cent("Are you Mr. Beast?") + "|")
                             stdscr.addstr(31, 0, "#" + int(WIDTH/2 - 2) * "-" + "#")
                             stdscr.refresh()
@@ -869,6 +885,7 @@ def main(stdscr):
                         dice, spent = chooseDiceAmount(stdscr, points, "Million", 120_000_000)
                         mundoDiceAmount += dice
                         points -= spent
+                        hasMundo = True
 
                     elif choice == "0":         # NOTHING
                         continue
@@ -904,6 +921,8 @@ def main(stdscr):
                             trundoDiceAmount += 1
                             mundoDiceAmount -= 1_000_000
                             
+                            hasTrundo = True
+                            
                             stdscr.addstr(30, 0, "|" + cent("This is quite the large Die.") + "|")
                             stdscr.addstr(31, 0, "#" + int(WIDTH/2 - 2) * "-" + "#")
                             stdscr.refresh()
@@ -921,6 +940,8 @@ def main(stdscr):
                             trundoDiceAmount += 1
                             points -= 120e12
                             
+                            hasTrundo = True
+                            
                             stdscr.addstr(30, 0, "|" + cent("This is quite the large Die.") + "|")
                             stdscr.addstr(31, 0, "#" + int(WIDTH/2 - 2) * "-" + "#")
                             stdscr.refresh()
@@ -936,6 +957,7 @@ def main(stdscr):
                         dice, spent = chooseDiceAmount(stdscr, points, "Trillion", 120e12)
                         trundoDiceAmount += dice
                         points -= spent
+                        hasTrundo = True
 
                     elif choice == "0":         # NOTHING
                         continue
@@ -1094,6 +1116,4 @@ def main(stdscr):
 
 
 if __name__ == "__main__":
-
     wrapper(main)
-
