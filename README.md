@@ -43,6 +43,5 @@ A way to convert old save files to new save files is:
   + Thousand
   + Million
   + Trillion
-  + Quintillion
+  + Quintillion (NEWEST)
 + ~~Colors~~
-+ A real tree
