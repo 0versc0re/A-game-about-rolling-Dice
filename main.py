@@ -3,6 +3,7 @@ import json, sys
 import random, curses
 from curses import wrapper
 from curses.textpad import Textbox
+# from pprint import pprint
 
 
 # DICE VARIABLES
@@ -23,6 +24,7 @@ hundoDiceAmount  = 0
 thundoDiceAmount = 0
 mundoDiceAmount  = 0
 trundoDiceAmount = 0
+qindoDiceAmount  = 0
 
 # LUCK VARIABLES
 rollLuck    = 1
@@ -40,27 +42,54 @@ hasHundo  = False
 hasThundo = False
 hasMundo  = False
 hasTrundo = False
+hasQindo  = False
 hasTree   = False
 
 # MISC
-gameVersion = "1.8.0"
-cards = {
-    "Club":    {"0": False, "1": False, "2": False, "3": False, "4": False, "5": False, "6": False, "7": False, "8": False, "9": False,
-                "A": False, "B": False, "C": False, "D": False, "E": False, "F": False, "G": False, "H": False, "I": False, "J": False, 
-                "K": False, "L": False, "M": False, "N": False, "O": False, "P": False, "Q": False, "R": False, "S": False, "T": False, 
-                "U": False, "V": False, "W": False, "X": False, "Y": False, "Z": False},
-    "Diamond": {"0": False, "1": False, "2": False, "3": False, "4": False, "5": False, "6": False, "7": False, "8": False, "9": False,
-                "A": False, "B": False, "C": False, "D": False, "E": False, "F": False, "G": False, "H": False, "I": False, "J": False, 
-                "K": False, "L": False, "M": False, "N": False, "O": False, "P": False, "Q": False, "R": False, "S": False, "T": False, 
-                "U": False, "V": False, "W": False, "X": False, "Y": False, "Z": False},
-    "Heart":   {"0": False, "1": False, "2": False, "3": False, "4": False, "5": False, "6": False, "7": False, "8": False, "9": False,
-                "A": False, "B": False, "C": False, "D": False, "E": False, "F": False, "G": False, "H": False, "I": False, "J": False, 
-                "K": False, "L": False, "M": False, "N": False, "O": False, "P": False, "Q": False, "R": False, "S": False, "T": False, 
-                "U": False, "V": False, "W": False, "X": False, "Y": False, "Z": False},
-    "Spade":   {"0": False, "1": False, "2": False, "3": False, "4": False, "5": False, "6": False, "7": False, "8": False, "9": False,
-                "A": False, "B": False, "C": False, "D": False, "E": False, "F": False, "G": False, "H": False, "I": False, "J": False, 
-                "K": False, "L": False, "M": False, "N": False, "O": False, "P": False, "Q": False, "R": False, "S": False, "T": False, 
-                "U": False, "V": False, "W": False, "X": False, "Y": False, "Z": False}}
+gameVersion = "1.8.1"
+
+# CARDS
+cardFour = {
+    "0": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "1": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "2": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "3": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "4": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "5": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "6": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "7": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "8": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "9": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "0": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "A": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "B": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "C": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "D": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "E": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "F": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "G": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "H": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "I": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "J": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "K": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "L": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "M": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "N": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "O": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "P": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "Q": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "R": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "S": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "T": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "U": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "V": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "W": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "X": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "Y": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "Z": {"Club": False, "Diamond": False, "Heart": False, "Spade": False}
+}
+fourOfAKind = 0
+cardPrice  = 10_000_000
 
 def saveGame():
     
@@ -74,7 +103,8 @@ def saveGame():
             "hundoDiceAmount":  hundoDiceAmount,
             "thundoDiceAmount": thundoDiceAmount,
             "mundoDiceAmount":  mundoDiceAmount,
-            "trundoDiceAmount": trundoDiceAmount
+            "trundoDiceAmount": trundoDiceAmount,
+            "qindoDiceAmount": qindoDiceAmount
         },
         "points": {
             "points":           points,
@@ -98,10 +128,13 @@ def saveGame():
             "hasThundo": hasThundo,
             "hasMundo": hasMundo,
             "hasTrundo": hasTrundo,
+            "hasQindo": hasQindo,
             "hasTree": hasTree
         },
         "playing_cards": {
-            "cards": cards
+            "cardFour": cardFour,
+            "fourOfAKind": fourOfAKind,
+            "cardPrice": cardPrice
         }
     }
     
@@ -125,28 +158,25 @@ def bigNumber(number: float):
 
     return str(round(number / (1000 ** len(numberSuffix)), 2)) + numberSuffix[-1]
 
-def rollDice(stdscr, amount: int, sides: float, offset: float, mult: float, luck: float, cards: float, COLOR):
+def rollDice(stdscr, amount: int, sides: float, scale: float, offset: float, mult: float, luck: float, cards: float, four: float, COLOR):
     
     _, WIDTH = stdscr.getmaxyx() # 156
     cent = lambda s: s.center(WIDTH - 2)
     
-    totalRolls = round(amount * offset)
     total = 0
-    
-    for _ in range(totalRolls):
+    totalRolls = amount * offset if amount < 1_000_000 else amount * offset / 1_000_000
+    for _ in range(int(totalRolls)):
         roll = random.randint(int(luck), int(sides)) if luck < sides else sides
         total += roll
-    stdscr.addstr(27, 0, "#" + (WIDTH - 2) * "-" + "#", COLOR)
-    stdscr.addstr(28, 0, "|" + cent(f"You rolled your Dice {bigNumber(round(amount * offset))} ({round(amount)}) times!") + "|", COLOR)
-
-    totalPoints = total * mult * cards
-
-    stdscr.addstr(29, 0, "#" + (WIDTH - 2) * "-" + "#", COLOR)
-    stdscr.addstr(30, 0, "|" + cent(f"You rolled this much: {bigNumber(total)} P") + "|", COLOR)
-    stdscr.addstr(31, 0, "|" + cent(f"Your current Multiplier: {round(mult, 2)} MP") + "|", COLOR)
-    stdscr.addstr(32, 0, "|" + cent(f"Your card Multiplier: {round(cards, 2)} CMP") + "|", COLOR)
-    stdscr.addstr(33, 0, "|" + cent(f"You now have {bigNumber(totalPoints)} more points.") + "|", COLOR)
-    stdscr.addstr(34, 0, "#" + (WIDTH - 2) * "-" + "#", COLOR)
+    totalPoints = total * mult * cards * four * scale if amount < 1_000_000 else total * mult * cards * four * scale * 1_000_000
+        
+    stdscr.addstr(30, 0, "|" + cent(f"You rolled your Dice {bigNumber(round(amount * offset))} ({bigNumber(round(amount))}) times!") + "|", COLOR)
+    stdscr.addstr(31, 0, "#" + (WIDTH - 2) * "-" + "#", COLOR)
+    stdscr.addstr(32, 0, "|" + cent(f"You rolled this much: {bigNumber(total * scale)}") + "|", COLOR)
+    stdscr.addstr(33, 0, "|" + cent(f"Your current Multiplier: {round(mult, 2)} MP") + "|", COLOR)
+    stdscr.addstr(34, 0, "|" + cent(f"Your Card and Four of a Kind Multiplier: {round(cards, 2)}, {round(four, 2)}") + "|", COLOR)
+    stdscr.addstr(35, 0, "|" + cent(f"You now have {bigNumber(totalPoints)} more points.") + "|", COLOR)
+    stdscr.addstr(36, 0, "#" + (WIDTH - 2) * "-" + "#", COLOR)
     stdscr.refresh()
     stdscr.getch()
     
@@ -159,25 +189,24 @@ def chooseDiceAmount(stdscr, points: float, name: str, price: float, COLOR):
     
     maxAmount = points // price
     
-    stdscr.addstr(29, 0, "#" + (WIDTH - 2) * "-" + "#", COLOR)
-    stdscr.addstr(30, 0, "|" + cent(f"You have {bigNumber(points)} points.") + "|", COLOR)
-    stdscr.addstr(31, 0, "|" + cent(f"With your points, you can get {bigNumber(maxAmount)} {name} sided Dice") + "|", COLOR)
-    stdscr.addstr(32, 0, "|" + cent("How many Dice do you want?") + "|", COLOR)
-    stdscr.addstr(33, 0, "#" + (WIDTH - 2) * "-" + "#", COLOR)
-    stdscr.addstr(34, 0, "| >" + (WIDTH - 4) * " " + "|", COLOR)
+    stdscr.addstr(32, 0, "|" + cent(f"You have {bigNumber(points)} points.") + "|", COLOR)
+    stdscr.addstr(33, 0, "|" + cent(f"With your points, you can get {bigNumber(maxAmount)} {name} sided Dice") + "|", COLOR)
+    stdscr.addstr(34, 0, "|" + cent("How many Dice do you want?") + "|", COLOR)
     stdscr.addstr(35, 0, "#" + (WIDTH - 2) * "-" + "#", COLOR)
+    stdscr.addstr(36, 0, "| >" + (WIDTH - 4) * " " + "|", COLOR)
+    stdscr.addstr(37, 0, "#" + (WIDTH - 2) * "-" + "#", COLOR)
     
     stdscr.refresh()
     
     curses.curs_set(1)
-    win = curses.newwin(1, 100, 34, 4)
+    win = curses.newwin(1, 100, 36, 4)
     box = Textbox(win)
     
     try:
         box.edit()
         choice = int(box.gather())
     except ValueError:
-        stdscr.addstr(37, 0, f"Please choose a number between 1 and {bigNumber(maxAmount)}.", COLOR)
+        stdscr.addstr(39, 0, f"Please choose a number between 1 and {bigNumber(maxAmount)}.", COLOR)
         curses.curs_set(0)
         stdscr.refresh()
         stdscr.getch()
@@ -188,14 +217,14 @@ def chooseDiceAmount(stdscr, points: float, name: str, price: float, COLOR):
         if choice <= 0: msg = "You must buy at least 1 Die!"
         else:           msg = "You don't have enough points!"
             
-        stdscr.addstr(37, 0, msg, COLOR)
+        stdscr.addstr(39, 0, msg, COLOR)
         curses.curs_set(0)
         stdscr.refresh()
         stdscr.getch()
         return 0, 0
     
-    stdscr.addstr(36, 0, "|" + cent(f"You now have {choice} more {name} sided Dice.") + "|", COLOR)
-    stdscr.addstr(37, 0, "#" + (WIDTH - 2) * "-" + "#", COLOR)
+    stdscr.addstr(38, 0, "|" + cent(f"You now have {choice} more {name} sided Dice.") + "|", COLOR)
+    stdscr.addstr(39, 0, "#" + (WIDTH - 2) * "-" + "#", COLOR)
     curses.curs_set(0)
     stdscr.refresh()
     stdscr.getch()
@@ -211,20 +240,20 @@ def progressBar(percent: float, size: int):
 def main(stdscr):
     
     # BOOLEANS
-    Menu = True
-    Play = False
+    Menu  = True
+    Play  = False
     Store = False
-    Tree = False
-    Info = False
+    Tree  = False
+    Info  = False
     Cards = False
 
     # GLOBAL VARIABLES
     global diceSides, diceAmount, points, pointsMult, pointsMultExpo
     global upgradeDice, upgradeExpo, moreDice, moreExpo, rollLuck, upgradeLuck, luckExpo
-    global hundoDiceAmount, thundoDiceAmount, mundoDiceAmount, trundoDiceAmount
+    global hundoDiceAmount, thundoDiceAmount, mundoDiceAmount, trundoDiceAmount, qindoDiceAmount
     global storePriceOffset, diceAmountOffset, luckOffset, multiplierOffset
-    global hasHundo, hasThundo, hasMundo, hasTrundo, hasTree
-    global gameVersion, cards
+    global hasHundo, hasThundo, hasMundo, hasTrundo, hasQindo, hasTree
+    global gameVersion, cardFour, fourOfAKind, cardPrice
     
     # HIDE CURSOR
     curses.curs_set(0)
@@ -253,10 +282,9 @@ def main(stdscr):
                 (1, 102), (102, 1), (2, 51), (51, 2), (3, 34), (34, 3), (6, 17), (17, 6),   # total 102
                 (1, 103), (103, 1)                                                          # total 103
             }
-    _, WIDTH = stdscr.getmaxyx() # 156
-    cent = lambda s: s.center(WIDTH - 2)
-    centHalf = lambda s: s.center(int(WIDTH/2 - 2))
-    cardPrice = 10_000_000
+    _, WIDTH   = stdscr.getmaxyx() # 156
+    cent       = lambda s: s.center(WIDTH - 2)
+    centHalf   = lambda s: s.center(int(WIDTH/2 - 2))
     
     while True:
         
@@ -306,28 +334,29 @@ def main(stdscr):
                         data = json.load(f)
                     
                     # DICE
-                    diceSides =        data["dice"]["diceSides"]
-                    diceAmount =       data["dice"]["diceAmount"]
-                    hundoDiceAmount =  data["dice"]["hundoDiceAmount"]
+                    diceSides        = data["dice"]["diceSides"]
+                    diceAmount       = data["dice"]["diceAmount"]
+                    hundoDiceAmount  = data["dice"]["hundoDiceAmount"]
                     thundoDiceAmount = data["dice"]["thundoDiceAmount"]
-                    mundoDiceAmount =  data["dice"]["mundoDiceAmount"]
+                    mundoDiceAmount  = data["dice"]["mundoDiceAmount"]
                     trundoDiceAmount = data["dice"]["trundoDiceAmount"]
+                    qindoDiceAmount  = data["dice"]["qindoDiceAmount"]
                     
                     # POINTS
-                    points =         data["points"]["points"]
-                    pointsMult =     data["points"]["pointsMult"]
+                    points         = data["points"]["points"]
+                    pointsMult     = data["points"]["pointsMult"]
                     pointsMultExpo = data["points"]["pointsMultExpo"]
                     
                     # STORE
                     upgradeDice = data["store"]["upgradeDice"]
-                    moreDice =    data["store"]["moreDice"]
-                    rollLuck =    data["store"]["rollLuck"]
+                    moreDice    = data["store"]["moreDice"]
+                    rollLuck    = data["store"]["rollLuck"]
                     upgradeLuck = data["store"]["upgradeLuck"]
                     
                     # OFFSET
                     storePriceOffset = data["offset"]["storePriceOffset"]
                     diceAmountOffset = data["offset"]["diceAmountOffset"]
-                    luckOffset =       data["offset"]["luckOffset"]
+                    luckOffset       = data["offset"]["luckOffset"]
                     multiplierOffset = data["offset"]["multiplierOffset"]
                     
                     # HAS UNLOCKED
@@ -335,10 +364,13 @@ def main(stdscr):
                     hasThundo = data["has"]["hasThundo"]
                     hasMundo  = data["has"]["hasMundo"]
                     hasTrundo = data["has"]["hasTrundo"]
+                    hasQindo  = data["has"]["hasQindo"]
                     hasTree   = data["has"]["hasTree"]
                     
                     # CARDS
-                    cards     = data["playing_cards"]["cards"]
+                    cardFour    = data["playing_cards"]["cardFour"]
+                    fourOfAKind = data["playing_cards"]["fourOfAKind"]
+                    cardPrice   = data["playing_cards"]["cardPrice"]
                     
                     stdscr.addstr(6, 0, "|" + cent("Welcome back!") + "|", RED)
                     stdscr.addstr(7, 0, "#" + (WIDTH - 2) * "-" + "#", RED)
@@ -366,57 +398,62 @@ def main(stdscr):
             saveGame()
             stdscr.clear()
             
-            count = sum(v for k in cards.values() for v in k.values())
+            count = sum(v for k in cardFour.values() for v in k.values())
             cardPoints = 1 + count/100
+            fourPoints = 1 + fourOfAKind/100
             
             # DICE DISPLAY
             stdscr.addstr(0, 0, "#" + (WIDTH - 2) * "-" + "#", BLUE)
             stdscr.addstr(1, 0, "|" + cent(f"You have {round(diceAmount * diceAmountOffset)} ({round(diceAmount)}) {diceSides} sided Dice") + "|", BLUE)
-            if hasMundo: stdscr.addstr(2, 0, "|" + cent(f"You have {bigNumber(round(hundoDiceAmount * diceAmountOffset))} ({bigNumber(round(hundoDiceAmount))}) Hundred sided Dice") + "|", BLUE)
-            else: stdscr.addstr(2, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
+            if hasMundo:                          stdscr.addstr(2, 0, "|" + cent(f"You have {bigNumber(round(hundoDiceAmount * diceAmountOffset))} ({bigNumber(round(hundoDiceAmount))}) Hundred sided Dice") + "|", BLUE)
+            else:                                 stdscr.addstr(2, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
             if thundoDiceAmount > 0 or hasThundo: stdscr.addstr(3, 0, "|" + cent(f"You have {bigNumber(round(thundoDiceAmount * diceAmountOffset))} ({bigNumber(round(thundoDiceAmount))}) Thousand sided Dice") + "|", BLUE)
-            else: stdscr.addstr(3, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
-            if mundoDiceAmount > 0 or hasMundo: stdscr.addstr(4, 0, "|" + cent(f"You have {bigNumber(round(mundoDiceAmount * diceAmountOffset))} ({bigNumber(round(mundoDiceAmount))}) Million sided Dice") + "|", BLUE)
-            else: stdscr.addstr(4, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
+            else:                                 stdscr.addstr(3, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
+            if mundoDiceAmount > 0 or hasMundo:   stdscr.addstr(4, 0, "|" + cent(f"You have {bigNumber(round(mundoDiceAmount * diceAmountOffset))} ({bigNumber(round(mundoDiceAmount))}) Million sided Dice") + "|", BLUE)
+            else:                                 stdscr.addstr(4, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
             if trundoDiceAmount > 0 or hasTrundo: stdscr.addstr(5, 0, "|" + cent(f"You have {bigNumber(round(trundoDiceAmount * diceAmountOffset))} ({bigNumber(round(trundoDiceAmount))}) Trillion sided Dice") + "|", BLUE)
-            else: stdscr.addstr(5, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
+            else:                                 stdscr.addstr(5, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
+            if qindoDiceAmount > 0 or hasQindo:   stdscr.addstr(6, 0, "|" + cent(f"You have {bigNumber(round(qindoDiceAmount * diceAmountOffset))} ({bigNumber(round(qindoDiceAmount))}) Quintillion sided Dice") + "|", BLUE)
+            else:                                 stdscr.addstr(6, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
             
             # POINTS AND CARDS DISPLAY
-            stdscr.addstr(6, 0, "#" + (WIDTH - 2) * "-" + "#", BLUE)
-            stdscr.addstr(7, 0, "|" + cent(f"You have {bigNumber(points)} points and you have {count}/{len(cards["Club"]) * len(cards)} cards.") + "|", BLUE)
+            stdscr.addstr(7, 0, "#" + (WIDTH - 2) * "-" + "#", BLUE)
+            stdscr.addstr(8, 0, "|" + cent(f"You have {bigNumber(points)} points and you have {count}/{len(cardFour["0"]) * len(cardFour)} cards.") + "|", BLUE)
             
             # LUCK AND MULTIPLIER DISPLAY
-            stdscr.addstr(8, 0, "#" + (WIDTH - 2) * "-" + "#", BLUE)
-            stdscr.addstr(9, 0, "|" + cent(f"Your lowest Dice roll: {round(rollLuck)}") + "|", BLUE)
-            stdscr.addstr(10, 0, "|" + centHalf(f"Your current Multiplier: {round(pointsMult, 2)} MP"), BLUE)
-            stdscr.addstr(10, int(WIDTH/2 + 1), centHalf(f"Progress to the next Multiplier upgrade: {"0" if 1000 ** pointsMult - points < 0 else bigNumber(1000 ** pointsMult - points)} points") + "|", BLUE)
-            stdscr.addstr(11, 0, "|" + cent(progressBar(points / (1000 ** pointsMult), WIDTH - 2)) + "|", BLUE)
-            if points >= 1000 ** pointsMult: stdscr.addstr(12, 0, "|" + cent("You have enough points to upgrade your Multiplier!") + "|", BLUE)
-            else: stdscr.addstr(12, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
-            if pointsMult >= 10: stdscr.addstr(13, 0, "|" + cent("You have enough Multiplier to upgrade it's scaling!") + "|", BLUE)
-            else: stdscr.addstr(13, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
-            stdscr.addstr(14, 0, "#" + (WIDTH - 2) * "-" + "#", BLUE)
+            stdscr.addstr(9, 0, "#" + (WIDTH - 2) * "-" + "#", BLUE)
+            stdscr.addstr(10, 0, "|" + cent(f"Your lowest Dice roll: {round(rollLuck)}") + "|", BLUE)
+            stdscr.addstr(11, 0, "|" + centHalf(f"Your current Multiplier: {round(pointsMult, 2)} MP"), BLUE)
+            stdscr.addstr(11, int(WIDTH/2 + 1), centHalf(f"Progress to the next Multiplier upgrade: {"0" if 1000 ** pointsMult - points < 0 else bigNumber(1000 ** pointsMult - points)} points") + "|", BLUE)
+            stdscr.addstr(12, 0, "|" + cent(progressBar(points / (1000 ** pointsMult), WIDTH - 2)) + "|", BLUE)
+            if points >= 1000 ** pointsMult: stdscr.addstr(13, 0, "|" + cent("You have enough points to upgrade your Multiplier!") + "|", BLUE)
+            else:                            stdscr.addstr(13, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
+            if pointsMult >= 10:             stdscr.addstr(14, 0, "|" + cent("You have enough Multiplier to upgrade it's scaling!") + "|", BLUE)
+            else:                            stdscr.addstr(14, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
+            stdscr.addstr(15, 0, "#" + (WIDTH - 2) * "-" + "#", BLUE)
 
             # OPTIONS DISPLAY
-            stdscr.addstr(15, 0, "|" + cent("1 - Dice Store") + "|", BLUE)
-            stdscr.addstr(16, 0, "|" + cent("2 - Upgrade Multiplier") + "|", BLUE)
-            if pointsMult >= 10: stdscr.addstr(17, 0, "|" + cent("3 - Upgrade Multiplier scaling") + "|", BLUE)
-            else: stdscr.addstr(17, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
-            stdscr.addstr(18, 0, "|" + cent("4 - Roll Dice") + "|", BLUE)
-            if hundoDiceAmount > 0: stdscr.addstr(19, 0, "|" + cent("5 - Roll the Hundred sided Dice") + "|", BLUE)
-            else: stdscr.addstr(19, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
-            if thundoDiceAmount > 0: stdscr.addstr(20, 0, "|" + cent("6 - Roll the Thousand sided Dice") + "|", BLUE)
-            else: stdscr.addstr(20, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
-            if mundoDiceAmount > 0: stdscr.addstr(21, 0, "|" + cent("7 - Roll the Million sided Dice") + "|", BLUE)
-            else: stdscr.addstr(21, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
-            if trundoDiceAmount > 0: stdscr.addstr(22, 0, "|" + cent("8 - Roll the Trillion sided Dice") + "|", BLUE)
-            else: stdscr.addstr(22, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
-            if points >= 1e15 or hasTree: stdscr.addstr(23, 0, "|" + cent("9 - Go to the Upgrade Tree") + "|", BLUE)
-            else: stdscr.addstr(23, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
-            stdscr.addstr(24, 0, "|" + cent("0 - Save and Exit") + "|", BLUE)
-            stdscr.addstr(25, 0, "|" + cent("M - Back to Menu") + "|", BLUE)
-            stdscr.addstr(26, 0, "|" + cent("K - Look at your Cards") + "|", BLUE)
-            stdscr.addstr(27, 0, "#" + (WIDTH - 2) * "-" + "#", BLUE)
+            stdscr.addstr(16, 0, "|" + cent("1 - Dice Store") + "|", BLUE)
+            stdscr.addstr(17, 0, "|" + cent("2 - Upgrade Multiplier") + "|", BLUE)
+            if pointsMult >= 10: stdscr.addstr(18, 0, "|" + cent("3 - Upgrade Multiplier scaling") + "|", BLUE)
+            else:                stdscr.addstr(18, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
+            stdscr.addstr(19, 0, "|" + cent("4 - Roll Dice") + "|", BLUE)
+            if hundoDiceAmount > 0:       stdscr.addstr(20, 0, "|" + cent("5 - Roll the Hundred sided Dice") + "|", BLUE)
+            else:                         stdscr.addstr(20, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
+            if thundoDiceAmount > 0:      stdscr.addstr(21, 0, "|" + cent("6 - Roll the Thousand sided Dice") + "|", BLUE)
+            else:                         stdscr.addstr(21, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
+            if mundoDiceAmount > 0:       stdscr.addstr(22, 0, "|" + cent("7 - Roll the Million sided Dice") + "|", BLUE)
+            else:                         stdscr.addstr(22, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
+            if trundoDiceAmount > 0:      stdscr.addstr(23, 0, "|" + cent("8 - Roll the Trillion sided Dice") + "|", BLUE)
+            else:                         stdscr.addstr(23, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
+            if qindoDiceAmount > 0:       stdscr.addstr(24, 0, "|" + cent("9 - Roll the Quintillion sided Dice") + "|", BLUE)
+            else:                         stdscr.addstr(24, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
+            if points >= 1e15 or hasTree: stdscr.addstr(25, 0, "|" + cent("T - Go to the Upgrade Tree") + "|", BLUE)
+            else:                         stdscr.addstr(25, 0, "|" + (WIDTH - 2) * " " + "|", BLUE)
+            stdscr.addstr(26, 0, "|" + cent("0 - Save and Exit") + "|", BLUE)
+            stdscr.addstr(27, 0, "|" + cent("M - Back to Menu") + "|", BLUE)
+            stdscr.addstr(28, 0, "|" + cent("K - Look at your Cards") + "|", BLUE)
+            stdscr.addstr(29, 0, "#" + (WIDTH - 2) * "-" + "#", BLUE)
             stdscr.refresh()
             
             choice = stdscr.getkey()
@@ -431,17 +468,17 @@ def main(stdscr):
                 
             elif choice == "2":     # UPGRADE MULTIPLIER
                 
-                stdscr.addstr(28, 0, "|" + cent("WARNING!") + "|", BLUE)
-                stdscr.addstr(29, 0, "|" + cent("UPGRADING YOUR MULTIPLIER RESETS YOUR") + "|", BLUE)
-                stdscr.addstr(30, 0, "|" + cent("DICE AND POINTS BACK TO 1 AND 0") + "|", BLUE)
-                stdscr.addstr(31, 0, "|" + cent("STORE PRICES ARE ALSO RESET") + "|", BLUE)
-                stdscr.addstr(32, 0, "#" + (WIDTH - 2) * "-" + "#", BLUE)
-                stdscr.addstr(33, 0, "|" + cent(f"Your current Multiplier: {round(pointsMult, 2)} MP") + "|", BLUE)
-                stdscr.addstr(34, 0, "|" + cent(f"You need {bigNumber(1000 ** pointsMult)} points to upgrade your Multiplier.") + "|", BLUE)
-                stdscr.addstr(35, 0, "#" + (WIDTH - 2) * "-" + "#", BLUE)
-                stdscr.addstr(36, 0, "|" + cent("1 - Upgrade Multiplier") + "|", BLUE)
-                stdscr.addstr(37, 0, "|" + cent("0 - I don't want to") + "|", BLUE)
-                stdscr.addstr(38, 0, "#" + (WIDTH - 2) * "-" + "#", BLUE)
+                stdscr.addstr(30, 0, "|" + cent("WARNING!") + "|", BLUE)
+                stdscr.addstr(31, 0, "|" + cent("UPGRADING YOUR MULTIPLIER RESETS YOUR") + "|", BLUE)
+                stdscr.addstr(32, 0, "|" + cent("DICE AND POINTS BACK TO 1 AND 0") + "|", BLUE)
+                stdscr.addstr(33, 0, "|" + cent("STORE PRICES ARE ALSO RESET") + "|", BLUE)
+                stdscr.addstr(34, 0, "#" + (WIDTH - 2) * "-" + "#", BLUE)
+                stdscr.addstr(35, 0, "|" + cent(f"Your current Multiplier: {round(pointsMult, 2)} MP") + "|", BLUE)
+                stdscr.addstr(36, 0, "|" + cent(f"You need {bigNumber(1000 ** pointsMult)} points to upgrade your Multiplier.") + "|", BLUE)
+                stdscr.addstr(37, 0, "#" + (WIDTH - 2) * "-" + "#", BLUE)
+                stdscr.addstr(38, 0, "|" + cent("1 - Upgrade Multiplier") + "|", BLUE)
+                stdscr.addstr(39, 0, "|" + cent("0 - I don't want to") + "|", BLUE)
+                stdscr.addstr(40, 0, "#" + (WIDTH - 2) * "-" + "#", BLUE)
                 
                 choice = stdscr.getkey()
                 
@@ -464,23 +501,26 @@ def main(stdscr):
                         thundoDiceAmount = 0
                         mundoDiceAmount = 0
                         trundoDiceAmount = 0
+                        qindoDiceAmount = 0
                         
                         rollLuck = 1
                         upgradeLuck = 200
                         luckExpo = 1.1
                         
-                        for i in cards.values():
+                        cardPrice = 10_000_000
+                        fourOfAKind = 0
+                        for i in cardFour.values():
                             for j in i:
                                 i[j] = False
                         
-                        stdscr.addstr(39, 0, "|" + cent("Wise choice.") + "|", BLUE)
-                        stdscr.addstr(40, 0, "|" + cent(f"Your current Multiplier: {round(pointsMult, 2)} MP") + "|", BLUE)
-                        stdscr.addstr(41, 0, "#" + (WIDTH - 2) * "-" + "#", BLUE)
+                        stdscr.addstr(41, 0, "|" + cent("Wise choice.") + "|", BLUE)
+                        stdscr.addstr(42, 0, "|" + cent(f"Your current Multiplier: {round(pointsMult, 2)} MP") + "|", BLUE)
+                        stdscr.addstr(43, 0, "#" + (WIDTH - 2) * "-" + "#", BLUE)
                         stdscr.refresh()
                         stdscr.getch()
                         
                     else:
-                        stdscr.addstr(40, 0, "You don't have enough points!", BLUE)
+                        stdscr.addstr(42, 0, "You don't have enough points!", BLUE)
                         stdscr.refresh()
                         stdscr.getch()
                 
@@ -488,7 +528,7 @@ def main(stdscr):
                     continue
                 
                 else:                       # INVALID
-                    stdscr.addstr(40, 0, "Invalid choice!", BLUE)
+                    stdscr.addstr(42, 0, "Invalid choice!", BLUE)
                     stdscr.refresh()
                     stdscr.getch()
             
@@ -496,13 +536,13 @@ def main(stdscr):
                 
                 if pointsMult >= 10:
                 
-                    stdscr.addstr(28, 0, "|" + cent("WARNING!") + "|", BLUE)
-                    stdscr.addstr(29, 0, "|" + cent("UPGRADING YOUR MULTIPLIER'S SCALING RESETS") + "|", BLUE)
-                    stdscr.addstr(30, 0, "|" + cent("EVERYTHING BUT YOUR MULTIPLIER BACK TO 1") + "|", BLUE)
-                    stdscr.addstr(31, 0, "#" + (WIDTH - 2) * "-" + "#", BLUE)
-                    stdscr.addstr(32, 0, "|" + cent("0 - I don't want to") + "|", BLUE)
-                    stdscr.addstr(33, 0, "|" + cent("1 - Upgrade Multiplier scaling") + "|", BLUE)
-                    stdscr.addstr(34, 0, "#" + (WIDTH - 2) * "-" + "#", BLUE)
+                    stdscr.addstr(30, 0, "|" + cent("WARNING!") + "|", BLUE)
+                    stdscr.addstr(31, 0, "|" + cent("UPGRADING YOUR MULTIPLIER'S SCALING RESETS") + "|", BLUE)
+                    stdscr.addstr(32, 0, "|" + cent("EVERYTHING BUT YOUR MULTIPLIER BACK TO 1") + "|", BLUE)
+                    stdscr.addstr(33, 0, "#" + (WIDTH - 2) * "-" + "#", BLUE)
+                    stdscr.addstr(34, 0, "|" + cent("0 - I don't want to") + "|", BLUE)
+                    stdscr.addstr(35, 0, "|" + cent("1 - Upgrade Multiplier scaling") + "|", BLUE)
+                    stdscr.addstr(36, 0, "#" + (WIDTH - 2) * "-" + "#", BLUE)
                     
                     choice = stdscr.getkey()
                     
@@ -524,18 +564,21 @@ def main(stdscr):
                         thundoDiceAmount = 0
                         mundoDiceAmount = 0
                         trundoDiceAmount = 0
+                        qindoDiceAmount = 0
                             
                         rollLuck = 1
                         upgradeLuck = 200
                         luckExpo = 1.1
                         
-                        for i in cards.values():
+                        cardPrice = 10_000_000
+                        fourOfAKind = 0
+                        for i in cardFour.values():
                             for j in i:
                                 i[j] = False
                         
-                        stdscr.addstr(35, 0, "|" + cent("Great choice!") + "|", BLUE)
-                        stdscr.addstr(36, 0, "|" + cent(f"Your current Multiplier: {round(pointsMult, 2)} MP") + "|", BLUE)
-                        stdscr.addstr(37, 0, "#" + (WIDTH - 2) * "-" + "#", BLUE)
+                        stdscr.addstr(37, 0, "|" + cent("Great choice!") + "|", BLUE)
+                        stdscr.addstr(38, 0, "|" + cent(f"Your current Multiplier: {round(pointsMult, 2)} MP") + "|", BLUE)
+                        stdscr.addstr(39, 0, "#" + (WIDTH - 2) * "-" + "#", BLUE)
                         stdscr.refresh()
                         stdscr.getch()
 
@@ -543,30 +586,34 @@ def main(stdscr):
                         continue
                 
                     else:                   # INVALID
-                        stdscr.addstr(36, 0, "Invalid choice!", BLUE)
+                        stdscr.addstr(38, 0, "Invalid choice!", BLUE)
                         stdscr.refresh()
                         stdscr.getch()
             
             elif choice == "4":     # ROLL DICE
-                points += rollDice(stdscr, diceAmount, diceSides, diceAmountOffset, pointsMult, rollLuck, cardPoints, BLUE)
+                points += rollDice(stdscr, diceAmount, diceSides, 1, diceAmountOffset, pointsMult, rollLuck, cardPoints, fourPoints, BLUE)
             
             elif choice == "5":     # ROLL HUNDO
                 if hundoDiceAmount > 0:
-                    points += rollDice(stdscr, hundoDiceAmount, 100, diceAmountOffset, pointsMult, rollLuck, cardPoints, BLUE)
+                    points += rollDice(stdscr, hundoDiceAmount, 100, 1, diceAmountOffset, pointsMult, rollLuck, cardPoints, fourPoints, BLUE)
                     
             elif choice == "6":     # ROLL THUNDO
                 if thundoDiceAmount > 0:
-                    points += rollDice(stdscr, thundoDiceAmount, 1000, diceAmountOffset, pointsMult, rollLuck, cardPoints, BLUE)
+                    points += rollDice(stdscr, thundoDiceAmount, 1000, 1, diceAmountOffset, pointsMult, rollLuck, cardPoints, fourPoints, BLUE)
             
             elif choice == "7":     # ROLL MUNDO
                 if mundoDiceAmount > 0:
-                    points += rollDice(stdscr, mundoDiceAmount, 1_000_000, diceAmountOffset, pointsMult, rollLuck, cardPoints, BLUE)
+                    points += rollDice(stdscr, mundoDiceAmount, 1_000_000, 1, diceAmountOffset, pointsMult, rollLuck, cardPoints, fourPoints, BLUE)
                     
             elif choice == "8":     # ROLL TRUNDO
                 if trundoDiceAmount > 0:
-                    points += rollDice(stdscr, trundoDiceAmount, 1e12, diceAmountOffset, pointsMult, rollLuck, cardPoints, BLUE)
+                    points += rollDice(stdscr, trundoDiceAmount, 1_000_000, 1_000_000, diceAmountOffset, pointsMult, rollLuck, cardPoints, fourPoints, BLUE)
             
-            elif choice == "9":     # UPGRADE TREE
+            elif choice == "9":     # ROLL QINDO
+                if qindoDiceAmount > 0:
+                    points += rollDice(stdscr, qindoDiceAmount, 1_000_000, 1e12, diceAmountOffset, pointsMult, rollLuck, cardPoints, fourPoints, BLUE)
+            
+            elif choice == "t":     # UPGRADE TREE
                 if points >= 1e15 or hasTree:
                     Tree = True
                     Play = False
@@ -593,35 +640,39 @@ def main(stdscr):
             # DICE DISPLAY
             stdscr.addstr(0, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
             stdscr.addstr(1, 0, "|" + cent(f"You have {round(diceAmount * diceAmountOffset)} ({round(diceAmount)}) {diceSides} sided Dice") + "|", YELLOW)
-            if hasMundo: stdscr.addstr(2, 0, "|" + cent(f"You have {bigNumber(round(hundoDiceAmount * diceAmountOffset))} ({bigNumber(round(hundoDiceAmount))}) Hundred sided Dice") + "|", YELLOW)
-            else: stdscr.addstr(2, 0, "|" + (WIDTH - 2) * " " + "|", YELLOW)
+            if hasMundo:                          stdscr.addstr(2, 0, "|" + cent(f"You have {bigNumber(round(hundoDiceAmount * diceAmountOffset))} ({bigNumber(round(hundoDiceAmount))}) Hundred sided Dice") + "|", YELLOW)
+            else:                                 stdscr.addstr(2, 0, "|" + (WIDTH - 2) * " " + "|", YELLOW)
             if thundoDiceAmount > 0 or hasThundo: stdscr.addstr(3, 0, "|" + cent(f"You have {bigNumber(round(thundoDiceAmount * diceAmountOffset))} ({bigNumber(round(thundoDiceAmount))}) Thousand sided Dice") + "|", YELLOW)
-            else: stdscr.addstr(3, 0, "|" + (WIDTH - 2) * " " + "|", YELLOW)
-            if mundoDiceAmount > 0 or hasMundo: stdscr.addstr(4, 0, "|" + cent(f"You have {bigNumber(round(mundoDiceAmount * diceAmountOffset))} ({bigNumber(round(mundoDiceAmount))}) Million sided Dice") + "|", YELLOW)
-            else: stdscr.addstr(4, 0, "|" + (WIDTH - 2) * " " + "|", YELLOW)
+            else:                                 stdscr.addstr(3, 0, "|" + (WIDTH - 2) * " " + "|", YELLOW)
+            if mundoDiceAmount > 0 or hasMundo:   stdscr.addstr(4, 0, "|" + cent(f"You have {bigNumber(round(mundoDiceAmount * diceAmountOffset))} ({bigNumber(round(mundoDiceAmount))}) Million sided Dice") + "|", YELLOW)
+            else:                                 stdscr.addstr(4, 0, "|" + (WIDTH - 2) * " " + "|", YELLOW)
             if trundoDiceAmount > 0 or hasTrundo: stdscr.addstr(5, 0, "|" + cent(f"You have {bigNumber(round(trundoDiceAmount * diceAmountOffset))} ({bigNumber(round(trundoDiceAmount))}) Trillion sided Dice") + "|", YELLOW)
-            else: stdscr.addstr(5, 0, "|" + (WIDTH - 2) * " " + "|", YELLOW)
+            else:                                 stdscr.addstr(5, 0, "|" + (WIDTH - 2) * " " + "|", YELLOW)
+            if qindoDiceAmount > 0 or hasQindo:   stdscr.addstr(6, 0, "|" + cent(f"You have {bigNumber(round(qindoDiceAmount * diceAmountOffset))} ({bigNumber(round(qindoDiceAmount))}) Quintillion sided Dice") + "|", YELLOW)
+            else:                                 stdscr.addstr(6, 0, "|" + (WIDTH - 2) * " " + "|", YELLOW)
             
             # POINTS AND LUCK DISPLAY
-            stdscr.addstr(6, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
-            stdscr.addstr(7, 0, "|" + cent(f"You have {bigNumber(points)} points.") + "|", YELLOW)
-            stdscr.addstr(8, 0, "|" + cent(f"Your lowest Dice roll: {round(rollLuck)}") + "|", YELLOW)
-            stdscr.addstr(9, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+            stdscr.addstr(7, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+            stdscr.addstr(8, 0, "|" + cent(f"You have {bigNumber(points)} points.") + "|", YELLOW)
+            stdscr.addstr(9, 0, "|" + cent(f"Your lowest Dice roll: {round(rollLuck)}") + "|", YELLOW)
+            stdscr.addstr(10, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
                             
             # OPTIONS DISPLAY
-            stdscr.addstr(10, 0, "|" + cent(f"1 - Upgrade Dice: {bigNumber((upgradeDice * diceAmount) / storePriceOffset)} points") + "|", YELLOW)
-            stdscr.addstr(11, 0, "|" + cent(f"2 - Buy more Dice: {bigNumber((moreDice * 1.5) / storePriceOffset)} points") + "|", YELLOW)
-            stdscr.addstr(12, 0, "|" + cent(f"3 - Buy a Lucky Amulet: {bigNumber(upgradeLuck / storePriceOffset)} points") + "|", YELLOW)
-            if ((diceAmount, diceSides) in hundoPairs) or (points >= 12_000): stdscr.addstr(13, 0, "|" + cent("4 - Get a Hundred sided Die") + "|", YELLOW)
-            else: stdscr.addstr(13, 0, "|" + (WIDTH - 2) * " " + "|", YELLOW)
-            if hundoDiceAmount >= 10 or points >= 120_000: stdscr.addstr(14, 0, "|" + cent("5 - Get a Thousand sided Die") + "|", YELLOW)
-            else: stdscr.addstr(14, 0, "|" + (WIDTH - 2) * " " + "|", YELLOW)
-            if thundoDiceAmount >= 1000 or hundoDiceAmount >= 10_000 or points >= 120_000_000: stdscr.addstr(15, 0, "|" + cent("6 - Get a Million sided Die") + "|", YELLOW)
-            else: stdscr.addstr(15, 0, "|" + (WIDTH - 2) * " " + "|", YELLOW)
-            if mundoDiceAmount >= 1_000_000 or points >= 120e12: stdscr.addstr(16, 0, "|" + cent("7 - Get a Trillion sided Die") + "|", YELLOW)
-            else: stdscr.addstr(16, 0, "|" + (WIDTH - 2) * " " + "|", YELLOW)
-            stdscr.addstr(17, 0, "|" + cent("0 - Exit Store") + "|", YELLOW)
-            stdscr.addstr(18, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+            stdscr.addstr(11, 0, "|" + cent(f"1 - Upgrade Dice: {bigNumber((upgradeDice * diceAmount) / storePriceOffset)} points") + "|", YELLOW)
+            stdscr.addstr(12, 0, "|" + cent(f"2 - Buy more Dice: {bigNumber((moreDice * 1.5) / storePriceOffset)} points") + "|", YELLOW)
+            stdscr.addstr(13, 0, "|" + cent(f"3 - Buy a Lucky Amulet: {bigNumber(upgradeLuck / storePriceOffset)} points") + "|", YELLOW)
+            if ((diceAmount, diceSides) in hundoPairs) or (points >= 12_000):                  stdscr.addstr(14, 0, "|" + cent("4 - Get a Hundred sided Die") + "|", YELLOW)
+            else:                                                                              stdscr.addstr(14, 0, "|" + (WIDTH - 2) * " " + "|", YELLOW)
+            if hundoDiceAmount >= 10 or points >= 120_000:                                     stdscr.addstr(15, 0, "|" + cent("5 - Get a Thousand sided Die") + "|", YELLOW)
+            else:                                                                              stdscr.addstr(15, 0, "|" + (WIDTH - 2) * " " + "|", YELLOW)
+            if thundoDiceAmount >= 1000 or hundoDiceAmount >= 10_000 or points >= 120_000_000: stdscr.addstr(16, 0, "|" + cent("6 - Get a Million sided Die") + "|", YELLOW)
+            else:                                                                              stdscr.addstr(16, 0, "|" + (WIDTH - 2) * " " + "|", YELLOW)
+            if mundoDiceAmount >= 1_000_000 or points >= 120e12:                               stdscr.addstr(17, 0, "|" + cent("7 - Get a Trillion sided Die") + "|", YELLOW)
+            else:                                                                              stdscr.addstr(17, 0, "|" + (WIDTH - 2) * " " + "|", YELLOW)
+            if qindoDiceAmount >= 1_000_000 or points >= 120e18:                               stdscr.addstr(18, 0, "|" + cent("8 - Get a Quintillion sided Die") + "|", YELLOW)
+            else:                                                                              stdscr.addstr(18, 0, "|" + (WIDTH - 2) * " " + "|", YELLOW)
+            stdscr.addstr(19, 0, "|" + cent("0 - Exit Store") + "|", YELLOW)
+            stdscr.addstr(20, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
             stdscr.refresh()
             
             choice = stdscr.getkey()
@@ -636,14 +687,14 @@ def main(stdscr):
                     points -= (upgradeDice * diceAmount) / storePriceOffset
                     upgradeDice = upgradeDice ** upgradeExpo
                     diceSides += 1
-                    stdscr.addstr(19, 0, "|" + cent(f"You now have {round(diceAmount * diceAmountOffset)} dice with {diceSides} sides each.") + "|", YELLOW)
-                    stdscr.addstr(20, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                    stdscr.addstr(21, 0, "|" + cent(f"You now have {round(diceAmount * diceAmountOffset)} dice with {diceSides} sides each.") + "|", YELLOW)
+                    stdscr.addstr(22, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
                     stdscr.refresh()
                     stdscr.getch()
                     
                 else:
-                    stdscr.addstr(19, 0, "|" + cent("You don't have enough points!") + "|", YELLOW)
-                    stdscr.addstr(20, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                    stdscr.addstr(21, 0, "|" + cent("You don't have enough points!") + "|", YELLOW)
+                    stdscr.addstr(22, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
                     stdscr.refresh()
                     stdscr.getch()
             
@@ -653,14 +704,14 @@ def main(stdscr):
                     points -= (moreDice * 1.5) / storePriceOffset
                     moreDice = moreDice ** moreExpo
                     diceAmount += 1
-                    stdscr.addstr(19, 0, "|" + cent(f"You now have {round(diceAmount * diceAmountOffset)} dice with {diceSides} sides each.") + "|", YELLOW)
-                    stdscr.addstr(20, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                    stdscr.addstr(21, 0, "|" + cent(f"You now have {round(diceAmount * diceAmountOffset)} dice with {diceSides} sides each.") + "|", YELLOW)
+                    stdscr.addstr(22, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
                     stdscr.refresh()
                     stdscr.getch()
                     
                 else:
-                    stdscr.addstr(19, 0, "|" + cent("You don't have enough points!") + "|", YELLOW)
-                    stdscr.addstr(20, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                    stdscr.addstr(21, 0, "|" + cent("You don't have enough points!") + "|", YELLOW)
+                    stdscr.addstr(22, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
                     stdscr.refresh()
                     stdscr.getch()
             
@@ -670,14 +721,14 @@ def main(stdscr):
                     points -= upgradeLuck / storePriceOffset
                     upgradeLuck = upgradeLuck ** luckExpo
                     rollLuck += 1 * luckOffset
-                    stdscr.addstr(19, 0, "|" + cent("You feel luckier!") + "|", YELLOW)
-                    stdscr.addstr(20, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                    stdscr.addstr(21, 0, "|" + cent("You feel luckier!") + "|", YELLOW)
+                    stdscr.addstr(22, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
                     stdscr.refresh()
                     stdscr.getch()
                     
                 else:
-                    stdscr.addstr(19, 0, "|" + cent("You don't have enough points!") + "|", YELLOW)
-                    stdscr.addstr(20, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                    stdscr.addstr(21, 0, "|" + cent("You don't have enough points!") + "|", YELLOW)
+                    stdscr.addstr(22, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
                     stdscr.refresh()
                     stdscr.getch()
             
@@ -685,18 +736,17 @@ def main(stdscr):
                 
                 if ((diceAmount, diceSides) in hundoPairs) or (points >= 12_000):
                 
-                    stdscr.addstr(18, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
-                    stdscr.addstr(19, 0, "|" + cent("WARNING!") + "|", YELLOW)
-                    stdscr.addstr(20, 0, "|" + cent("YOU'RE ABOUT TO TRADE OFF ALL OF YOUR DICE FOR A Hundred SIDED DIE") + "|", YELLOW)
-                    stdscr.addstr(21, 0, "|" + cent("YOU'LL HAVE YOUR NEW Hundred SIDED DIE AND THE ORIGINAL 4 SIDED DIE") + "|", YELLOW)
-                    stdscr.addstr(22, 0, "|" + cent("YOU WON'T LOSE YOUR DICE IF YOU PAY FOR THE Hundred SIDED DIE") + "|", YELLOW)
-                    stdscr.addstr(23, 0, "|" + cent("(the Hundred sided Die doesn't persist between multiplier upgrades)") + "|", YELLOW)
-                    stdscr.addstr(24, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
-                    stdscr.addstr(25, 0, "|" + cent("1 - Trade off my Dice") + "|", YELLOW)
-                    stdscr.addstr(26, 0, "|" + cent("2 - Pay for the Die") + "|", YELLOW)
-                    stdscr.addstr(27, 0, "|" + cent("3 - Choose how many Dice") + "|", YELLOW)
-                    stdscr.addstr(28, 0, "|" + cent("0 - I don't want to") + "|", YELLOW)
-                    stdscr.addstr(29, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                    stdscr.addstr(21, 0, "|" + cent("WARNING!") + "|", YELLOW)
+                    stdscr.addstr(22, 0, "|" + cent("YOU'RE ABOUT TO TRADE OFF ALL OF YOUR DICE FOR A Hundred SIDED DIE") + "|", YELLOW)
+                    stdscr.addstr(23, 0, "|" + cent("YOU'LL HAVE YOUR NEW Hundred SIDED DIE AND THE ORIGINAL 4 SIDED DIE") + "|", YELLOW)
+                    stdscr.addstr(24, 0, "|" + cent("YOU WON'T LOSE YOUR DICE IF YOU PAY FOR THE Hundred SIDED DIE") + "|", YELLOW)
+                    stdscr.addstr(25, 0, "|" + cent("(the Hundred sided Die doesn't persist between multiplier upgrades)") + "|", YELLOW)
+                    stdscr.addstr(26, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                    stdscr.addstr(27, 0, "|" + cent("1 - Trade off my Dice") + "|", YELLOW)
+                    stdscr.addstr(28, 0, "|" + cent("2 - Pay for the Die") + "|", YELLOW)
+                    stdscr.addstr(29, 0, "|" + cent("3 - Choose how many Dice") + "|", YELLOW)
+                    stdscr.addstr(30, 0, "|" + cent("0 - I don't want to") + "|", YELLOW)
+                    stdscr.addstr(31, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
                     
                     choice = stdscr.getkey()
                     
@@ -715,13 +765,13 @@ def main(stdscr):
                             
                             hasHundo = True
                             
-                            stdscr.addstr(30, 0, "|" + cent("Welcome your new Hundred sided Die!") + "|", YELLOW)
-                            stdscr.addstr(31, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                            stdscr.addstr(32, 0, "|" + cent("Welcome your new Hundred sided Die!") + "|", YELLOW)
+                            stdscr.addstr(33, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
                             
                         else:
-                            stdscr.addstr(31, 0, "You don't have enough Dice!", YELLOW)
+                            stdscr.addstr(33, 0, "You don't have enough Dice!", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
                     
@@ -734,13 +784,13 @@ def main(stdscr):
                             
                             hasHundo = True
                             
-                            stdscr.addstr(30, 0, "|" + cent("Welcome your new Hundred sided Die!") + "|", YELLOW)
-                            stdscr.addstr(31, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                            stdscr.addstr(32, 0, "|" + cent("Welcome your new Hundred sided Die!") + "|", YELLOW)
+                            stdscr.addstr(33, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
                             
                         else:
-                            stdscr.addstr(31, 0, "You don't have enough points!", YELLOW)
+                            stdscr.addstr(33, 0, "You don't have enough points!", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
                     
@@ -755,7 +805,7 @@ def main(stdscr):
                         continue
                     
                     else:                       # INVALID
-                        stdscr.addstr(31, 0, "Invalid choice!", YELLOW)
+                        stdscr.addstr(33, 0, "Invalid choice!", YELLOW)
                         stdscr.refresh()
                         stdscr.getch()
 
@@ -763,18 +813,17 @@ def main(stdscr):
                 
                 if hundoDiceAmount >= 10 or points >= 120_000:
                 
-                    stdscr.addstr(18, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
-                    stdscr.addstr(19, 0, "|" + cent("WARNING!") + "|", YELLOW)
-                    stdscr.addstr(20, 0, "|" + cent("YOU'RE ABOUT TO TRADE OFF 10 OF YOUR Hundred SIDED DICE") + "|", YELLOW)
-                    stdscr.addstr(21, 0, "|" + cent("OR PAY 120,000 POINTS FOR AN INCREDIBLE Thousand SIDED DIE") + "|", YELLOW)
-                    stdscr.addstr(22, 0, "|" + (WIDTH - 2) * " " + "|", YELLOW)
-                    stdscr.addstr(23, 0, "|" + cent("(this still doesn't persist between multiplier upgrades)") + "|", YELLOW)
-                    stdscr.addstr(24, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
-                    stdscr.addstr(25, 0, "|" + cent("1 - Trade off my Dice") + "|", YELLOW)
-                    stdscr.addstr(26, 0, "|" + cent("2 - Pay for the Die") + "|", YELLOW)
-                    stdscr.addstr(27, 0, "|" + cent("3 - Choose how many Dice") + "|", YELLOW)
-                    stdscr.addstr(28, 0, "|" + cent("0 - I don't want to") + "|", YELLOW)
-                    stdscr.addstr(29, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                    stdscr.addstr(21, 0, "|" + cent("WARNING!") + "|", YELLOW)
+                    stdscr.addstr(22, 0, "|" + cent("YOU'RE ABOUT TO TRADE OFF 10 OF YOUR Hundred SIDED DICE") + "|", YELLOW)
+                    stdscr.addstr(23, 0, "|" + cent("OR PAY 120,000 POINTS FOR AN INCREDIBLE Thousand SIDED DIE") + "|", YELLOW)
+                    stdscr.addstr(24, 0, "|" + (WIDTH - 2) * " " + "|", YELLOW)
+                    stdscr.addstr(25, 0, "|" + cent("(this still doesn't persist between multiplier upgrades)") + "|", YELLOW)
+                    stdscr.addstr(26, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                    stdscr.addstr(27, 0, "|" + cent("1 - Trade off my Dice") + "|", YELLOW)
+                    stdscr.addstr(28, 0, "|" + cent("2 - Pay for the Die") + "|", YELLOW)
+                    stdscr.addstr(29, 0, "|" + cent("3 - Choose how many Dice") + "|", YELLOW)
+                    stdscr.addstr(30, 0, "|" + cent("0 - I don't want to") + "|", YELLOW)
+                    stdscr.addstr(31, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
                     
                     choice = stdscr.getkey()
                     
@@ -787,13 +836,13 @@ def main(stdscr):
                             
                             hasThundo = True
                             
-                            stdscr.addstr(30, 0, "|" + cent("Stand ready for my arrival, worm.") + "|", YELLOW)
-                            stdscr.addstr(31, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                            stdscr.addstr(32, 0, "|" + cent("Stand ready for my arrival, worm.") + "|", YELLOW)
+                            stdscr.addstr(33, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
                             
                         else:
-                            stdscr.addstr(31, 0, "You don't have enough Dice!", YELLOW)
+                            stdscr.addstr(33, 0, "You don't have enough Dice!", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
                     
@@ -806,13 +855,13 @@ def main(stdscr):
                             
                             hasThundo = True
                             
-                            stdscr.addstr(30, 0, "|" + cent("Stand ready for my arrival, worm.") + "|", YELLOW)
-                            stdscr.addstr(31, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                            stdscr.addstr(32, 0, "|" + cent("Stand ready for my arrival, worm.") + "|", YELLOW)
+                            stdscr.addstr(33, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
                             
                         else:
-                            stdscr.addstr(31, 0, "You don't have enough points!", YELLOW)
+                            stdscr.addstr(33, 0, "You don't have enough points!", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
                     
@@ -827,7 +876,7 @@ def main(stdscr):
                         continue
                     
                     else:                       # INVALID
-                        stdscr.addstr(31, 0, "Invalid choice!", YELLOW)
+                        stdscr.addstr(33, 0, "Invalid choice!", YELLOW)
                         stdscr.refresh()
                         stdscr.getch()
 
@@ -835,18 +884,17 @@ def main(stdscr):
                 
                 if thundoDiceAmount >= 1000 or hundoDiceAmount >= 10_000 or points >= 120_000_000:
                 
-                    stdscr.addstr(18, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
-                    stdscr.addstr(19, 0, "|" + cent("WARNING!") + "|", YELLOW)
-                    stdscr.addstr(20, 0, "|" + cent("YOU'RE ABOUT TO TRADE OFF YOUR DICE") + "|", YELLOW)
-                    stdscr.addstr(21, 0, "|" + cent("OR PAY 120 Million POINTS") + "|", YELLOW)
-                    stdscr.addstr(22, 0, "|" + cent("FOR A Million SIDED DIE") + "|", YELLOW)
-                    stdscr.addstr(23, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
-                    stdscr.addstr(24, 0, "|" + cent("1 - Trade off my Hundred Sided Dice") + "|", YELLOW)
-                    stdscr.addstr(25, 0, "|" + cent("2 - Trade off my Thousand Sided Dice") + "|", YELLOW)
-                    stdscr.addstr(26, 0, "|" + cent("3 - Pay for the Die") + "|", YELLOW)
-                    stdscr.addstr(27, 0, "|" + cent("4 - Choose how many Dice") + "|", YELLOW)
-                    stdscr.addstr(28, 0, "|" + cent("0 - I don't want to") + "|", YELLOW)
-                    stdscr.addstr(29, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                    stdscr.addstr(21, 0, "|" + cent("WARNING!") + "|", YELLOW)
+                    stdscr.addstr(22, 0, "|" + cent("YOU'RE ABOUT TO TRADE OFF YOUR DICE") + "|", YELLOW)
+                    stdscr.addstr(23, 0, "|" + cent("OR PAY 120 Million POINTS") + "|", YELLOW)
+                    stdscr.addstr(24, 0, "|" + cent("FOR A Million SIDED DIE") + "|", YELLOW)
+                    stdscr.addstr(25, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                    stdscr.addstr(26, 0, "|" + cent("1 - Trade off my Hundred Sided Dice") + "|", YELLOW)
+                    stdscr.addstr(27, 0, "|" + cent("2 - Trade off my Thousand Sided Dice") + "|", YELLOW)
+                    stdscr.addstr(28, 0, "|" + cent("3 - Pay for the Die") + "|", YELLOW)
+                    stdscr.addstr(29, 0, "|" + cent("4 - Choose how many Dice") + "|", YELLOW)
+                    stdscr.addstr(30, 0, "|" + cent("0 - I don't want to") + "|", YELLOW)
+                    stdscr.addstr(31, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
                     
                     choice = stdscr.getkey()
                     
@@ -859,13 +907,13 @@ def main(stdscr):
                             
                             hasMundo = True
                             
-                            stdscr.addstr(30, 0, "|" + cent("Are you Mr. Beast?") + "|", YELLOW)
-                            stdscr.addstr(31, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                            stdscr.addstr(32, 0, "|" + cent("Are you Mr. Beast?") + "|", YELLOW)
+                            stdscr.addstr(33, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
                             
                         else:
-                            stdscr.addstr(31, 0, "You don't have enough Dice!", YELLOW)
+                            stdscr.addstr(33, 0, "You don't have enough Dice!", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
                     
@@ -878,13 +926,13 @@ def main(stdscr):
                             
                             hasMundo = True
                             
-                            stdscr.addstr(30, 0, "|" + cent("Are you Mr. Beast?") + "|", YELLOW)
-                            stdscr.addstr(31, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                            stdscr.addstr(32, 0, "|" + cent("Are you Mr. Beast?") + "|", YELLOW)
+                            stdscr.addstr(33, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
                             
                         else:
-                            stdscr.addstr(31, 0, "You don't have enough Dice!", YELLOW)
+                            stdscr.addstr(33, 0, "You don't have enough Dice!", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
                     
@@ -897,13 +945,13 @@ def main(stdscr):
                             
                             hasMundo = True
                             
-                            stdscr.addstr(30, 0, "|" + cent("Are you Mr. Beast?") + "|", YELLOW)
-                            stdscr.addstr(31, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                            stdscr.addstr(32, 0, "|" + cent("Are you Mr. Beast?") + "|", YELLOW)
+                            stdscr.addstr(33, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
                             
                         else:
-                            stdscr.addstr(31, 0, "You don't have enough points!", YELLOW)
+                            stdscr.addstr(33, 0, "You don't have enough points!", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
                     
@@ -918,7 +966,7 @@ def main(stdscr):
                         continue
                     
                     else:                       # INVALID
-                        stdscr.addstr(31, 0, "Invalid choice!", YELLOW)
+                        stdscr.addstr(33, 0, "Invalid choice!", YELLOW)
                         stdscr.refresh()
                         stdscr.getch()
 
@@ -926,18 +974,17 @@ def main(stdscr):
                 
                 if mundoDiceAmount >= 1_000_000 or points >= 120e12:
                 
-                    stdscr.addstr(18, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
-                    stdscr.addstr(19, 0, "|" + cent("WARNING!") + "|", YELLOW)
-                    stdscr.addstr(20, 0, "|" + cent("YOU'RE ABOUT TO TRADE OFF YOUR DICE") + "|", YELLOW)
-                    stdscr.addstr(21, 0, "|" + cent("OR PAY 120 Trillion POINTS") + "|", YELLOW)
-                    stdscr.addstr(22, 0, "|" + cent("FOR A Trillion SIDED DIE") + "|", YELLOW)
-                    stdscr.addstr(23, 0, "|" + (WIDTH - 2) * " " + "|", YELLOW)
-                    stdscr.addstr(24, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
-                    stdscr.addstr(25, 0, "|" + cent("1 - Trade off my Dice") + "|", YELLOW)
-                    stdscr.addstr(26, 0, "|" + cent("2 - Pay for the Die") + "|", YELLOW)
-                    stdscr.addstr(27, 0, "|" + cent("3 - Choose how many Dice") + "|", YELLOW)
-                    stdscr.addstr(28, 0, "|" + cent("0 - I don't want to") + "|", YELLOW)
-                    stdscr.addstr(29, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                    stdscr.addstr(21, 0, "|" + cent("WARNING!") + "|", YELLOW)
+                    stdscr.addstr(22, 0, "|" + cent("YOU'RE ABOUT TO TRADE OFF YOUR DICE") + "|", YELLOW)
+                    stdscr.addstr(23, 0, "|" + cent("OR PAY 120 Trillion POINTS") + "|", YELLOW)
+                    stdscr.addstr(24, 0, "|" + cent("FOR A Trillion SIDED DIE") + "|", YELLOW)
+                    stdscr.addstr(25, 0, "|" + (WIDTH - 2) * " " + "|", YELLOW)
+                    stdscr.addstr(26, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                    stdscr.addstr(27, 0, "|" + cent("1 - Trade off my Dice") + "|", YELLOW)
+                    stdscr.addstr(28, 0, "|" + cent("2 - Pay for the Die") + "|", YELLOW)
+                    stdscr.addstr(29, 0, "|" + cent("3 - Choose how many Dice") + "|", YELLOW)
+                    stdscr.addstr(30, 0, "|" + cent("0 - I don't want to") + "|", YELLOW)
+                    stdscr.addstr(31, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
                     
                     choice = stdscr.getkey()
                     
@@ -950,13 +997,13 @@ def main(stdscr):
                             
                             hasTrundo = True
                             
-                            stdscr.addstr(30, 0, "|" + cent("This is quite the large Die.") + "|", YELLOW)
-                            stdscr.addstr(31, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                            stdscr.addstr(32, 0, "|" + cent("This is quite the large Die.") + "|", YELLOW)
+                            stdscr.addstr(33, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
                             
                         else:
-                            stdscr.addstr(31, 0, "You don't have enough Dice!", YELLOW)
+                            stdscr.addstr(33, 0, "You don't have enough Dice!", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
                     
@@ -969,13 +1016,13 @@ def main(stdscr):
                             
                             hasTrundo = True
                             
-                            stdscr.addstr(30, 0, "|" + cent("This is quite the large Die.") + "|", YELLOW)
-                            stdscr.addstr(31, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                            stdscr.addstr(32, 0, "|" + cent("This is quite the large Die.") + "|", YELLOW)
+                            stdscr.addstr(33, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
                             
                         else:
-                            stdscr.addstr(31, 0, "You don't have enough points!", YELLOW)
+                            stdscr.addstr(33, 0, "You don't have enough points!", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
                     
@@ -990,7 +1037,77 @@ def main(stdscr):
                         continue
                     
                     else:                       # INVALID
-                        stdscr.addstr(31, 0, "Invalid choice!", YELLOW)
+                        stdscr.addstr(33, 0, "Invalid choice!", YELLOW)
+                        stdscr.refresh()
+                        stdscr.getch()
+
+            elif choice == "8":         # GET QINDO DICE
+                
+                if trundoDiceAmount >= 1_000_000 or points >= 120e18:
+                    
+                    stdscr.addstr(21, 0, "|" + cent("WARNING!") + "|", YELLOW)
+                    stdscr.addstr(22, 0, "|" + cent("YOU'RE ABOUT TO TRADE OFF YOUR DICE") + "|", YELLOW)
+                    stdscr.addstr(23, 0, "|" + cent("OR PAY 120 QUINTILLION POINTS") + "|", YELLOW)
+                    stdscr.addstr(24, 0, "|" + cent("FOR A Quintillion SIDED DIE") + "|", YELLOW)
+                    stdscr.addstr(25, 0, "|" + (WIDTH - 2) * " " + "|", YELLOW)
+                    stdscr.addstr(26, 0, "|" + (WIDTH - 2) * "-" + "#", YELLOW)
+                    stdscr.addstr(27, 0, "|" + cent("1 - Trade off my Dice") + "|", YELLOW)
+                    stdscr.addstr(28, 0, "|" + cent("2 - Pay for the Die") + "|", YELLOW)
+                    stdscr.addstr(29, 0, "|" + cent("3 - Choose how many Dice") + "|", YELLOW)
+                    stdscr.addstr(30, 0, "|" + cent("0 - I don't want to") + "|", YELLOW)
+                    stdscr.addstr(31, 0, "|" + (WIDTH - 2) * "-" + "#", YELLOW)
+
+                    choice = stdscr.getkey()
+
+                    if choice == "1":           # DICE AMOUNT
+                        
+                        if trundoDiceAmount >= 1_000_000:
+                            
+                            qindoDiceAmount += 1
+                            trundoDiceAmount -= 1_000_000
+                            
+                            hasQindo = True
+                            
+                            stdscr.addstr(32, 0, "|" + cent("These are getting kinda big already.") + "|", YELLOW)
+                            stdscr.addstr(33, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                            stdscr.refresh()
+                            stdscr.getch()
+                            
+                        else:
+                            stdscr.addstr(33, 0, "You don't have enough Dice!", YELLOW)
+                            stdscr.refresh()
+                            stdscr.getch()
+                            
+                    elif choice == "2":         # ENOUGH POINTS
+                        
+                        if points >= 120e18:
+                            
+                            qindoDiceAmount += 1
+                            points -= 120e18
+                            
+                            hasQindo = True
+                            
+                            stdscr.addstr(32, 0, "|" + cent("These are getting kinda big already.") + "|", YELLOW)
+                            stdscr.addstr(33, 0, "#" + (WIDTH - 2) * "-" + "#", YELLOW)
+                            stdscr.refresh()
+                            stdscr.getch()
+                            
+                        else:
+                            stdscr.addstr(33, 0, "You don't have enough points!", YELLOW)
+                            stdscr.refresh()
+                            stdscr.getch()
+
+                    elif choice == "3":         # CHOOSE HOW MANY DICE
+                        dice, spent = chooseDiceAmount(stdscr, points, "Quintillion", 120e18, YELLOW)
+                        qindoDiceAmount += dice
+                        points -= spent
+                        hasQindo = True
+
+                    elif choice == "0":         # NOTHING
+                        continue
+
+                    else:                       # INVALID
+                        stdscr.addstr(33, 0, "Invalid choice!", YELLOW)
                         stdscr.refresh()
                         stdscr.getch()
 
@@ -1143,30 +1260,35 @@ def main(stdscr):
             saveGame()
             stdscr.clear()
             
-            countCards = sum(v for suits in cards.values() for v in suits.values())
-            falseCards = [(ok, ik) for ok, suits in cards.items() for ik, v in suits.items() if not v]
-            priceCard = cardPrice ** (1 + countCards/50)
+            countTrue = {k: sum(vv for vv in v.values()) for k, v in cardFour.items()}
+            allTrueKeys = [k for k, v in cardFour.items() if all(v.values())]
+            trueCards = sum(v for thing in cardFour.values() for v in thing.values())
+            falseCards = [(ok, ik) for ok, thing in cardFour.items() for ik, v in thing.items() if not v]
+            ableFour = False
             
             stdscr.addstr(0, 0, "#" + (WIDTH - 2) * "-" + "#", MAGENTA)
             x, y = 1, 0
-            for suits in cards:
-                for card in cards[suits]:
-                    if   suits == "Club":    stdscr.addstr(x, y, f"| {card} of {suits}s |{25 * "█" if cards[suits][card] else 25 * "░"}|", MAGENTA)
-                    elif suits == "Diamond": stdscr.addstr(x, y, f"| {card} of {suits}s |{22 * "█" if cards[suits][card] else 22 * "░"}|", MAGENTA)
-                    elif suits == "Heart":   stdscr.addstr(x, y, f"| {card} of {suits}s |{24 * "█" if cards[suits][card] else 24 * "░"}|", MAGENTA)
-                    elif suits == "Spade":   stdscr.addstr(x, y, f"| {card} of {suits}s |{23 * "█" if cards[suits][card] else 23 * "░"}|", MAGENTA)
-                    x += 1
-                x = 1
-                y += int(WIDTH / 4)
+            for thing in cardFour:
+                for suit in cardFour[thing]:       # █ ▒ ░
+                    if countTrue[thing] == 4: ableFour = True
+                    if   suit == "Club":    stdscr.addstr(x, y, f"| {thing} of {suit}s |{25 * "█" if countTrue[thing] == 4 else 25 * "▒" if cardFour[thing][suit] else 25 * "░"}|", MAGENTA)
+                    elif suit == "Heart":   stdscr.addstr(x, y, f"| {thing} of {suit}s |{24 * "█" if countTrue[thing] == 4 else 24 * "▒" if cardFour[thing][suit] else 24 * "░"}|", MAGENTA)
+                    elif suit == "Spade":   stdscr.addstr(x, y, f"| {thing} of {suit}s |{23 * "█" if countTrue[thing] == 4 else 23 * "▒" if cardFour[thing][suit] else 23 * "░"}|", MAGENTA)
+                    elif suit == "Diamond": stdscr.addstr(x, y, f"| {thing} of {suit}s |{22 * "█" if countTrue[thing] == 4 else 22 * "▒" if cardFour[thing][suit] else 22 * "░"}|", MAGENTA)
+                    y += int(WIDTH / 4)
+                x += 1
+                y = 0
             
             for i in range(37):
                 stdscr.addstr(i + 1, WIDTH - 1, "|", MAGENTA)
             stdscr.addstr(37, 0, "#" + (WIDTH - 2) * "-" + "#", MAGENTA)
-            stdscr.addstr(38, 0, "|" + cent(f"You have unlocked {countCards}/{len(cards[suits]) * len(cards)} Cards and you have {bigNumber(points)} points.") + "|", MAGENTA)
+            stdscr.addstr(38, 0, "|" + cent(f"You have unlocked {trueCards}/{len(cardFour[thing]) * len(cardFour)} Cards and you have {bigNumber(points)} points.") + "|", MAGENTA)
             stdscr.addstr(39, 0, "#" + (WIDTH - 2) * "-" + "#", MAGENTA)
             stdscr.addstr(40, 0, "|" + cent("0 - Stop looking at your Cards") + "|", MAGENTA)
-            stdscr.addstr(41, 0, "|" + cent(f"1 - Buy a random Card: {bigNumber(priceCard)}") + "|", MAGENTA)
-            stdscr.addstr(42, 0, "#" + (WIDTH - 2) * "-" + "#", MAGENTA)
+            stdscr.addstr(41, 0, "|" + cent(f"1 - Buy a random Card: {bigNumber(cardPrice)}") + "|", MAGENTA)
+            if ableFour: stdscr.addstr(42, 0, "|" + cent("2 - Trade away a Four of a Kind") + "|", MAGENTA)
+            else:        stdscr.addstr(42, 0, "|" + (WIDTH - 2) * " " + "|", MAGENTA)
+            stdscr.addstr(43, 0, "#" + (WIDTH - 2) * "-" + "#", MAGENTA)
             stdscr.refresh()
             
             choice = stdscr.getkey()
@@ -1177,21 +1299,46 @@ def main(stdscr):
                 
             elif choice == "1":     # RANDOM CARD
                 
-                if points >= priceCard:
+                if not trueCards == len(cardFour[thing]) * len(cardFour):
+                
+                    if points >= cardPrice:
+                        
+                        points -= cardPrice
+                        cardPrice = cardPrice * (1 + (trueCards/40))
+                        ok, ik = random.choice(falseCards)
+                        cardFour[ok][ik] = True
+                        
+                        stdscr.addstr(44, 0, "|" + cent(f"You pulled a {ok} of {ik}s for {bigNumber(cardPrice)} points!") + "|", MAGENTA)
+                        try: stdscr.addstr(45, 0, "#" + (WIDTH - 2) * "-" + "#", MAGENTA)
+                        except curses.error: pass
+                        stdscr.refresh()
+                        stdscr.getkey()
                     
-                    points -= priceCard
-                    ok, ik = random.choice(falseCards)
-                    cards[ok][ik] = True
-                    
-                    stdscr.addstr(43, 0, "|" + cent(f"You pulled a {ik} of {ok}s for {bigNumber(priceCard)} points!") + "|", MAGENTA)
-                    stdscr.addstr(44, 0, "#" + (WIDTH - 2) * "-" + "#", MAGENTA)
-                    stdscr.refresh()
-                    stdscr.getkey()
+                    else:
+                        stdscr.addstr(45, 0, "You don't have enough points!", MAGENTA)
+                        stdscr.refresh()
+                        stdscr.getkey()
                 
                 else:
-                    stdscr.addstr(44, 0, "You don't have enough points!", MAGENTA)
+                    stdscr.addstr(45, 0, "You have collected all the cards!", MAGENTA)
                     stdscr.refresh()
                     stdscr.getkey()
+            
+            elif choice == "2":     # FOUR OF A KIND
+                
+                if ableFour:
+                    
+                    randomFour = random.choice(allTrueKeys)
+                    for suit in cardFour[randomFour]:
+                        cardFour[randomFour][suit] = False
+                    fourOfAKind += 1
+                    
+                    stdscr.addstr(44, 0, "|" + cent(f"Your Four of a Kind was: {randomFour}'s!") + "|", MAGENTA)
+                    try: stdscr.addstr(45, 0, "#" + (WIDTH - 2) * "-" + "#", MAGENTA)
+                    except curses.error: pass
+                    stdscr.refresh()
+                    stdscr.getkey()
+                    ableFour = False
             
             else:                   # INVALID
                 stdscr.addstr(44, 0, "Invalid choice!", MAGENTA)
