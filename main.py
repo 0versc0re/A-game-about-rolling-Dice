@@ -140,9 +140,6 @@ def saveGame():
     
     with open("save.json", "w") as f:
         json.dump(saveData, f, indent=4)
-    
-    with open("save_bak.json", "w") as f:
-        json.dump(saveData, f, indent=4)
 
 def bigNumber(number: float):
     
@@ -320,16 +317,16 @@ def main(stdscr):
                 
                 stdscr.addstr(6,  0, "▌" + cent("Are you sure?") + "▐", RED)
                 stdscr.addstr(7,  0, "▛" + (WIDTH - 2) * "▀" + "▜", RED)
-                stdscr.addstr(8,  0, "▌" + cent("0 - No ") + "▐", RED)
-                stdscr.addstr(9,  0, "▌" + cent("1 - Yes") + "▐", RED)
+                stdscr.addstr(8,  0, "▌" + cent("L - No ") + "▐", RED)
+                stdscr.addstr(9,  0, "▌" + cent("S - Yes") + "▐", RED)
                 stdscr.addstr(10, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
                 
                 choice = stdscr.getkey()
                 
-                if choice == "0":       # NO
+                if choice == "L":       # NO
                     continue
                     
-                elif choice == "1":     # YES
+                elif choice == "S":     # YES
                     stdscr.clear()
                     stdscr.refresh()
                     Menu = False
@@ -340,7 +337,7 @@ def main(stdscr):
                     stdscr.addstr(12, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
                     stdscr.refresh()
                     stdscr.getch()
-                
+            
             elif choice == "1":         # LOAD GAME
                 
                 try:
@@ -1256,14 +1253,11 @@ def main(stdscr):
 
         while Info:     # GAME INFO
             
-            saveGame()
             stdscr.clear()
-            
             stdscr.addstr(0, 0, "▛" + (WIDTH - 2) * "▀" + "▜", RED)
             stdscr.addstr(1, 0, "▌" + cent(f"Game version: {gameVersion}") + "▐", RED)
             stdscr.addstr(2, 0, "▌" + cent("Any - Back to Menu") + "▐", RED)
             stdscr.addstr(3, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
-            
             stdscr.refresh()
             stdscr.getkey()
             Info, Menu = False, True
