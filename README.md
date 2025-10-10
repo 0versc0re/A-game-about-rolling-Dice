@@ -15,7 +15,7 @@ pip install windows-curses
 
 ### Actually playing the game
 
-Download **main.py** from [here](https://github.com/0versc0re/A-game-about-rolling-Dice/releases/tag/v.1.8.2) and put it in a separate folder.</br>
+Download **main.py** from [here](https://github.com/0versc0re/A-game-about-rolling-Dice/releases/tag/v.1.8.2.1) and put it in a separate folder.</br>
 This is to make sure the save file doesn't get lost.</br>
 Play it by right clicking in the folder and clicking "Open in Terminal". Fullscreen the terminal with **F11** and then type this into the terminal:
 ```
