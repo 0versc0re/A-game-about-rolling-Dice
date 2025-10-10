@@ -256,7 +256,7 @@ def main(stdscr):
     global hundoDiceAmount, thundoDiceAmount, mundoDiceAmount, trundoDiceAmount, qindoDiceAmount
     global storePriceOffset, diceAmountOffset, luckOffset, multiplierOffset
     global hasHundo, hasThundo, hasMundo, hasTrundo, hasQindo, hasTree
-    global gameVersion, fuckedMode, cardFour, fourOfAKind, cardPrice
+    global gameVersion, cardFour, fourOfAKind, cardPrice
     
     # HIDE CURSOR
     curses.curs_set(0)
