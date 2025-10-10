@@ -46,7 +46,7 @@ hasQindo  = False
 hasTree   = False
 
 # MISC
-gameVersion = "1.8.2"
+gameVersion = "1.8.2.2"
 
 # CARDS
 cardFour    = {
@@ -681,7 +681,7 @@ def main(stdscr):
             else:                                                                              stdscr.addstr(16, 0, "▌" + (WIDTH - 2) * " " + "▐", YELLOW)
             if mundoDiceAmount >= 1_000_000 or points >= 120e12:                               stdscr.addstr(17, 0, "▌" + cent("7 - Get a Trillion sided Die") + "▐", YELLOW)
             else:                                                                              stdscr.addstr(17, 0, "▌" + (WIDTH - 2) * " " + "▐", YELLOW)
-            if qindoDiceAmount >= 1_000_000 or points >= 120e18:                               stdscr.addstr(18, 0, "▌" + cent("8 - Get a Quintillion sided Die") + "▐", YELLOW)
+            if trundoDiceAmount >= 1_000_000 or points >= 120e18:                               stdscr.addstr(18, 0, "▌" + cent("8 - Get a Quintillion sided Die") + "▐", YELLOW)
             else:                                                                              stdscr.addstr(18, 0, "▌" + (WIDTH - 2) * " " + "▐", YELLOW)
             stdscr.addstr(19, 0, "▌" + cent("0 - Exit Store") + "▐", YELLOW)
             stdscr.addstr(20, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
