@@ -45,3 +45,4 @@ A way to convert old save files to new save files is:
   + Trillion
   + Quintillion (NEWEST)
 + ~~Colors~~
++ Modifications of existing cards (?)
