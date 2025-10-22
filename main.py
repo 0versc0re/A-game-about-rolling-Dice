@@ -46,7 +46,7 @@ hasQindo  = False
 hasTree   = False
 
 # MISC
-gameVersion = "1.8.3"
+gameVersion = "1.8.3.1"
 saveName    = "defaultsave"
 
 # CARDS
