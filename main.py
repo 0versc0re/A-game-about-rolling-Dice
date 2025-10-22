@@ -46,7 +46,7 @@ hasQindo  = False
 hasTree   = False
 
 # MISC
-gameVersion = "1.8.3.1"
+gameVersion = "1.8.3.2"
 saveName    = "defaultsave"
 
 # CARDS
@@ -341,6 +341,45 @@ def main(stdscr):
                     box.edit()
                     saveName = str(box.gather()).rstrip().lower()
                     curses.curs_set(0)
+                    
+                    diceSides      = 4
+                    diceAmount     = 1
+                    points         = 0
+                    pointsMult     = 1.0
+                    pointsMultExpo = 1.15
+
+                    upgradeDice = 50
+                    upgradeExpo = 1.05
+                    moreDice    = 50
+                    moreExpo    = 1.2
+
+                    hundoDiceAmount  = 0
+                    thundoDiceAmount = 0
+                    mundoDiceAmount  = 0
+                    trundoDiceAmount = 0
+                    qindoDiceAmount  = 0
+
+                    rollLuck    = 1
+                    upgradeLuck = 200
+                    luckExpo    = 1.1
+
+                    storePriceOffset = 1.0
+                    diceAmountOffset = 1.0
+                    luckOffset       = 1.0
+                    multiplierOffset = 1.0
+
+                    hasHundo  = False
+                    hasThundo = False
+                    hasMundo  = False
+                    hasTrundo = False
+                    hasQindo  = False
+                    hasTree   = False
+
+                    fourOfAKind = 0
+                    cardPrice   = 10_000_000
+                    for i in cardFour.values():
+                            for j in i:
+                                i[j] = False
                     
                     stdscr.clear()
                     stdscr.refresh()
