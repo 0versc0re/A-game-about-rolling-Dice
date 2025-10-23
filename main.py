@@ -1,5 +1,6 @@
 # IMPORTS
-import json, sys
+import json
+import sys, os
 import random, curses
 from curses import wrapper
 from curses.textpad import Textbox
@@ -46,7 +47,7 @@ hasQindo  = False
 hasTree   = False
 
 # MISC
-gameVersion = "1.8.3.2"
+gameVersion = "1.8.3.3"
 saveName    = "defaultsave"
 
 # CARDS
@@ -305,102 +306,29 @@ def main(stdscr):
             
             stdscr.clear()
             stdscr.addstr(0, 0, "▛" + (WIDTH - 2) * "▀" + "▜", RED)
-            stdscr.addstr(1, 0, "▌" + cent("0 - New  Game") + "▐", RED)
-            stdscr.addstr(2, 0, "▌" + cent("1 - Load Game") + "▐", RED)
-            stdscr.addstr(3, 0, "▌" + cent("2 - Exit Game") + "▐", RED)
-            stdscr.addstr(4, 0, "▌" + cent("3 - Game info") + "▐", RED)
-            stdscr.addstr(5, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
+            stdscr.addstr(1, 0, "▌" + cent("0 - Exit   Game") + "▐", RED)
+            stdscr.addstr(2, 0, "▌" + cent("1 - Load   Game") + "▐", RED)
+            stdscr.addstr(3, 0, "▌" + cent("2 - New    Game") + "▐", RED)
+            stdscr.addstr(4, 0, "▌" + cent("3 - Info   Game") + "▐", RED)
+            stdscr.addstr(5, 0, "▌" + cent("C - Copy   Save") + "▐", RED)
+            stdscr.addstr(6, 0, "▌" + cent("R - Rename Save") + "▐", RED)
+            stdscr.addstr(7, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
             stdscr.refresh()
             
             choice = stdscr.getkey()
             
-            if choice == "0":           # NEW GAME
-                
-                stdscr.addstr(6,  0, "▌" + cent("Are you sure?") + "▐", RED)
-                stdscr.addstr(7,  0, "▛" + (WIDTH - 2) * "▀" + "▜", RED)
-                stdscr.addstr(8,  0, "▌" + cent("L - No ") + "▐", RED)
-                stdscr.addstr(9,  0, "▌" + cent("S - Yes") + "▐", RED)
-                stdscr.addstr(10, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
-                
-                choice = stdscr.getkey()
-                
-                if choice == "l":       # NO
-                    continue
-                    
-                elif choice == "s":     # YES
-                    
-                    stdscr.addstr(11, 0, "▌" + cent("Enter the Save Name") + "▐", RED)
-                    stdscr.addstr(12, 0, "▌ >" + (WIDTH - 4) * " " + "▐", RED)
-                    stdscr.addstr(13, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
-                    stdscr.refresh()
-                    
-                    curses.curs_set(1)
-                    win = curses.newwin(1, 100, 12, 4)
-                    box = Textbox(win)
-                    
-                    box.edit()
-                    saveName = str(box.gather()).rstrip().lower()
-                    curses.curs_set(0)
-                    
-                    diceSides      = 4
-                    diceAmount     = 1
-                    points         = 0
-                    pointsMult     = 1.0
-                    pointsMultExpo = 1.15
-
-                    upgradeDice = 50
-                    upgradeExpo = 1.05
-                    moreDice    = 50
-                    moreExpo    = 1.2
-
-                    hundoDiceAmount  = 0
-                    thundoDiceAmount = 0
-                    mundoDiceAmount  = 0
-                    trundoDiceAmount = 0
-                    qindoDiceAmount  = 0
-
-                    rollLuck    = 1
-                    upgradeLuck = 200
-                    luckExpo    = 1.1
-
-                    storePriceOffset = 1.0
-                    diceAmountOffset = 1.0
-                    luckOffset       = 1.0
-                    multiplierOffset = 1.0
-
-                    hasHundo  = False
-                    hasThundo = False
-                    hasMundo  = False
-                    hasTrundo = False
-                    hasQindo  = False
-                    hasTree   = False
-
-                    fourOfAKind = 0
-                    cardPrice   = 10_000_000
-                    for i in cardFour.values():
-                            for j in i:
-                                i[j] = False
-                    
-                    stdscr.clear()
-                    stdscr.refresh()
-                    Menu = False
-                    Play = True
-                
-                else:                   # INVALID
-                    stdscr.addstr(11, 0, "▌" + cent("Invalid choice!") + "▐", RED)
-                    stdscr.addstr(12, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
-                    stdscr.refresh()
-                    stdscr.getch()
+            if choice == "0":           # EXIT GAME
+                sys.exit()
             
             elif choice == "1":         # LOAD GAME
                 
-                stdscr.addstr(6, 0, "▌" + cent("Enter the Save Name") + "▐", RED)
-                stdscr.addstr(7, 0, "▌ >" + (WIDTH - 4) * " " + "▐", RED)
-                stdscr.addstr(8, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
+                stdscr.addstr(8,  0, "▌" + cent("Enter the Save Name") + "▐", RED)
+                stdscr.addstr(9,  0, "▌ >" + (WIDTH - 4) * " " + "▐", RED)
+                stdscr.addstr(10, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
                 stdscr.refresh()
                 
                 curses.curs_set(1)
-                win = curses.newwin(1, 100, 7, 4)
+                win = curses.newwin(1, 100, 9, 4)
                 box = Textbox(win)
                 
                 box.edit()
@@ -452,10 +380,10 @@ def main(stdscr):
                     cardPrice   = data["playing_cards"]["cardPrice"]
                     
                     # MISC
-                    saveName = data["game_info"]["saveName"]
+                    data["game_info"]["saveName"] = saveName
                     
-                    stdscr.addstr(9,  0, "▌" + cent("Welcome back!") + "▐", RED)
-                    stdscr.addstr(10, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
+                    stdscr.addstr(11, 0, "▌" + cent("Welcome back!") + "▐", RED)
+                    stdscr.addstr(12, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
                     stdscr.refresh()
                     stdscr.getch()
                         
@@ -463,17 +391,169 @@ def main(stdscr):
                     Play = True
                         
                 except OSError:
-                    stdscr.addstr(9,  0, "▌" + cent("Corrupt or missing file!") + "▐", RED)
-                    stdscr.addstr(10, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
+                    stdscr.addstr(11, 0, "▌" + cent("Corrupt or missing file!") + "▐", RED)
+                    stdscr.addstr(12, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
                     stdscr.refresh()
                     stdscr.getch()
             
-            elif choice == "2":         # EXIT GAME
-                sys.exit()
+            elif choice == "2":         # NEW GAME
+                
+                stdscr.addstr(8,  0, "▌" + cent("Are you sure?") + "▐", RED)
+                stdscr.addstr(9,  0, "▛" + (WIDTH - 2) * "▀" + "▜", RED)
+                stdscr.addstr(10, 0, "▌" + cent("L - No ") + "▐", RED)
+                stdscr.addstr(11, 0, "▌" + cent("S - Yes") + "▐", RED)
+                stdscr.addstr(12, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
+                
+                choice = stdscr.getkey()
+                
+                if choice == "l":       # NO
+                    continue
+                    
+                elif choice == "s":     # YES
+                    
+                    stdscr.addstr(13, 0, "▌" + cent("Enter the Save Name") + "▐", RED)
+                    stdscr.addstr(14, 0, "▌ >" + (WIDTH - 4) * " " + "▐", RED)
+                    stdscr.addstr(15, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
+                    stdscr.refresh()
+                    
+                    curses.curs_set(1)
+                    win = curses.newwin(1, 100, 14, 4)
+                    box = Textbox(win)
+                    
+                    box.edit()
+                    saveName = str(box.gather()).rstrip().lower()
+                    curses.curs_set(0)
+                    
+                    diceSides      = 4
+                    diceAmount     = 1
+                    points         = 0
+                    pointsMult     = 1.0
+                    pointsMultExpo = 1.15
 
+                    upgradeDice = 50
+                    upgradeExpo = 1.05
+                    moreDice    = 50
+                    moreExpo    = 1.2
+
+                    hundoDiceAmount  = 0
+                    thundoDiceAmount = 0
+                    mundoDiceAmount  = 0
+                    trundoDiceAmount = 0
+                    qindoDiceAmount  = 0
+
+                    rollLuck    = 1
+                    upgradeLuck = 200
+                    luckExpo    = 1.1
+
+                    storePriceOffset = 1.0
+                    diceAmountOffset = 1.0
+                    luckOffset       = 1.0
+                    multiplierOffset = 1.0
+
+                    hasHundo  = False
+                    hasThundo = False
+                    hasMundo  = False
+                    hasTrundo = False
+                    hasQindo  = False
+                    hasTree   = False
+
+                    fourOfAKind = 0
+                    cardPrice   = 10_000_000
+                    for i in cardFour.values():
+                            for j in i:
+                                i[j] = False
+                    
+                    stdscr.clear()
+                    stdscr.refresh()
+                    Menu = False
+                    Play = True
+                
+                else:                   # INVALID
+                    stdscr.addstr(13, 0, "▌" + cent("Invalid choice!") + "▐", RED)
+                    stdscr.addstr(14, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
+                    stdscr.refresh()
+                    stdscr.getch()
+            
             elif choice == "3":         # GAME INFO
                 Info = True
                 Menu = False
+
+            elif choice == "c":         # COPY SAVE
+                
+                stdscr.addstr(8,  0, "▌" + cent("Enter the Save Name") + "▐", RED)
+                stdscr.addstr(9,  0, "▌ >" + (WIDTH - 4) * " " + "▐", RED)
+                stdscr.addstr(10, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
+                stdscr.refresh()
+                
+                curses.curs_set(1)
+                win = curses.newwin(1, 100, 9, 4)
+                box = Textbox(win)
+                
+                box.edit()
+                tempName = str(box.gather()).rstrip().lower()
+                curses.curs_set(0)
+                
+                try:
+                    
+                    with open(f"{tempName}.json", "r") as f:
+                        json.load(f)
+                        
+                    os.popen(f"copy {tempName}.json {tempName}-copy.json")
+                    stdscr.addstr(11, 0, "▌" + cent(f"Copied {tempName}.json as {tempName}-copy.json.") + "▐", RED)
+                    stdscr.addstr(12, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
+                    stdscr.refresh()
+                    stdscr.getch()
+                
+                except OSError:
+                    
+                    stdscr.addstr(11, 0, "▌" + cent("No Save with that Name!") + "▐", RED)
+                    stdscr.addstr(12, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
+                    stdscr.refresh()
+                    stdscr.getch()
+
+            elif choice == "r":         # RENAME SAVE
+                
+                stdscr.addstr(8,  0, "▌" + cent("Enter the Save Name") + "▐", RED)
+                stdscr.addstr(9,  0, "▌ >" + (WIDTH - 4) * " " + "▐", RED)
+                stdscr.addstr(10, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
+                stdscr.refresh()
+                
+                curses.curs_set(1)
+                win = curses.newwin(1, 100, 9, 4)
+                box = Textbox(win)
+                box.edit()
+                tempName = str(box.gather()).rstrip().lower()
+                curses.curs_set(0)
+                
+                try:
+                    
+                    with open(f"{tempName}.json", "r") as f:
+                        json.load(f)
+                        
+                    stdscr.addstr(11, 0, "▌" + cent("Enter the New Save Name") + "▐", RED)
+                    stdscr.addstr(12, 0, "▌ >" + (WIDTH - 4) * " " + "▐", RED)
+                    stdscr.addstr(13, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
+                    stdscr.refresh()
+                    
+                    curses.curs_set(1)
+                    win = curses.newwin(1, 100, 12, 4)
+                    box = Textbox(win)
+                    box.edit()
+                    tempNewName = str(box.gather()).rstrip().lower()
+                    curses.curs_set(0)
+                        
+                    os.rename(f"{tempName}.json", f"{tempNewName}.json")
+                    stdscr.addstr(14, 0, "▌" + cent(f"Renamed {tempName}.json to {tempNewName}.json.") + "▐", RED)
+                    stdscr.addstr(15, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
+                    stdscr.refresh()
+                    stdscr.getch()
+                
+                except OSError:
+                    
+                    stdscr.addstr(11, 0, "▌" + cent("No Save with that Name!") + "▐", RED)
+                    stdscr.addstr(12, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
+                    stdscr.refresh()
+                    stdscr.getch()
 
         while Play:     # GAME PLAY
             
