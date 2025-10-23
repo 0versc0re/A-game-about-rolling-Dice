@@ -1,9 +1,9 @@
 # IMPORTS
-import json
-import sys, os
+import json, sys
 import random, curses
 from curses import wrapper
 from curses.textpad import Textbox
+from os import popen, rename
 # from pprint import pprint
 
 
@@ -47,7 +47,7 @@ hasQindo  = False
 hasTree   = False
 
 # MISC
-gameVersion = "1.8.3.3"
+gameVersion = "1.8.3.4"
 saveName    = "defaultsave"
 
 # CARDS
@@ -234,6 +234,7 @@ def chooseDiceAmount(stdscr, points: float, name: str, price: float, COLOR):
 
 def progressBar(percent: float, size: int):
     
+    percent = 1 if percent >= 1 else percent
     full = int(percent * size)
     empty = size - full
     bar = "█" * full + "░" * empty
@@ -284,21 +285,22 @@ def main(stdscr):
                 (1, 102), (102, 1), (2, 51), (51, 2), (3, 34), (34, 3), (6, 17), (17, 6),   # total 102
                 (1, 103), (103, 1)                                                          # total 103
             }
-    _, WIDTH   = stdscr.getmaxyx() # 156
-    cent       = lambda s: s.center(WIDTH - 2)
-    centHalf   = lambda s: s.center(int(WIDTH/2 - 2))
+    _, WIDTH   = stdscr.getmaxyx()
+    cent       = lambda c: c.center(WIDTH - 2)
+    centHalf   = lambda h: h.center(int(WIDTH/2 - 2))
     
-    # FULL        █
-    # HALF        ▒
-    # SOME        ░
-    # RIGHT       ▌
-    # LEFT        ▐
-    # UP          ▀
-    # DOWN        ▄
-    # TOPLEFT     ▛
-    # TOPRIGHT    ▜
-    # BOTTOMLEFT  ▙
-    # BOTTOMRIGHT ▟
+    # ASCII BLOCK CHARACTERS
+    # BLOCK  FULL     █
+    # BLOCK  HALF     ▒
+    # BLOCK  SOME     ░
+    # LINE   LEFT     ▐
+    # LINE   RIGHT    ▌
+    # BLOCK  TOP      ▀
+    # BLOCK  BOTTOM   ▄
+    # TOP    LEFT     ▛
+    # TOP    RIGHT    ▜
+    # BOTTOM LEFT     ▙
+    # BOTTOM RIGHT    ▟
     
     while True:
         
@@ -498,7 +500,7 @@ def main(stdscr):
                     with open(f"{tempName}.json", "r") as f:
                         json.load(f)
                         
-                    os.popen(f"copy {tempName}.json {tempName}-copy.json")
+                    popen(f"copy {tempName}.json {tempName}-copy.json")
                     stdscr.addstr(11, 0, "▌" + cent(f"Copied {tempName}.json as {tempName}-copy.json.") + "▐", RED)
                     stdscr.addstr(12, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
                     stdscr.refresh()
@@ -542,7 +544,7 @@ def main(stdscr):
                     tempNewName = str(box.gather()).rstrip().lower()
                     curses.curs_set(0)
                         
-                    os.rename(f"{tempName}.json", f"{tempNewName}.json")
+                    rename(f"{tempName}.json", f"{tempNewName}.json")
                     stdscr.addstr(14, 0, "▌" + cent(f"Renamed {tempName}.json to {tempNewName}.json.") + "▐", RED)
                     stdscr.addstr(15, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
                     stdscr.refresh()
@@ -584,7 +586,7 @@ def main(stdscr):
             stdscr.addstr(9,  0, "▌" + (WIDTH - 2) * " " + "▐", BLUE)
             stdscr.addstr(10, 0, "▌" + cent(f"Your lowest Dice roll: {round(rollLuck)}") + "▐", BLUE)
             stdscr.addstr(11, 0, "▌" + centHalf(f"Your current Multiplier: {round(pointsMult, 2)} MP"), BLUE)
-            stdscr.addstr(11, int(WIDTH/2 + 1), centHalf(f"Progress to the next Multiplier upgrade: {"0" if 1000 ** pointsMult - points < 0 else bigNumber(1000 ** pointsMult - points)} points") + "▐", BLUE)
+            stdscr.addstr(11, int(WIDTH/2 + 1), centHalf(f"Progress to the next Multiplier upgrade: {"0" if 1000 ** pointsMult - points < 0 else bigNumber(1000 ** pointsMult - points)} points ") + "▐", BLUE)
             stdscr.addstr(12, 0, "▌" + cent(progressBar(points / (1000 ** pointsMult), WIDTH - 2)) + "▐", BLUE)
             if points >= 1000 ** pointsMult: stdscr.addstr(13, 0, "▌" + cent("You have enough points to upgrade your Multiplier!") + "▐", BLUE)
             else:                            stdscr.addstr(13, 0, "▌" + (WIDTH - 2) * " " + "▐", BLUE)
