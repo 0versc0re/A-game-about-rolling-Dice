@@ -38,6 +38,7 @@ A way to convert old save files to new save files is:
 ## Things I may add to this game in the future
 
 + ~~Multiple save files~~
+  + Option to see all saves
 + Larger dice
   + Hundred
   + Thousand
@@ -45,4 +46,5 @@ A way to convert old save files to new save files is:
   + Trillion
   + Quintillion (NEWEST)
 + ~~Colors~~
+  + Only border colors
 + Modifications of existing cards (?)
