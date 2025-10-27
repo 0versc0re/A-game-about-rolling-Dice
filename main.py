@@ -716,6 +716,14 @@ def main(stdscr):
                         trundoDiceAmount = 0
                         qindoDiceAmount = 0
                         
+                        goldDiceAmount = 0
+                        goldDiceSides = 0
+                        goldHundoDiceAmount = 0
+                        goldThundoDiceAmount = 0
+                        goldMundoDiceAmount = 0
+                        goldTrundoDiceAmount = 0
+                        goldQindoDiceAmount = 0
+                        
                         rollLuck = 1
                         upgradeLuck = 200
                         luckExpo = 1.1
@@ -778,6 +786,14 @@ def main(stdscr):
                         mundoDiceAmount = 0
                         trundoDiceAmount = 0
                         qindoDiceAmount = 0
+                        
+                        goldDiceAmount = 0
+                        goldDiceSides = 0
+                        goldHundoDiceAmount = 0
+                        goldThundoDiceAmount = 0
+                        goldMundoDiceAmount = 0
+                        goldTrundoDiceAmount = 0
+                        goldQindoDiceAmount = 0
                             
                         rollLuck = 1
                         upgradeLuck = 200
