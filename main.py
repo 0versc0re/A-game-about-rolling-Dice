@@ -7,9 +7,7 @@ from os import popen, rename
 # from pprint import pprint
 
 
-# DICE VARIABLES
-diceSides      = 4
-diceAmount     = 1
+# POINT VARIABLES
 points         = 0
 pointsMult     = 1.0
 pointsMultExpo = 1.15
@@ -20,12 +18,23 @@ upgradeExpo = 1.05
 moreDice    = 50
 moreExpo    = 1.2
 
-# BIG DICE VARIABLES
+# REGULAR DICE VARIABLES
+diceSides        = 4
+diceAmount       = 1
 hundoDiceAmount  = 0
 thundoDiceAmount = 0
 mundoDiceAmount  = 0
 trundoDiceAmount = 0
 qindoDiceAmount  = 0
+
+# GOLD DICE VARIABLES
+goldDiceSides        = 0
+goldDiceAmount       = 0
+goldHundoDiceAmount  = 0
+goldThundoDiceAmount = 0
+goldMundoDiceAmount  = 0
+goldTrundoDiceAmount = 0
+goldQindoDiceAmount  = 0
 
 # LUCK VARIABLES
 rollLuck    = 1
@@ -47,7 +56,7 @@ hasQindo  = False
 hasTree   = False
 
 # MISC
-gameVersion = "1.8.3.4"
+gameVersion = "1.8.4"
 saveName    = "defaultsave"
 
 # CARDS
@@ -97,27 +106,38 @@ def saveGame(name: str):
     saveData = {
         "game_info": {
             "gameVersion": gameVersion,
-            "saveName": saveName
+            "saveName":    saveName
         },
         "dice": {
-            "diceSides":        diceSides,
-            "diceAmount":       diceAmount,
-            "hundoDiceAmount":  hundoDiceAmount,
-            "thundoDiceAmount": thundoDiceAmount,
-            "mundoDiceAmount":  mundoDiceAmount,
-            "trundoDiceAmount": trundoDiceAmount,
-            "qindoDiceAmount":  qindoDiceAmount
+            "regular": {
+                "diceSides":            diceSides,
+                "diceAmount":           diceAmount,
+                "hundoDiceAmount":      hundoDiceAmount,
+                "thundoDiceAmount":     thundoDiceAmount,
+                "mundoDiceAmount":      mundoDiceAmount,
+                "trundoDiceAmount":     trundoDiceAmount,
+                "qindoDiceAmount":      qindoDiceAmount
+            },
+            "gold": {
+                "goldDiceSides":        goldDiceSides,
+                "goldDiceAmount":       goldDiceAmount,
+                "goldHundoDiceAmount":  goldHundoDiceAmount,
+                "goldThundoDiceAmount": goldThundoDiceAmount,
+                "goldMundoDiceAmount":  goldMundoDiceAmount,
+                "goldTrundoDiceAmount": goldTrundoDiceAmount,
+                "goldQindoDiceAmount":  goldQindoDiceAmount
+            }
         },
         "points": {
-            "points":           points,
-            "pointsMult":       pointsMult,
-            "pointsMultExpo":   pointsMultExpo
+            "points":         points,
+            "pointsMult":     pointsMult,
+            "pointsMultExpo": pointsMultExpo
         },
         "store": {
-            "upgradeDice":      upgradeDice,
-            "moreDice":         moreDice,
-            "rollLuck":         rollLuck,
-            "upgradeLuck":      upgradeLuck
+            "upgradeDice": upgradeDice,
+            "moreDice":    moreDice,
+            "rollLuck":    rollLuck,
+            "upgradeLuck": upgradeLuck
         },
         "offset": {
             "storePriceOffset": storePriceOffset,
@@ -126,17 +146,17 @@ def saveGame(name: str):
             "multiplierOffset": multiplierOffset
         },
         "has": {
-            "hasHundo":         hasHundo,
-            "hasThundo":        hasThundo,
-            "hasMundo":         hasMundo,
-            "hasTrundo":        hasTrundo,
-            "hasQindo":         hasQindo,
-            "hasTree":          hasTree
+            "hasHundo":  hasHundo,
+            "hasThundo": hasThundo,
+            "hasMundo":  hasMundo,
+            "hasTrundo": hasTrundo,
+            "hasQindo":  hasQindo,
+            "hasTree":   hasTree
         },
         "playing_cards": {
-            "cardFour":         cardFour,
-            "fourOfAKind":      fourOfAKind,
-            "cardPrice":        cardPrice
+            "cardFour":    cardFour,
+            "fourOfAKind": fourOfAKind,
+            "cardPrice":   cardPrice
         }
     }
     
@@ -160,25 +180,34 @@ def bigNumber(number: float):
 
     return str(round(number / (1000 ** len(numberSuffix)), 2)) + numberSuffix[-1]
 
-def rollDice(stdscr, amount: int, sides: float, scale: float, offset: float, mult: float, luck: float, cards: float, four: float, COLOR):
+def rollDice(stdscr, regular: int, gold: int, sides: float, scale: float, offset: float, mult: float, luck: float, cards: float, four: float, COLOR):
     
     _, WIDTH = stdscr.getmaxyx() # 156
     cent = lambda s: s.center(WIDTH - 2)
-    
+
     total = 0
-    totalRolls = amount * offset if amount < 1_000_000 else amount * offset / 1_000_000
+    totalRolls = regular * offset if regular < 1_000_000 else regular * offset / 1_000_000
     for _ in range(int(totalRolls)):
         roll = random.randint(int(luck), int(sides)) if luck < sides else sides
         total += roll
-    totalPoints = total * mult * cards * four * scale if amount < 1_000_000 else total * mult * cards * four * scale * 1_000_000
+    totalPoints = total * mult * cards * four * scale if regular < 1_000_000 else total * mult * cards * four * scale * 1_000_000
+    
+    if gold > 0:
+        goldTotal = 0
+        totalRolls = gold * offset if gold < 1_000_000 else gold * offset / 1_000_000
+        for _ in range(int(totalRolls)):
+            roll = random.randint(int(luck), int(sides)) if luck < sides else sides
+            goldTotal += roll
+        totalPoints += goldTotal * mult * cards * four * scale * 2 if gold < 1_000_000 else goldTotal * mult * cards * four * scale * 2 * 1_000_000
         
-    stdscr.addstr(30, 0, "▌" + cent(f"You rolled your Dice {bigNumber(round(amount * offset))} ({bigNumber(round(amount))}) times!") + "▐", COLOR)
-    stdscr.addstr(31, 0, "▛" + (WIDTH - 2) * "▀" + "▜", COLOR)
-    stdscr.addstr(32, 0, "▌" + cent(f"You rolled this much: {bigNumber(total * scale)}") + "▐", COLOR)
-    stdscr.addstr(33, 0, "▌" + cent(f"Your current Multiplier: {round(mult, 2)} MP") + "▐", COLOR)
-    stdscr.addstr(34, 0, "▌" + cent(f"Your Card and Four of a Kind Multipliers: {round(cards, 2)}, {round(four, 2)}") + "▐", COLOR)
-    stdscr.addstr(35, 0, "▌" + cent(f"You now have {bigNumber(totalPoints)} more points.") + "▐", COLOR)
-    stdscr.addstr(36, 0, "▙" + (WIDTH - 2) * "▄" + "▟", COLOR)
+    stdscr.addstr(30, 0, "▌" + cent(f"You rolled your Dice {bigNumber(round(regular * offset))} ({bigNumber(round(regular))}) times!") + "▐", COLOR)
+    stdscr.addstr(31, 0, "▌" + cent(f"You rolled your Golden Dice {bigNumber(round(gold * offset))} ({bigNumber(round(gold))}) times!") + "▐", COLOR)
+    stdscr.addstr(32, 0, "▛" + (WIDTH - 2) * "▀" + "▜", COLOR)
+    stdscr.addstr(33, 0, "▌" + cent(f"You rolled this much: {bigNumber((total + goldTotal) * scale)}") + "▐", COLOR)
+    stdscr.addstr(34, 0, "▌" + cent(f"Your current Multiplier: {round(mult, 2)} MP") + "▐", COLOR)
+    stdscr.addstr(35, 0, "▌" + cent(f"Your Card and Four of a Kind Multipliers: {round(cards, 2)}, {round(four, 2)}") + "▐", COLOR)
+    stdscr.addstr(36, 0, "▌" + cent(f"You now have {bigNumber(totalPoints)} more points.") + "▐", COLOR)
+    stdscr.addstr(37, 0, "▙" + (WIDTH - 2) * "▄" + "▟", COLOR)
     stdscr.refresh()
     stdscr.getch()
     
@@ -230,6 +259,7 @@ def chooseDiceAmount(stdscr, points: float, name: str, price: float, COLOR):
     curses.curs_set(0)
     stdscr.refresh()
     stdscr.getch()
+    
     return choice, choice * price
 
 def progressBar(percent: float, size: int):
@@ -251,9 +281,10 @@ def main(stdscr):
     Cards = False
 
     # GLOBAL VARIABLES
-    global diceSides, diceAmount, points, pointsMult, pointsMultExpo
+    global diceSides, diceAmount, goldDiceSides, goldDiceAmount, points, pointsMult, pointsMultExpo
     global upgradeDice, upgradeExpo, moreDice, moreExpo, rollLuck, upgradeLuck, luckExpo
     global hundoDiceAmount, thundoDiceAmount, mundoDiceAmount, trundoDiceAmount, qindoDiceAmount
+    global goldHundoDiceAmount, goldThundoDiceAmount, goldMundoDiceAmount, goldTrundoDiceAmount, goldQindoDiceAmount
     global storePriceOffset, diceAmountOffset, luckOffset, multiplierOffset
     global hasHundo, hasThundo, hasMundo, hasTrundo, hasQindo, hasTree
     global gameVersion, saveName, cardFour, fourOfAKind, cardPrice
@@ -319,10 +350,10 @@ def main(stdscr):
             
             choice = stdscr.getkey()
             
-            if choice == "0":           # EXIT GAME
+            if choice == "0":           # EXIT   GAME
                 sys.exit()
             
-            elif choice == "1":         # LOAD GAME
+            elif choice == "1":         # LOAD   GAME
                 
                 stdscr.addstr(8,  0, "▌" + cent("Enter the Save Name") + "▐", RED)
                 stdscr.addstr(9,  0, "▌ >" + (WIDTH - 4) * " " + "▐", RED)
@@ -342,14 +373,23 @@ def main(stdscr):
                     with open(f"{saveName}.json", "r") as f:
                         data = json.load(f)
                     
-                    # DICE
-                    diceSides        = data["dice"]["diceSides"]
-                    diceAmount       = data["dice"]["diceAmount"]
-                    hundoDiceAmount  = data["dice"]["hundoDiceAmount"]
-                    thundoDiceAmount = data["dice"]["thundoDiceAmount"]
-                    mundoDiceAmount  = data["dice"]["mundoDiceAmount"]
-                    trundoDiceAmount = data["dice"]["trundoDiceAmount"]
-                    qindoDiceAmount  = data["dice"]["qindoDiceAmount"]
+                    # REGULAR DICE
+                    diceSides        = data["dice"]["regular"]["diceSides"]
+                    diceAmount       = data["dice"]["regular"]["diceAmount"]
+                    hundoDiceAmount  = data["dice"]["regular"]["hundoDiceAmount"]
+                    thundoDiceAmount = data["dice"]["regular"]["thundoDiceAmount"]
+                    mundoDiceAmount  = data["dice"]["regular"]["mundoDiceAmount"]
+                    trundoDiceAmount = data["dice"]["regular"]["trundoDiceAmount"]
+                    qindoDiceAmount  = data["dice"]["regular"]["qindoDiceAmount"]
+                    
+                    # GOLD DICE
+                    goldDiceSides        = data["dice"]["gold"]["goldDiceSides"]
+                    goldDiceAmount       = data["dice"]["gold"]["goldDiceAmount"]
+                    goldHundoDiceAmount  = data["dice"]["gold"]["goldHundoDiceAmount"]
+                    goldThundoDiceAmount = data["dice"]["gold"]["goldThundoDiceAmount"]
+                    goldMundoDiceAmount  = data["dice"]["gold"]["goldMundoDiceAmount"]
+                    goldTrundoDiceAmount = data["dice"]["gold"]["goldTrundoDiceAmount"]
+                    goldQindoDiceAmount  = data["dice"]["gold"]["goldQindoDiceAmount"]
                     
                     # POINTS
                     points         = data["points"]["points"]
@@ -398,7 +438,7 @@ def main(stdscr):
                     stdscr.refresh()
                     stdscr.getch()
             
-            elif choice == "2":         # NEW GAME
+            elif choice == "2":         # NEW    GAME
                 
                 stdscr.addstr(8,  0, "▌" + cent("Are you sure?") + "▐", RED)
                 stdscr.addstr(9,  0, "▛" + (WIDTH - 2) * "▀" + "▜", RED)
@@ -476,11 +516,11 @@ def main(stdscr):
                     stdscr.refresh()
                     stdscr.getch()
             
-            elif choice == "3":         # GAME INFO
+            elif choice == "3":         # INFO   GAME
                 Info = True
                 Menu = False
 
-            elif choice == "c":         # COPY SAVE
+            elif choice == "c":         # COPY   SAVE
                 
                 stdscr.addstr(8,  0, "▌" + cent("Enter the Save Name") + "▐", RED)
                 stdscr.addstr(9,  0, "▌ >" + (WIDTH - 4) * " " + "▐", RED)
@@ -563,22 +603,33 @@ def main(stdscr):
             stdscr.clear()
             
             count = sum(v for k in cardFour.values() for v in k.values())
-            cardPoints = 1 + count/100
-            fourPoints = 1 + fourOfAKind/100
+            cardPoints = 1 + count / 100
+            fourPoints = 1 + fourOfAKind / 100
             
             # DICE DISPLAY
             stdscr.addstr(0, 0, "▛" + (WIDTH - 2) * "▀" + "▜", BLUE)
-            stdscr.addstr(1, 0, "▌" + cent(f"You have {round(diceAmount * diceAmountOffset)} ({round(diceAmount)}) {diceSides} sided Dice") + "▐", BLUE)
-            if hasMundo:                          stdscr.addstr(2, 0, "▌" + cent(f"You have {bigNumber(round(hundoDiceAmount * diceAmountOffset))} ({bigNumber(round(hundoDiceAmount))}) Hundred sided Dice") + "▐", BLUE)
-            else:                                 stdscr.addstr(2, 0, "▌" + (WIDTH - 2) * " " + "▐", BLUE)
-            if thundoDiceAmount > 0 or hasThundo: stdscr.addstr(3, 0, "▌" + cent(f"You have {bigNumber(round(thundoDiceAmount * diceAmountOffset))} ({bigNumber(round(thundoDiceAmount))}) Thousand sided Dice") + "▐", BLUE)
-            else:                                 stdscr.addstr(3, 0, "▌" + (WIDTH - 2) * " " + "▐", BLUE)
-            if mundoDiceAmount > 0 or hasMundo:   stdscr.addstr(4, 0, "▌" + cent(f"You have {bigNumber(round(mundoDiceAmount * diceAmountOffset))} ({bigNumber(round(mundoDiceAmount))}) Million sided Dice") + "▐", BLUE)
-            else:                                 stdscr.addstr(4, 0, "▌" + (WIDTH - 2) * " " + "▐", BLUE)
-            if trundoDiceAmount > 0 or hasTrundo: stdscr.addstr(5, 0, "▌" + cent(f"You have {bigNumber(round(trundoDiceAmount * diceAmountOffset))} ({bigNumber(round(trundoDiceAmount))}) Trillion sided Dice") + "▐", BLUE)
-            else:                                 stdscr.addstr(5, 0, "▌" + (WIDTH - 2) * " " + "▐", BLUE)
-            if qindoDiceAmount > 0 or hasQindo:   stdscr.addstr(6, 0, "▌" + cent(f"You have {bigNumber(round(qindoDiceAmount * diceAmountOffset))} ({bigNumber(round(qindoDiceAmount))}) Quintillion sided Dice") + "▐", BLUE)
-            else:                                 stdscr.addstr(6, 0, "▌" + (WIDTH - 2) * " " + "▐", BLUE)
+            stdscr.addstr(1, 0, "▌" + centHalf(f"You have {round(diceAmount * diceAmountOffset)} ({round(diceAmount)}) {diceSides} sided Dice"), BLUE)
+            stdscr.addstr(1, int(WIDTH/2 + 1), centHalf(f"You have {round(goldDiceAmount * diceAmountOffset)} ({round(goldDiceAmount)}) {goldDiceSides} sided Golden Dice") + "▐", BLUE)
+            if hasMundo: 
+                    stdscr.addstr(2, 0, "▌" + centHalf(f"You have {bigNumber(round(hundoDiceAmount * diceAmountOffset))} ({bigNumber(round(hundoDiceAmount))}) Hundred sided Dice"), BLUE)
+                    stdscr.addstr(2, int(WIDTH/2 + 1), centHalf(f"You have {bigNumber(round(goldHundoDiceAmount * diceAmountOffset))} ({bigNumber(round(goldHundoDiceAmount))}) Hundred sided Golden Dice") + "▐", BLUE)
+            else:   stdscr.addstr(2, 0, "▌" + (WIDTH - 2) * " " + "▐", BLUE)
+            if thundoDiceAmount > 0 or hasThundo:
+                    stdscr.addstr(3, 0, "▌" + centHalf(f"You have {bigNumber(round(thundoDiceAmount * diceAmountOffset))} ({bigNumber(round(thundoDiceAmount))}) Thousand sided Dice"), BLUE)
+                    stdscr.addstr(3, int(WIDTH/2 + 1), centHalf(f"You have {bigNumber(round(goldThundoDiceAmount * diceAmountOffset))} ({bigNumber(round(goldThundoDiceAmount))}) Thousand sided Golden Dice") + "▐", BLUE)
+            else:   stdscr.addstr(3, 0, "▌" + (WIDTH - 2) * " " + "▐", BLUE)
+            if mundoDiceAmount > 0 or hasMundo:
+                    stdscr.addstr(4, 0, "▌" + centHalf(f"You have {bigNumber(round(mundoDiceAmount * diceAmountOffset))} ({bigNumber(round(mundoDiceAmount))}) Million sided Dice"), BLUE)
+                    stdscr.addstr(4, int(WIDTH/2 + 1), centHalf(f"You have {bigNumber(round(goldMundoDiceAmount * diceAmountOffset))} ({bigNumber(round(goldMundoDiceAmount))}) Million sided Golden Dice") + "▐", BLUE)
+            else:   stdscr.addstr(4, 0, "▌" + (WIDTH - 2) * " " + "▐", BLUE)
+            if trundoDiceAmount > 0 or hasTrundo:
+                    stdscr.addstr(5, 0, "▌" + centHalf(f"You have {bigNumber(round(trundoDiceAmount * diceAmountOffset))} ({bigNumber(round(trundoDiceAmount))}) Trillion sided Dice"), BLUE)
+                    stdscr.addstr(5, int(WIDTH/2 + 1), centHalf(f"You have {bigNumber(round(goldTrundoDiceAmount * diceAmountOffset))} ({bigNumber(round(goldTrundoDiceAmount))}) Trillion sided Golden Dice") + "▐", BLUE)
+            else:   stdscr.addstr(5, 0, "▌" + (WIDTH - 2) * " " + "▐", BLUE)
+            if qindoDiceAmount > 0 or hasQindo:
+                    stdscr.addstr(6, 0, "▌" + centHalf(f"You have {bigNumber(round(qindoDiceAmount * diceAmountOffset))} ({bigNumber(round(qindoDiceAmount))}) Quintillion sided Dice"), BLUE)
+                    stdscr.addstr(6, int(WIDTH/2 + 1), centHalf(f"You have {bigNumber(round(goldQindoDiceAmount * diceAmountOffset))} ({bigNumber(round(goldQindoDiceAmount))}) Quintillion sided Golden Dice") + "▐", BLUE)
+            else:   stdscr.addstr(6, 0, "▌" + (WIDTH - 2) * " " + "▐", BLUE)
             
             # POINTS, CARDS, LUCK AND MULTIPLIER DISPLAY
             stdscr.addstr(7,  0, "▙" + (WIDTH - 2) * "▄" + "▟", BLUE)
@@ -753,27 +804,27 @@ def main(stdscr):
                         stdscr.getch()
             
             elif choice == "4":     # ROLL DICE
-                points += rollDice(stdscr, diceAmount, diceSides, 1, diceAmountOffset, pointsMult, rollLuck, cardPoints, fourPoints, BLUE)
+                points += rollDice(stdscr, diceAmount, goldDiceAmount, diceSides, 1, diceAmountOffset, pointsMult, rollLuck, cardPoints, fourPoints, BLUE)
             
             elif choice == "5":     # ROLL HUNDO
                 if hundoDiceAmount > 0:
-                    points += rollDice(stdscr, hundoDiceAmount, 100, 1, diceAmountOffset, pointsMult, rollLuck, cardPoints, fourPoints, BLUE)
+                    points += rollDice(stdscr, hundoDiceAmount, goldHundoDiceAmount, 100, 1, diceAmountOffset, pointsMult, rollLuck, cardPoints, fourPoints, BLUE)
                     
             elif choice == "6":     # ROLL THUNDO
                 if thundoDiceAmount > 0:
-                    points += rollDice(stdscr, thundoDiceAmount, 1000, 1, diceAmountOffset, pointsMult, rollLuck, cardPoints, fourPoints, BLUE)
+                    points += rollDice(stdscr, thundoDiceAmount, goldThundoDiceAmount, 1000, 1, diceAmountOffset, pointsMult, rollLuck, cardPoints, fourPoints, BLUE)
             
             elif choice == "7":     # ROLL MUNDO
                 if mundoDiceAmount > 0:
-                    points += rollDice(stdscr, mundoDiceAmount, 1_000_000, 1, diceAmountOffset, pointsMult, rollLuck, cardPoints, fourPoints, BLUE)
+                    points += rollDice(stdscr, mundoDiceAmount, goldMundoDiceAmount, 1_000_000, 1, diceAmountOffset, pointsMult, rollLuck, cardPoints, fourPoints, BLUE)
                     
             elif choice == "8":     # ROLL TRUNDO
                 if trundoDiceAmount > 0:
-                    points += rollDice(stdscr, trundoDiceAmount, 1_000_000, 1_000_000, diceAmountOffset, pointsMult, rollLuck, cardPoints, fourPoints, BLUE)
+                    points += rollDice(stdscr, trundoDiceAmount, goldTrundoDiceAmount, 1_000_000, 1_000_000, diceAmountOffset, pointsMult, rollLuck, cardPoints, fourPoints, BLUE)
             
             elif choice == "9":     # ROLL QINDO
                 if qindoDiceAmount > 0:
-                    points += rollDice(stdscr, qindoDiceAmount, 1_000_000, 1e12, diceAmountOffset, pointsMult, rollLuck, cardPoints, fourPoints, BLUE)
+                    points += rollDice(stdscr, qindoDiceAmount, goldQindoDiceAmount, 1_000_000, 1e12, diceAmountOffset, pointsMult, rollLuck, cardPoints, fourPoints, BLUE)
             
             elif choice == "t":     # UPGRADE TREE
                 if points >= 1e15 or hasTree:
@@ -801,17 +852,28 @@ def main(stdscr):
             
             # DICE DISPLAY
             stdscr.addstr(0, 0, "▛" + (WIDTH - 2) * "▀" + "▜", YELLOW)
-            stdscr.addstr(1, 0, "▌" + cent(f"You have {round(diceAmount * diceAmountOffset)} ({round(diceAmount)}) {diceSides} sided Dice") + "▐", YELLOW)
-            if hasMundo:                          stdscr.addstr(2, 0, "▌" + cent(f"You have {bigNumber(round(hundoDiceAmount * diceAmountOffset))} ({bigNumber(round(hundoDiceAmount))}) Hundred sided Dice") + "▐", YELLOW)
-            else:                                 stdscr.addstr(2, 0, "▌" + (WIDTH - 2) * " " + "▐", YELLOW)
-            if thundoDiceAmount > 0 or hasThundo: stdscr.addstr(3, 0, "▌" + cent(f"You have {bigNumber(round(thundoDiceAmount * diceAmountOffset))} ({bigNumber(round(thundoDiceAmount))}) Thousand sided Dice") + "▐", YELLOW)
-            else:                                 stdscr.addstr(3, 0, "▌" + (WIDTH - 2) * " " + "▐", YELLOW)
-            if mundoDiceAmount > 0 or hasMundo:   stdscr.addstr(4, 0, "▌" + cent(f"You have {bigNumber(round(mundoDiceAmount * diceAmountOffset))} ({bigNumber(round(mundoDiceAmount))}) Million sided Dice") + "▐", YELLOW)
-            else:                                 stdscr.addstr(4, 0, "▌" + (WIDTH - 2) * " " + "▐", YELLOW)
-            if trundoDiceAmount > 0 or hasTrundo: stdscr.addstr(5, 0, "▌" + cent(f"You have {bigNumber(round(trundoDiceAmount * diceAmountOffset))} ({bigNumber(round(trundoDiceAmount))}) Trillion sided Dice") + "▐", YELLOW)
-            else:                                 stdscr.addstr(5, 0, "▌" + (WIDTH - 2) * " " + "▐", YELLOW)
-            if qindoDiceAmount > 0 or hasQindo:   stdscr.addstr(6, 0, "▌" + cent(f"You have {bigNumber(round(qindoDiceAmount * diceAmountOffset))} ({bigNumber(round(qindoDiceAmount))}) Quintillion sided Dice") + "▐", YELLOW)
-            else:                                 stdscr.addstr(6, 0, "▌" + (WIDTH - 2) * " " + "▐", YELLOW)
+            stdscr.addstr(1, 0, "▌" + centHalf(f"You have {round(diceAmount * diceAmountOffset)} ({round(diceAmount)}) {diceSides} sided Dice"), YELLOW)
+            stdscr.addstr(1, int(WIDTH/2 + 1), centHalf(f"You have {round(goldDiceAmount * diceAmountOffset)} ({round(goldDiceAmount)}) {goldDiceSides} sided Golden Dice") + "▐", YELLOW)
+            if hasMundo: 
+                    stdscr.addstr(2, 0, "▌" + centHalf(f"You have {bigNumber(round(hundoDiceAmount * diceAmountOffset))} ({bigNumber(round(hundoDiceAmount))}) Hundred sided Dice"), YELLOW)
+                    stdscr.addstr(2, int(WIDTH/2 + 1), centHalf(f"You have {bigNumber(round(goldHundoDiceAmount * diceAmountOffset))} ({bigNumber(round(goldHundoDiceAmount))}) Hundred sided Golden Dice") + "▐", YELLOW)
+            else:   stdscr.addstr(2, 0, "▌" + (WIDTH - 2) * " " + "▐", YELLOW)
+            if thundoDiceAmount > 0 or hasThundo:
+                    stdscr.addstr(3, 0, "▌" + centHalf(f"You have {bigNumber(round(thundoDiceAmount * diceAmountOffset))} ({bigNumber(round(thundoDiceAmount))}) Thousand sided Dice"), YELLOW)
+                    stdscr.addstr(3, int(WIDTH/2 + 1), centHalf(f"You have {bigNumber(round(goldThundoDiceAmount * diceAmountOffset))} ({bigNumber(round(goldThundoDiceAmount))}) Thousand sided Golden Dice") + "▐", YELLOW)
+            else:   stdscr.addstr(3, 0, "▌" + (WIDTH - 2) * " " + "▐", YELLOW)
+            if mundoDiceAmount > 0 or hasMundo:
+                    stdscr.addstr(4, 0, "▌" + centHalf(f"You have {bigNumber(round(mundoDiceAmount * diceAmountOffset))} ({bigNumber(round(mundoDiceAmount))}) Million sided Dice"), YELLOW)
+                    stdscr.addstr(4, int(WIDTH/2 + 1), centHalf(f"You have {bigNumber(round(goldMundoDiceAmount * diceAmountOffset))} ({bigNumber(round(goldMundoDiceAmount))}) Million sided Golden Dice") + "▐", YELLOW)
+            else:   stdscr.addstr(4, 0, "▌" + (WIDTH - 2) * " " + "▐", YELLOW)
+            if trundoDiceAmount > 0 or hasTrundo:
+                    stdscr.addstr(5, 0, "▌" + centHalf(f"You have {bigNumber(round(trundoDiceAmount * diceAmountOffset))} ({bigNumber(round(trundoDiceAmount))}) Trillion sided Dice"), YELLOW)
+                    stdscr.addstr(5, int(WIDTH/2 + 1), centHalf(f"You have {bigNumber(round(goldTrundoDiceAmount * diceAmountOffset))} ({bigNumber(round(goldTrundoDiceAmount))}) Trillion sided Golden Dice") + "▐", YELLOW)
+            else:   stdscr.addstr(5, 0, "▌" + (WIDTH - 2) * " " + "▐", YELLOW)
+            if qindoDiceAmount > 0 or hasQindo:
+                    stdscr.addstr(6, 0, "▌" + centHalf(f"You have {bigNumber(round(qindoDiceAmount * diceAmountOffset))} ({bigNumber(round(qindoDiceAmount))}) Quintillion sided Dice"), YELLOW)
+                    stdscr.addstr(6, int(WIDTH/2 + 1), centHalf(f"You have {bigNumber(round(goldQindoDiceAmount * diceAmountOffset))} ({bigNumber(round(goldQindoDiceAmount))}) Quintillion sided Golden Dice") + "▐", YELLOW)
+            else:   stdscr.addstr(6, 0, "▌" + (WIDTH - 2) * " " + "▐", YELLOW)
             
             # POINTS AND LUCK DISPLAY
             stdscr.addstr(7,  0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
@@ -846,10 +908,17 @@ def main(stdscr):
             elif choice == "1":         # UPGRADE DICE
                 
                 if points >= (upgradeDice * diceAmount) / storePriceOffset:
+                    
                     points -= (upgradeDice * diceAmount) / storePriceOffset
                     upgradeDice = upgradeDice ** upgradeExpo
-                    diceSides += 1
-                    stdscr.addstr(21, 0, "▌" + cent(f"You now have {round(diceAmount * diceAmountOffset)} dice with {diceSides} sides each.") + "▐", YELLOW)
+                    
+                    if random.randint(1, 50) != 1:
+                        diceSides += 1
+                        stdscr.addstr(21, 0, "▌" + cent(f"You now have {round(diceAmount * diceAmountOffset)} Dice with {diceSides} sides each.") + "▐", YELLOW)
+                    else:
+                        goldDiceSides += 1
+                        stdscr.addstr(21, 0, "▌" + cent(f"You now have {round(goldDiceAmount * diceAmountOffset)} Dice with {goldDiceSides} sides each.") + "▐", YELLOW)
+                        
                     stdscr.addstr(22, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
                     stdscr.refresh()
                     stdscr.getch()
@@ -863,10 +932,17 @@ def main(stdscr):
             elif choice == "2":         # BUY MORE DICE
                 
                 if points >= (moreDice * 1.5) / storePriceOffset:
+                    
                     points -= (moreDice * 1.5) / storePriceOffset
                     moreDice = moreDice ** moreExpo
-                    diceAmount += 1
-                    stdscr.addstr(21, 0, "▌" + cent(f"You now have {round(diceAmount * diceAmountOffset)} dice with {diceSides} sides each.") + "▐", YELLOW)
+                    
+                    if random.randint(1, 50) != 1:
+                        diceAmount += 1
+                        stdscr.addstr(21, 0, "▌" + cent(f"You now have {round(diceAmount * diceAmountOffset)} Dice with {diceSides} sides each.") + "▐", YELLOW)
+                    else:
+                        goldDiceAmount += 1
+                        stdscr.addstr(21, 0, "▌" + cent(f"You now have {round(goldDiceAmount * diceAmountOffset)} Gold Dice with {goldDiceSides} sides each.") + "▐", YELLOW)
+                    
                     stdscr.addstr(22, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
                     stdscr.refresh()
                     stdscr.getch()
@@ -916,18 +992,21 @@ def main(stdscr):
                         
                         if (diceAmount, diceSides) in hundoPairs:
                             
-                            hundoDiceAmount += 1
                             diceSides = 4
                             diceAmount = 1
-                            
                             upgradeDice = 50
                             upgradeExpo = 1.05
                             moreDice = 50
                             moreExpo = 1.2
-                            
                             hasHundo = True
                             
-                            stdscr.addstr(32, 0, "▌" + cent("Welcome your new Hundred sided Die!") + "▐", YELLOW)
+                            if random.randit(1, 200) != 1:
+                                hundoDiceAmount += 1
+                                stdscr.addstr(32, 0, "▌" + cent("Welcome your new Hundred sided Die!") + "▐", YELLOW)
+                            else:
+                                goldHundoDiceAmount += 1
+                                stdscr.addstr(32, 0, "▌" + cent("Welcome your new Golden Hundred sided Die!") + "▐", YELLOW)
+                                
                             stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
@@ -941,12 +1020,16 @@ def main(stdscr):
                         
                         if points >= 12_000:
                             
-                            hundoDiceAmount += 1
                             points -= 12_000
-                            
                             hasHundo = True
                             
-                            stdscr.addstr(32, 0, "▌" + cent("Welcome your new Hundred sided Die!") + "▐", YELLOW)
+                            if random.randit(1, 200) != 1:
+                                hundoDiceAmount += 1
+                                stdscr.addstr(32, 0, "▌" + cent("Welcome your new Hundred sided Die!") + "▐", YELLOW)
+                            else:
+                                goldHundoDiceAmount += 1
+                                stdscr.addstr(32, 0, "▌" + cent("Welcome your new Golden Hundred sided Die!") + "▐", YELLOW)
+                                
                             stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
@@ -959,8 +1042,10 @@ def main(stdscr):
                     elif choice == "3":         # CHOOSE HOW MANY DICE
                         
                         dice, spent = chooseDiceAmount(stdscr, points, "Hundred", 12_000, YELLOW)
-                        hundoDiceAmount += dice
                         points -= spent
+                        for i in range(dice):
+                            if random.randint(1, 50) != 1: hundoDiceAmount += 1
+                            else:                           goldHundoDiceAmount += 1
                         hasHundo = True
 
                     elif choice == "0":         # NOTHING
@@ -993,12 +1078,16 @@ def main(stdscr):
                         
                         if hundoDiceAmount >= 10:
                             
-                            thundoDiceAmount += 1
                             hundoDiceAmount -= 10
-                            
                             hasThundo = True
                             
-                            stdscr.addstr(32, 0, "▌" + cent("Stand ready for my arrival, worm.") + "▐", YELLOW)
+                            if random.randit(1, 200) != 1:
+                                thundoDiceAmount += 1
+                                stdscr.addstr(32, 0, "▌" + cent("Stand ready for my arrival, worm.") + "▐", YELLOW)
+                            else:
+                                goldThundoDiceAmount += 1
+                                stdscr.addstr(32, 0, "▌" + cent("Stand ready for my arrival, worm.") + "▐", YELLOW)
+                                
                             stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
@@ -1012,12 +1101,16 @@ def main(stdscr):
                         
                         if points >= 120_000:
                             
-                            thundoDiceAmount += 1
                             points -= 120_000
-                            
                             hasThundo = True
                             
-                            stdscr.addstr(32, 0, "▌" + cent("Stand ready for my arrival, worm.") + "▐", YELLOW)
+                            if random.randit(1, 200) != 1:
+                                thundoDiceAmount += 1
+                                stdscr.addstr(32, 0, "▌" + cent("Stand ready for my arrival, worm.") + "▐", YELLOW)
+                            else:
+                                goldThundoDiceAmount += 1
+                                stdscr.addstr(32, 0, "▌" + cent("Stand ready for my arrival, worm.") + "▐", YELLOW)
+                                
                             stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
@@ -1030,8 +1123,10 @@ def main(stdscr):
                     elif choice == "3":         # CHOOSE HOW MANY DICE
                         
                         dice, spent = chooseDiceAmount(stdscr, points, "Thousand", 120_000, YELLOW)
-                        thundoDiceAmount += dice
                         points -= spent
+                        for i in range(dice):
+                            if random.randint(1, 50) != 1: thundoDiceAmount += 1
+                            else:                           goldThundoDiceAmount += 1
                         hasThundo = True
 
                     elif choice == "0":         # NOTHING
@@ -1063,13 +1158,17 @@ def main(stdscr):
                     if choice == "1":           # HUNDO TRADE
                         
                         if hundoDiceAmount >= 10_000:
-                            
-                            mundoDiceAmount += 1
+
                             hundoDiceAmount -= 10_000
-                            
                             hasMundo = True
                             
-                            stdscr.addstr(32, 0, "▌" + cent("Are you Mr. Beast?") + "▐", YELLOW)
+                            if random.randit(1, 200) != 1:
+                                mundoDiceAmount += 1
+                                stdscr.addstr(32, 0, "▌" + cent("Are you Mr. Beast?") + "▐", YELLOW)
+                            else:
+                                goldMundoDiceAmount += 1
+                                stdscr.addstr(32, 0, "▌" + cent("Are you Mr. Beast?") + "▐", YELLOW)
+                                
                             stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
@@ -1083,12 +1182,16 @@ def main(stdscr):
                         
                         if thundoDiceAmount >= 1000:
                             
-                            mundoDiceAmount += 1
                             thundoDiceAmount -= 1000
-                            
                             hasMundo = True
                             
-                            stdscr.addstr(32, 0, "▌" + cent("Are you Mr. Beast?") + "▐", YELLOW)
+                            if random.randit(1, 200) != 1:
+                                mundoDiceAmount += 1
+                                stdscr.addstr(32, 0, "▌" + cent("Are you Mr. Beast?") + "▐", YELLOW)
+                            else:
+                                goldMundoDiceAmount += 1
+                                stdscr.addstr(32, 0, "▌" + cent("Are you Mr. Beast?") + "▐", YELLOW)
+                                
                             stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
@@ -1102,12 +1205,16 @@ def main(stdscr):
                         
                         if points >= 120_000_000:
                             
-                            mundoDiceAmount += 1
                             points -= 120_000_000
-                            
                             hasMundo = True
                             
-                            stdscr.addstr(32, 0, "▌" + cent("Are you Mr. Beast?") + "▐", YELLOW)
+                            if random.randit(1, 200) != 1:
+                                mundoDiceAmount += 1
+                                stdscr.addstr(32, 0, "▌" + cent("Are you Mr. Beast?") + "▐", YELLOW)
+                            else:
+                                goldMundoDiceAmount += 1
+                                stdscr.addstr(32, 0, "▌" + cent("Are you Mr. Beast?") + "▐", YELLOW)
+                                
                             stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
@@ -1120,8 +1227,10 @@ def main(stdscr):
                     elif choice == "4":         # CHOOSE HOW MANY DICE
                         
                         dice, spent = chooseDiceAmount(stdscr, points, "Million", 120_000_000, YELLOW)
-                        mundoDiceAmount += dice
                         points -= spent
+                        for i in range(dice):
+                            if random.randint(1, 50) != 1: mundoDiceAmount += 1
+                            else:                           goldMundoDiceAmount += 1
                         hasMundo = True
 
                     elif choice == "0":         # NOTHING
@@ -1154,12 +1263,16 @@ def main(stdscr):
                         
                         if mundoDiceAmount >= 1_000_000:
                             
-                            trundoDiceAmount += 1
                             mundoDiceAmount -= 1_000_000
-                            
                             hasTrundo = True
                             
-                            stdscr.addstr(32, 0, "▌" + cent("This is quite the large Die.") + "▐", YELLOW)
+                            if random.randint(1, 50) != 1:
+                                trundoDiceAmount += 1
+                                stdscr.addstr(32, 0, "▌" + cent("This is quite the large Die.") + "▐", YELLOW)
+                            else:
+                                goldTrundoDiceAmount += 1
+                                stdscr.addstr(32, 0, "▌" + cent("This is quite the large Die.") + "▐", YELLOW)
+                                
                             stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
@@ -1173,12 +1286,16 @@ def main(stdscr):
                         
                         if points >= 120e12:
                             
-                            trundoDiceAmount += 1
                             points -= 120e12
-                            
                             hasTrundo = True
                             
-                            stdscr.addstr(32, 0, "▌" + cent("This is quite the large Die.") + "▐", YELLOW)
+                            if random.randint(1, 50) != 1:
+                                trundoDiceAmount += 1
+                                stdscr.addstr(32, 0, "▌" + cent("This is quite the large Die.") + "▐", YELLOW)
+                            else:
+                                goldTrundoDiceAmount += 1
+                                stdscr.addstr(32, 0, "▌" + cent("This is quite the large Die.") + "▐", YELLOW)
+                                
                             stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
@@ -1191,8 +1308,10 @@ def main(stdscr):
                     elif choice == "3":         # CHOOSE HOW MANY DICE
                         
                         dice, spent = chooseDiceAmount(stdscr, points, "Trillion", 120e12, YELLOW)
-                        trundoDiceAmount += dice
                         points -= spent
+                        for i in range(dice):
+                            if random.randint(1, 50) != 1: trundoDiceAmount += 1
+                            else:                           goldTrundoDiceAmount += 1
                         hasTrundo = True
 
                     elif choice == "0":         # NOTHING
@@ -1225,12 +1344,16 @@ def main(stdscr):
                         
                         if trundoDiceAmount >= 1_000_000:
                             
-                            qindoDiceAmount += 1
                             trundoDiceAmount -= 1_000_000
-                            
                             hasQindo = True
                             
-                            stdscr.addstr(32, 0, "▌" + cent("These are getting kinda big already.") + "▐", YELLOW)
+                            if random.randint(1, 50) != 1:
+                                qindoDiceAmount += 1
+                                stdscr.addstr(32, 0, "▌" + cent("These are getting kinda big already.") + "▐", YELLOW)
+                            else:
+                                goldQindoDiceAmount += 1
+                                stdscr.addstr(32, 0, "▌" + cent("These are getting kinda big already.") + "▐", YELLOW)
+                                
                             stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
@@ -1244,12 +1367,16 @@ def main(stdscr):
                         
                         if points >= 120e18:
                             
-                            qindoDiceAmount += 1
                             points -= 120e18
-                            
                             hasQindo = True
                             
-                            stdscr.addstr(32, 0, "▌" + cent("These are getting kinda big already.") + "▐", YELLOW)
+                            if random.randint(1, 50) != 1:
+                                qindoDiceAmount += 1
+                                stdscr.addstr(32, 0, "▌" + cent("These are getting kinda big already.") + "▐", YELLOW)
+                            else:
+                                goldQindoDiceAmount += 1
+                                stdscr.addstr(32, 0, "▌" + cent("These are getting kinda big already.") + "▐", YELLOW)
+                                
                             stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
                             stdscr.refresh()
                             stdscr.getch()
@@ -1260,9 +1387,12 @@ def main(stdscr):
                             stdscr.getch()
 
                     elif choice == "3":         # CHOOSE HOW MANY DICE
+                        
                         dice, spent = chooseDiceAmount(stdscr, points, "Quintillion", 120e18, YELLOW)
-                        qindoDiceAmount += dice
                         points -= spent
+                        for i in range(dice):
+                            if random.randint(1, 50) != 1: qindoDiceAmount += 1
+                            else:                           goldQindoDiceAmount += 1
                         hasQindo = True
 
                     elif choice == "0":         # NOTHING
