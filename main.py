@@ -203,7 +203,7 @@ def rollDice(stdscr, regular: int, gold: int, sides: float, scale: float, offset
     stdscr.addstr(30, 0, "▌" + cent(f"You rolled your Dice {bigNumber(round(regular * offset))} ({bigNumber(round(regular))}) times!") + "▐", COLOR)
     stdscr.addstr(31, 0, "▌" + cent(f"You rolled your Golden Dice {bigNumber(round(gold * offset))} ({bigNumber(round(gold))}) times!") + "▐", COLOR)
     stdscr.addstr(32, 0, "▛" + (WIDTH - 2) * "▀" + "▜", COLOR)
-    stdscr.addstr(33, 0, "▌" + cent(f"You rolled this much: {bigNumber((total + goldTotal) * scale)}") + "▐", COLOR)
+    stdscr.addstr(33, 0, "▌" + cent(f"You rolled this much: {bigNumber((total + goldTotal if gold > 0 else total) * scale)}") + "▐", COLOR)
     stdscr.addstr(34, 0, "▌" + cent(f"Your current Multiplier: {round(mult, 2)} MP") + "▐", COLOR)
     stdscr.addstr(35, 0, "▌" + cent(f"Your Card and Four of a Kind Multipliers: {round(cards, 2)}, {round(four, 2)}") + "▐", COLOR)
     stdscr.addstr(36, 0, "▌" + cent(f"You now have {bigNumber(totalPoints)} more points.") + "▐", COLOR)
