@@ -1016,7 +1016,7 @@ def main(stdscr):
                             moreExpo = 1.2
                             hasHundo = True
                             
-                            if random.randit(1, 200) != 1:
+                            if random.randint(1, 50) != 1:
                                 hundoDiceAmount += 1
                                 stdscr.addstr(32, 0, "▌" + cent("Welcome your new Hundred sided Die!") + "▐", YELLOW)
                             else:
@@ -1039,7 +1039,7 @@ def main(stdscr):
                             points -= 12_000
                             hasHundo = True
                             
-                            if random.randit(1, 200) != 1:
+                            if random.randint(1, 50) != 1:
                                 hundoDiceAmount += 1
                                 stdscr.addstr(32, 0, "▌" + cent("Welcome your new Hundred sided Die!") + "▐", YELLOW)
                             else:
@@ -1097,7 +1097,7 @@ def main(stdscr):
                             hundoDiceAmount -= 10
                             hasThundo = True
                             
-                            if random.randit(1, 200) != 1:
+                            if random.randint(1, 50) != 1:
                                 thundoDiceAmount += 1
                                 stdscr.addstr(32, 0, "▌" + cent("Stand ready for my arrival, worm.") + "▐", YELLOW)
                             else:
@@ -1120,7 +1120,7 @@ def main(stdscr):
                             points -= 120_000
                             hasThundo = True
                             
-                            if random.randit(1, 200) != 1:
+                            if random.randint(1, 50) != 1:
                                 thundoDiceAmount += 1
                                 stdscr.addstr(32, 0, "▌" + cent("Stand ready for my arrival, worm.") + "▐", YELLOW)
                             else:
@@ -1178,7 +1178,7 @@ def main(stdscr):
                             hundoDiceAmount -= 10_000
                             hasMundo = True
                             
-                            if random.randit(1, 200) != 1:
+                            if random.randint(1, 50) != 1:
                                 mundoDiceAmount += 1
                                 stdscr.addstr(32, 0, "▌" + cent("Are you Mr. Beast?") + "▐", YELLOW)
                             else:
@@ -1201,7 +1201,7 @@ def main(stdscr):
                             thundoDiceAmount -= 1000
                             hasMundo = True
                             
-                            if random.randit(1, 200) != 1:
+                            if random.randint(1, 50) != 1:
                                 mundoDiceAmount += 1
                                 stdscr.addstr(32, 0, "▌" + cent("Are you Mr. Beast?") + "▐", YELLOW)
                             else:
@@ -1224,7 +1224,7 @@ def main(stdscr):
                             points -= 120_000_000
                             hasMundo = True
                             
-                            if random.randit(1, 200) != 1:
+                            if random.randint(1, 50) != 1:
                                 mundoDiceAmount += 1
                                 stdscr.addstr(32, 0, "▌" + cent("Are you Mr. Beast?") + "▐", YELLOW)
                             else:
