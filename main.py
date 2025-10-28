@@ -56,7 +56,7 @@ hasQindo  = False
 hasTree   = False
 
 # MISC
-gameVersion = "1.8.4.2"
+gameVersion = "1.8.5"
 saveName    = "defaultsave"
 
 # CARDS
@@ -180,10 +180,18 @@ def bigNumber(number: float):
 
     return str(round(number / (1000 ** len(numberSuffix)), 2)) + numberSuffix[-1]
 
+def progressBar(percent: float, size: int):
+    
+    percent = 1 if percent >= 1 else percent
+    full = int(percent * size)
+    empty = size - full
+    bar = "█" * full + "░" * empty
+    return f"{bar}"
+
 def rollDice(stdscr, regular: int, gold: int, sides: float, scale: float, offset: float, mult: float, luck: float, cards: float, four: float, COLOR):
     
     _, WIDTH = stdscr.getmaxyx() # 156
-    cent = lambda s: s.center(WIDTH - 2)
+    cent = lambda c: c.center(WIDTH - 2)
 
     total = 0
     totalRolls = regular * offset if regular < 1_000_000 else regular * offset / 1_000_000
@@ -213,14 +221,14 @@ def rollDice(stdscr, regular: int, gold: int, sides: float, scale: float, offset
     
     return totalPoints
 
-def chooseDiceAmount(stdscr, points: float, name: str, price: float, COLOR):
+def chooseDiceAmount(stdscr, point: float, name: str, price: float, COLOR):
     
     _, WIDTH = stdscr.getmaxyx() # 156
-    cent = lambda s: s.center(WIDTH - 2)
+    cent = lambda c: c.center(WIDTH - 2)
     
-    maxAmount = points // price
+    maxAmount = point // price
     
-    stdscr.addstr(32, 0, "▌" + cent(f"You have {bigNumber(points)} points.") + "▐", COLOR)
+    stdscr.addstr(32, 0, "▌" + cent(f"You have {bigNumber(point)} points.") + "▐", COLOR)
     stdscr.addstr(33, 0, "▌" + cent(f"With your points, you can get {bigNumber(maxAmount)} {name} sided Dice") + "▐", COLOR)
     stdscr.addstr(34, 0, "▌" + cent("How many Dice do you want?") + "▐", COLOR)
     stdscr.addstr(35, 0, "▛" + (WIDTH - 2) * "▀" + "▜", COLOR)
@@ -262,13 +270,98 @@ def chooseDiceAmount(stdscr, points: float, name: str, price: float, COLOR):
     
     return choice, choice * price
 
-def progressBar(percent: float, size: int):
+def diceDisplay(stdscr, name: str, price: str, tradeName: str, COLOR):
     
-    percent = 1 if percent >= 1 else percent
-    full = int(percent * size)
-    empty = size - full
-    bar = "█" * full + "░" * empty
-    return f"{bar}"
+    _, WIDTH = stdscr.getmaxyx() # 156
+    cent = lambda c: c.center(WIDTH - 2)
+         
+    stdscr.addstr(21, 0, "▌" + cent("WARNING!") + "▐", COLOR)
+    stdscr.addstr(22, 0, "▌" + cent("YOU'RE ABOUT TO TRADE OFF YOUR DICE") + "▐", COLOR)
+    stdscr.addstr(23, 0, "▌" + cent(f"OR PAY {price} POINTS") + "▐", COLOR)
+    stdscr.addstr(24, 0, "▌" + cent(f"FOR A {name} SIDED DIE") + "▐", COLOR)
+    stdscr.addstr(25, 0, "▛" + (WIDTH - 2) * "▀" + "▜", COLOR)
+    stdscr.addstr(26, 0, "▌" + cent(f"1 - Trade off my {tradeName} sided Dice") + "▐", COLOR)
+    stdscr.addstr(27, 0, "▌" + cent(f"2 - Trade off my Golden {tradeName} sided Dice") + "▐", COLOR)
+    stdscr.addstr(28, 0, "▌" + cent("3 - Pay for the Die") + "▐", COLOR)
+    stdscr.addstr(29, 0, "▌" + cent("4 - Choose how many Dice") + "▐", COLOR)
+    stdscr.addstr(30, 0, "▌" + cent("0 - I don't want to") + "▐", COLOR)
+    stdscr.addstr(31, 0, "▙" + (WIDTH - 2) * "▄" + "▟", COLOR)
+
+def diceTrade(stdscr, tradeAmount: int, price: float, COLOR):
+    
+    _, WIDTH = stdscr.getmaxyx() # 156
+    cent = lambda c: c.center(WIDTH - 2)
+    
+    newReg  = 0
+    newGold = 0
+    if tradeAmount >= price:
+        
+        if random.randint(1, 50) != 1:
+            newReg += 1
+            stdscr.addstr(32, 0, "▌" + cent("Welcome your new Bigger Die!") + "▐", COLOR)
+        else:
+            newGold += 1
+            stdscr.addstr(32, 0, "▌" + cent("Welcome your new Bigger Golden Die!") + "▐", COLOR)
+            
+        stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", COLOR)
+        stdscr.refresh()
+        stdscr.getch()
+        return price, newReg, newGold
+        
+    else:
+        stdscr.addstr(33, 0, "You don't have enough Dice!", COLOR)
+        stdscr.refresh()
+        stdscr.getch()
+        return 0, 0, 0
+
+def goldDiceTrade(stdscr, tradeAmount: int, price: float, COLOR):
+    
+    _, WIDTH = stdscr.getmaxyx() # 156
+    cent = lambda c: c.center(WIDTH - 2)
+    
+    newGold = 0
+    if tradeAmount >= price:
+        
+        newGold += 1
+        
+        stdscr.addstr(32, 0, "▌" + cent("Welcome your new Bigger Golden Die!") + "▐", COLOR)
+        stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", COLOR)
+        stdscr.refresh()
+        stdscr.getch()
+        return price, newGold
+        
+    else:
+        stdscr.addstr(33, 0, "You don't have enough Dice!", COLOR)
+        stdscr.refresh()
+        stdscr.getch()
+        return 0, 0
+
+def pointTrade(stdscr, point: float, price: float, COLOR):
+    
+    _, WIDTH = stdscr.getmaxyx() # 156
+    cent = lambda c: c.center(WIDTH - 2)
+    
+    newReg  = 0
+    newGold = 0
+    if point >= price:
+        
+        if random.randint(1, 50) != 1:
+            newReg += 1
+            stdscr.addstr(32, 0, "▌" + cent("Welcome your new Die!") + "▐", COLOR)
+        else:
+            newGold += 1
+            stdscr.addstr(32, 0, "▌" + cent("Welcome your new Golden Die!") + "▐", COLOR)
+            
+        stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", COLOR)
+        stdscr.refresh()
+        stdscr.getch()
+        return price, newReg, newGold
+        
+    else:
+        stdscr.addstr(33, 0, "You don't have enough points!", COLOR)
+        stdscr.refresh()
+        stdscr.getch()
+        return 0, 0, 0
 
 def main(stdscr):
     
@@ -307,15 +400,6 @@ def main(stdscr):
     MAGENTA = curses.color_pair(5)
     
     # MISC
-    hundoPairs = {
-                (1, 97),  (97, 1),                                                          # total 97
-                (1, 98),  (98, 1),  (2, 49), (49, 2), (7, 14), (14, 7),                     # total 98
-                (1, 99),  (99, 1),  (3, 33), (33, 3), (9, 11), (11, 9),                     # total 99
-                (1, 100), (10, 10), (2, 50), (50, 2), (4, 25), (25, 4), (5, 20), (20, 5),   # total 100
-                (1, 101), (101, 1),                                                         # total 101
-                (1, 102), (102, 1), (2, 51), (51, 2), (3, 34), (34, 3), (6, 17), (17, 6),   # total 102
-                (1, 103), (103, 1)                                                          # total 103
-            }
     _, WIDTH   = stdscr.getmaxyx()
     cent       = lambda c: c.center(WIDTH - 2)
     centHalf   = lambda h: h.center(int(WIDTH/2 - 2))
@@ -901,7 +985,7 @@ def main(stdscr):
             stdscr.addstr(11, 0, "▌" + cent(f"1 - Upgrade Dice: {bigNumber((upgradeDice * diceAmount) / storePriceOffset)} points") + "▐", YELLOW)
             stdscr.addstr(12, 0, "▌" + cent(f"2 - Buy more Dice: {bigNumber((moreDice * 1.5) / storePriceOffset)} points") + "▐", YELLOW)
             stdscr.addstr(13, 0, "▌" + cent(f"3 - Buy a Lucky Amulet: {bigNumber(upgradeLuck / storePriceOffset)} points") + "▐", YELLOW)
-            if ((diceAmount, diceSides) in hundoPairs) or (points >= 12_000):                  stdscr.addstr(14, 0, "▌" + cent("4 - Get a Hundred sided Die") + "▐", YELLOW)
+            if diceAmount >= 10 or points >= 12_000:                                           stdscr.addstr(14, 0, "▌" + cent("4 - Get a Hundred sided Die") + "▐", YELLOW)
             else:                                                                              stdscr.addstr(14, 0, "▌" + (WIDTH - 2) * " " + "▐", YELLOW)
             if hundoDiceAmount >= 10 or points >= 120_000:                                     stdscr.addstr(15, 0, "▌" + cent("5 - Get a Thousand sided Die") + "▐", YELLOW)
             else:                                                                              stdscr.addstr(15, 0, "▌" + (WIDTH - 2) * " " + "▐", YELLOW)
@@ -988,257 +1072,114 @@ def main(stdscr):
             
             elif choice == "4":         # GET HUNDO DICE
                 
-                if ((diceAmount, diceSides) in hundoPairs) or (points >= 12_000):
-                
-                    stdscr.addstr(21, 0, "▌" + cent("WARNING!") + "▐", YELLOW)
-                    stdscr.addstr(22, 0, "▌" + cent("YOU'RE ABOUT TO TRADE OFF ALL OF YOUR DICE FOR A Hundred SIDED DIE") + "▐", YELLOW)
-                    stdscr.addstr(23, 0, "▌" + cent("YOU'LL HAVE YOUR NEW Hundred SIDED DIE AND THE ORIGINAL 4 SIDED DIE") + "▐", YELLOW)
-                    stdscr.addstr(24, 0, "▌" + cent("YOU WON'T LOSE YOUR DICE IF YOU PAY FOR THE Hundred SIDED DIE") + "▐", YELLOW)
-                    stdscr.addstr(25, 0, "▌" + cent("(the Hundred sided Die doesn't persist between multiplier upgrades)") + "▐", YELLOW)
-                    stdscr.addstr(26, 0, "▛" + (WIDTH - 2) * "▀" + "▜", YELLOW)
-                    stdscr.addstr(27, 0, "▌" + cent("1 - Trade off my Dice") + "▐", YELLOW)
-                    stdscr.addstr(28, 0, "▌" + cent("2 - Pay for the Die") + "▐", YELLOW)
-                    stdscr.addstr(29, 0, "▌" + cent("3 - Choose how many Dice") + "▐", YELLOW)
-                    stdscr.addstr(30, 0, "▌" + cent("0 - I don't want to") + "▐", YELLOW)
-                    stdscr.addstr(31, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
+                if diceAmount >= 10 or points >= 12_000:
                     
+                    diceDisplay(stdscr, "Hundred", "12000", "Regular", YELLOW)
                     choice = stdscr.getkey()
                     
                     if choice == "1":           # DICE AMOUNT
                         
-                        if (diceAmount, diceSides) in hundoPairs:
-                            
-                            diceSides = 4
-                            diceAmount = 1
-                            upgradeDice = 50
-                            upgradeExpo = 1.05
-                            moreDice = 50
-                            moreExpo = 1.2
-                            hasHundo = True
-                            
-                            if random.randint(1, 50) != 1:
-                                hundoDiceAmount += 1
-                                stdscr.addstr(32, 0, "▌" + cent("Welcome your new Hundred sided Die!") + "▐", YELLOW)
-                            else:
-                                goldHundoDiceAmount += 1
-                                stdscr.addstr(32, 0, "▌" + cent("Welcome your new Golden Hundred sided Die!") + "▐", YELLOW)
-                                
-                            stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
-                            stdscr.refresh()
-                            stdscr.getch()
-                            
-                        else:
-                            stdscr.addstr(33, 0, "You don't have enough Dice!", YELLOW)
-                            stdscr.refresh()
-                            stdscr.getch()
+                        trade, regular, gold = diceTrade(stdscr, diceAmount, 10, YELLOW)
+                        diceAmount -= trade
+                        hundoDiceAmount += regular
+                        goldHundoDiceAmount += gold
+                        hasHundo = True
                     
-                    elif choice == "2":         # ENOUGH POINTS
+                    elif choice == "2":         # GOLDEN DICE AMOUNT
                         
-                        if points >= 12_000:
-                            
-                            points -= 12_000
-                            hasHundo = True
-                            
-                            if random.randint(1, 50) != 1:
-                                hundoDiceAmount += 1
-                                stdscr.addstr(32, 0, "▌" + cent("Welcome your new Hundred sided Die!") + "▐", YELLOW)
-                            else:
-                                goldHundoDiceAmount += 1
-                                stdscr.addstr(32, 0, "▌" + cent("Welcome your new Golden Hundred sided Die!") + "▐", YELLOW)
-                                
-                            stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
-                            stdscr.refresh()
-                            stdscr.getch()
-                            
-                        else:
-                            stdscr.addstr(33, 0, "You don't have enough points!", YELLOW)
-                            stdscr.refresh()
-                            stdscr.getch()
+                        trade, amount = goldDiceTrade(stdscr, goldDiceAmount, 10, YELLOW)
+                        goldDiceAmount -= trade
+                        goldHundoDiceAmount += amount
                     
-                    elif choice == "3":         # CHOOSE HOW MANY DICE
+                    elif choice == "3":         # ENOUGH POINTS
+                        
+                        spent, regular, gold = pointTrade(stdscr, points, 12_000, YELLOW)
+                        points -= spent
+                        hundoDiceAmount += regular
+                        goldHundoDiceAmount += gold
+                        hasHundo = True
+                    
+                    elif choice == "4":         # CHOOSE HOW MANY DICE
                         
                         dice, spent = chooseDiceAmount(stdscr, points, "Hundred", 12_000, YELLOW)
                         points -= spent
                         for i in range(dice):
                             if random.randint(1, 50) != 1: hundoDiceAmount += 1
-                            else:                           goldHundoDiceAmount += 1
+                            else:                          goldHundoDiceAmount += 1
                         hasHundo = True
 
                     elif choice == "0":         # NOTHING
                         continue
                     
-                    else:                       # INVALID
-                        stdscr.addstr(33, 0, "Invalid choice!", YELLOW)
-                        stdscr.refresh()
-                        stdscr.getch()
-
             elif choice == "5":         # GET THUNDO DICE
                 
                 if hundoDiceAmount >= 10 or points >= 120_000:
-                
-                    stdscr.addstr(21, 0, "▌" + cent("WARNING!") + "▐", YELLOW)
-                    stdscr.addstr(22, 0, "▌" + cent("YOU'RE ABOUT TO TRADE OFF 10 OF YOUR Hundred SIDED DICE") + "▐", YELLOW)
-                    stdscr.addstr(23, 0, "▌" + cent("OR PAY 120,000 POINTS FOR AN INCREDIBLE Thousand SIDED DIE") + "▐", YELLOW)
-                    stdscr.addstr(24, 0, "▌" + (WIDTH - 2) * " " + "▐", YELLOW)
-                    stdscr.addstr(25, 0, "▌" + cent("(this still doesn't persist between multiplier upgrades)") + "▐", YELLOW)
-                    stdscr.addstr(26, 0, "▛" + (WIDTH - 2) * "▀" + "▜", YELLOW)
-                    stdscr.addstr(27, 0, "▌" + cent("1 - Trade off my Dice") + "▐", YELLOW)
-                    stdscr.addstr(28, 0, "▌" + cent("2 - Pay for the Die") + "▐", YELLOW)
-                    stdscr.addstr(29, 0, "▌" + cent("3 - Choose how many Dice") + "▐", YELLOW)
-                    stdscr.addstr(30, 0, "▌" + cent("0 - I don't want to") + "▐", YELLOW)
-                    stdscr.addstr(31, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
                     
+                    diceDisplay(stdscr, "Thousand", "120000", "Hundred", YELLOW)
                     choice = stdscr.getkey()
                     
                     if choice == "1":           # DICE AMOUNT
                         
-                        if hundoDiceAmount >= 10:
-                            
-                            hundoDiceAmount -= 10
-                            hasThundo = True
-                            
-                            if random.randint(1, 50) != 1:
-                                thundoDiceAmount += 1
-                                stdscr.addstr(32, 0, "▌" + cent("Stand ready for my arrival, worm.") + "▐", YELLOW)
-                            else:
-                                goldThundoDiceAmount += 1
-                                stdscr.addstr(32, 0, "▌" + cent("Stand ready for my arrival, worm.") + "▐", YELLOW)
-                                
-                            stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
-                            stdscr.refresh()
-                            stdscr.getch()
-                            
-                        else:
-                            stdscr.addstr(33, 0, "You don't have enough Dice!", YELLOW)
-                            stdscr.refresh()
-                            stdscr.getch()
+                        trade, regular, gold = diceTrade(stdscr, hundoDiceAmount, 10, YELLOW)
+                        hundoDiceAmount -= trade
+                        thundoDiceAmount += regular
+                        goldThundoDiceAmount += gold
+                        hasThundo = True
                     
-                    elif choice == "2":         # ENOUGH POINTS
+                    elif choice == "2":         # GOLDEN DICE AMOUNT
                         
-                        if points >= 120_000:
-                            
-                            points -= 120_000
-                            hasThundo = True
-                            
-                            if random.randint(1, 50) != 1:
-                                thundoDiceAmount += 1
-                                stdscr.addstr(32, 0, "▌" + cent("Stand ready for my arrival, worm.") + "▐", YELLOW)
-                            else:
-                                goldThundoDiceAmount += 1
-                                stdscr.addstr(32, 0, "▌" + cent("Stand ready for my arrival, worm.") + "▐", YELLOW)
-                                
-                            stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
-                            stdscr.refresh()
-                            stdscr.getch()
-                            
-                        else:
-                            stdscr.addstr(33, 0, "You don't have enough points!", YELLOW)
-                            stdscr.refresh()
-                            stdscr.getch()
+                        trade, gold = goldDiceTrade(stdscr, goldHundoDiceAmount, 10, YELLOW)
+                        goldHundoDiceAmount -= trade
+                        goldThundoDiceAmount += gold
                     
-                    elif choice == "3":         # CHOOSE HOW MANY DICE
+                    elif choice == "3":         # ENOUGH POINTS
+                        
+                        spent, regular, gold = pointTrade(stdscr, points, 120_000, YELLOW)
+                        points -= spent
+                        thundoDiceAmount += regular
+                        goldThundoDiceAmount += gold
+                        hasThundo = True
+                    
+                    elif choice == "4":         # CHOOSE HOW MANY DICE
                         
                         dice, spent = chooseDiceAmount(stdscr, points, "Thousand", 120_000, YELLOW)
                         points -= spent
                         for i in range(dice):
                             if random.randint(1, 50) != 1: thundoDiceAmount += 1
-                            else:                           goldThundoDiceAmount += 1
+                            else:                          goldThundoDiceAmount += 1
                         hasThundo = True
 
                     elif choice == "0":         # NOTHING
                         continue
                     
-                    else:                       # INVALID
-                        stdscr.addstr(33, 0, "Invalid choice!", YELLOW)
-                        stdscr.refresh()
-                        stdscr.getch()
-
             elif choice == "6":         # GET MUNDO DICE
                 
-                if thundoDiceAmount >= 1000 or hundoDiceAmount >= 10_000 or points >= 120_000_000:
-                
-                    stdscr.addstr(21, 0, "▌" + cent("WARNING!") + "▐", YELLOW)
-                    stdscr.addstr(22, 0, "▌" + cent("YOU'RE ABOUT TO TRADE OFF YOUR DICE") + "▐", YELLOW)
-                    stdscr.addstr(23, 0, "▌" + cent("OR PAY 120 Million POINTS") + "▐", YELLOW)
-                    stdscr.addstr(24, 0, "▌" + cent("FOR A Million SIDED DIE") + "▐", YELLOW)
-                    stdscr.addstr(25, 0, "▛" + (WIDTH - 2) * "▀" + "▜", YELLOW)
-                    stdscr.addstr(26, 0, "▌" + cent("1 - Trade off my Hundred Sided Dice") + "▐", YELLOW)
-                    stdscr.addstr(27, 0, "▌" + cent("2 - Trade off my Thousand Sided Dice") + "▐", YELLOW)
-                    stdscr.addstr(28, 0, "▌" + cent("3 - Pay for the Die") + "▐", YELLOW)
-                    stdscr.addstr(29, 0, "▌" + cent("4 - Choose how many Dice") + "▐", YELLOW)
-                    stdscr.addstr(30, 0, "▌" + cent("0 - I don't want to") + "▐", YELLOW)
-                    stdscr.addstr(31, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
+                if thundoDiceAmount >= 1000 or points >= 120_000_000:
                     
+                    diceDisplay(stdscr, "Million", "120 Million", "Thousand", YELLOW)
                     choice = stdscr.getkey()
                     
-                    if choice == "1":           # HUNDO TRADE
+                    if choice == "1":           # DICE AMOUNT
                         
-                        if hundoDiceAmount >= 10_000:
-
-                            hundoDiceAmount -= 10_000
-                            hasMundo = True
-                            
-                            if random.randint(1, 50) != 1:
-                                mundoDiceAmount += 1
-                                stdscr.addstr(32, 0, "▌" + cent("Are you Mr. Beast?") + "▐", YELLOW)
-                            else:
-                                goldMundoDiceAmount += 1
-                                stdscr.addstr(32, 0, "▌" + cent("Are you Mr. Beast?") + "▐", YELLOW)
-                                
-                            stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
-                            stdscr.refresh()
-                            stdscr.getch()
-                            
-                        else:
-                            stdscr.addstr(33, 0, "You don't have enough Dice!", YELLOW)
-                            stdscr.refresh()
-                            stdscr.getch()
+                        trade, regular, gold = diceTrade(stdscr, thundoDiceAmount, 1000, YELLOW)
+                        thundoDiceAmount -= trade
+                        mundoDiceAmount += regular
+                        goldMundoDiceAmount += gold
+                        hasMundo = True
                     
-                    elif choice == "2":         # THUNDO TRADE
+                    elif choice == "2":         # GOLDEN DICE AMOUNT
                         
-                        if thundoDiceAmount >= 1000:
-                            
-                            thundoDiceAmount -= 1000
-                            hasMundo = True
-                            
-                            if random.randint(1, 50) != 1:
-                                mundoDiceAmount += 1
-                                stdscr.addstr(32, 0, "▌" + cent("Are you Mr. Beast?") + "▐", YELLOW)
-                            else:
-                                goldMundoDiceAmount += 1
-                                stdscr.addstr(32, 0, "▌" + cent("Are you Mr. Beast?") + "▐", YELLOW)
-                                
-                            stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
-                            stdscr.refresh()
-                            stdscr.getch()
-                            
-                        else:
-                            stdscr.addstr(33, 0, "You don't have enough Dice!", YELLOW)
-                            stdscr.refresh()
-                            stdscr.getch()
+                        trade, amount = goldDiceTrade(stdscr, goldThundoDiceAmount, 1000, YELLOW)
+                        goldThundoDiceAmount -= trade
+                        goldMundoDiceAmount += amount
                     
                     elif choice == "3":         # ENOUGH POINTS
                         
-                        if points >= 120_000_000:
-                            
-                            points -= 120_000_000
-                            hasMundo = True
-                            
-                            if random.randint(1, 50) != 1:
-                                mundoDiceAmount += 1
-                                stdscr.addstr(32, 0, "▌" + cent("Are you Mr. Beast?") + "▐", YELLOW)
-                            else:
-                                goldMundoDiceAmount += 1
-                                stdscr.addstr(32, 0, "▌" + cent("Are you Mr. Beast?") + "▐", YELLOW)
-                                
-                            stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
-                            stdscr.refresh()
-                            stdscr.getch()
-                            
-                        else:
-                            stdscr.addstr(33, 0, "You don't have enough points!", YELLOW)
-                            stdscr.refresh()
-                            stdscr.getch()
+                        spent, regular, gold = pointTrade(stdscr, points, 120_000_000, YELLOW)
+                        points -= spent
+                        mundoDiceAmount += regular
+                        goldMundoDiceAmount += gold
+                        hasMundo = True
                     
                     elif choice == "4":         # CHOOSE HOW MANY DICE
                         
@@ -1252,74 +1193,34 @@ def main(stdscr):
                     elif choice == "0":         # NOTHING
                         continue
                     
-                    else:                       # INVALID
-                        stdscr.addstr(33, 0, "Invalid choice!", YELLOW)
-                        stdscr.refresh()
-                        stdscr.getch()
-
             elif choice == "7":         # GET TRUNDO DICE
                 
                 if mundoDiceAmount >= 1_000_000 or points >= 120e12:
-                
-                    stdscr.addstr(21, 0, "▌" + cent("WARNING!") + "▐", YELLOW)
-                    stdscr.addstr(22, 0, "▌" + cent("YOU'RE ABOUT TO TRADE OFF YOUR DICE") + "▐", YELLOW)
-                    stdscr.addstr(23, 0, "▌" + cent("OR PAY 120 Trillion POINTS") + "▐", YELLOW)
-                    stdscr.addstr(24, 0, "▌" + cent("FOR A Trillion SIDED DIE") + "▐", YELLOW)
-                    stdscr.addstr(25, 0, "▌" + (WIDTH - 2) * " " + "▐", YELLOW)
-                    stdscr.addstr(26, 0, "▛" + (WIDTH - 2) * "▀" + "▜", YELLOW)
-                    stdscr.addstr(27, 0, "▌" + cent("1 - Trade off my Dice") + "▐", YELLOW)
-                    stdscr.addstr(28, 0, "▌" + cent("2 - Pay for the Die") + "▐", YELLOW)
-                    stdscr.addstr(29, 0, "▌" + cent("3 - Choose how many Dice") + "▐", YELLOW)
-                    stdscr.addstr(30, 0, "▌" + cent("0 - I don't want to") + "▐", YELLOW)
-                    stdscr.addstr(31, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
                     
+                    diceDisplay(stdscr, "Trillion", "120 Trillion", "Million", YELLOW)
                     choice = stdscr.getkey()
                     
                     if choice == "1":           # DICE AMOUNT
                         
-                        if mundoDiceAmount >= 1_000_000:
-                            
-                            mundoDiceAmount -= 1_000_000
-                            hasTrundo = True
-                            
-                            if random.randint(1, 50) != 1:
-                                trundoDiceAmount += 1
-                                stdscr.addstr(32, 0, "▌" + cent("This is quite the large Die.") + "▐", YELLOW)
-                            else:
-                                goldTrundoDiceAmount += 1
-                                stdscr.addstr(32, 0, "▌" + cent("This is quite the large Die.") + "▐", YELLOW)
-                                
-                            stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
-                            stdscr.refresh()
-                            stdscr.getch()
-                            
-                        else:
-                            stdscr.addstr(33, 0, "You don't have enough Dice!", YELLOW)
-                            stdscr.refresh()
-                            stdscr.getch()
+                        trade, regular, gold = diceTrade(stdscr, mundoDiceAmount, 1_000_000, YELLOW)
+                        mundoDiceAmount -= trade
+                        trundoDiceAmount += regular
+                        goldTrundoDiceAmount += gold
+                        hasTrundo = True
+                    
+                    elif choice == "2":         # GOLDEN DICE AMOUNT
+                        
+                        trade, amount = goldDiceTrade(stdscr, goldMundoDiceAmount, 1_000_000, YELLOW)
+                        goldMundoDiceAmount -= trade
+                        goldTrundoDiceAmount += amount
                     
                     elif choice == "2":         # ENOUGH POINTS
                         
-                        if points >= 120e12:
-                            
-                            points -= 120e12
-                            hasTrundo = True
-                            
-                            if random.randint(1, 50) != 1:
-                                trundoDiceAmount += 1
-                                stdscr.addstr(32, 0, "▌" + cent("This is quite the large Die.") + "▐", YELLOW)
-                            else:
-                                goldTrundoDiceAmount += 1
-                                stdscr.addstr(32, 0, "▌" + cent("This is quite the large Die.") + "▐", YELLOW)
-                                
-                            stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
-                            stdscr.refresh()
-                            stdscr.getch()
-                            
-                        else:
-                            stdscr.addstr(33, 0, "You don't have enough points!", YELLOW)
-                            stdscr.refresh()
-                            stdscr.getch()
+                        spent, regular, gold = pointTrade(stdscr, points, 120e12, YELLOW)
+                        points -= spent
+                        trundoDiceAmount += regular
+                        goldTrundoDiceAmount += gold
+                        hasTrundo = True
                     
                     elif choice == "3":         # CHOOSE HOW MANY DICE
                         
@@ -1327,98 +1228,53 @@ def main(stdscr):
                         points -= spent
                         for i in range(dice):
                             if random.randint(1, 50) != 1: trundoDiceAmount += 1
-                            else:                           goldTrundoDiceAmount += 1
+                            else:                          goldTrundoDiceAmount += 1
                         hasTrundo = True
 
                     elif choice == "0":         # NOTHING
                         continue
                     
-                    else:                       # INVALID
-                        stdscr.addstr(33, 0, "Invalid choice!", YELLOW)
-                        stdscr.refresh()
-                        stdscr.getch()
-
             elif choice == "8":         # GET QINDO DICE
                 
                 if trundoDiceAmount >= 1_000_000 or points >= 120e18:
                     
-                    stdscr.addstr(21, 0, "▌" + cent("WARNING!") + "▐", YELLOW)
-                    stdscr.addstr(22, 0, "▌" + cent("YOU'RE ABOUT TO TRADE OFF YOUR DICE") + "▐", YELLOW)
-                    stdscr.addstr(23, 0, "▌" + cent("OR PAY 120 QUINTILLION POINTS") + "▐", YELLOW)
-                    stdscr.addstr(24, 0, "▌" + cent("FOR A Quintillion SIDED DIE") + "▐", YELLOW)
-                    stdscr.addstr(25, 0, "▌" + (WIDTH - 2) * " " + "▐", YELLOW)
-                    stdscr.addstr(26, 0, "▛" + (WIDTH - 2) * "▀" + "▜", YELLOW)
-                    stdscr.addstr(27, 0, "▌" + cent("1 - Trade off my Dice") + "▐", YELLOW)
-                    stdscr.addstr(28, 0, "▌" + cent("2 - Pay for the Die") + "▐", YELLOW)
-                    stdscr.addstr(29, 0, "▌" + cent("3 - Choose how many Dice") + "▐", YELLOW)
-                    stdscr.addstr(30, 0, "▌" + cent("0 - I don't want to") + "▐", YELLOW)
-                    stdscr.addstr(31, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
-
+                    diceDisplay(stdscr, "Quintillion", "120 Quintillion", "Trillion", YELLOW)
                     choice = stdscr.getkey()
 
                     if choice == "1":           # DICE AMOUNT
                         
-                        if trundoDiceAmount >= 1_000_000:
-                            
-                            trundoDiceAmount -= 1_000_000
-                            hasQindo = True
-                            
-                            if random.randint(1, 50) != 1:
-                                qindoDiceAmount += 1
-                                stdscr.addstr(32, 0, "▌" + cent("These are getting kinda big already.") + "▐", YELLOW)
-                            else:
-                                goldQindoDiceAmount += 1
-                                stdscr.addstr(32, 0, "▌" + cent("These are getting kinda big already.") + "▐", YELLOW)
-                                
-                            stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
-                            stdscr.refresh()
-                            stdscr.getch()
-                            
-                        else:
-                            stdscr.addstr(33, 0, "You don't have enough Dice!", YELLOW)
-                            stdscr.refresh()
-                            stdscr.getch()
-                            
-                    elif choice == "2":         # ENOUGH POINTS
+                        trade, regular, gold = diceTrade(stdscr, trundoDiceAmount, 1_000_000, YELLOW)
+                        trundoDiceAmount -= trade
+                        qindoDiceAmount += regular
+                        goldQindoDiceAmount += gold
+                        hasQindo = True
+                    
+                    elif choice == "2":         # GOLDEN DICE AMOUNT
                         
-                        if points >= 120e18:
-                            
-                            points -= 120e18
-                            hasQindo = True
-                            
-                            if random.randint(1, 50) != 1:
-                                qindoDiceAmount += 1
-                                stdscr.addstr(32, 0, "▌" + cent("These are getting kinda big already.") + "▐", YELLOW)
-                            else:
-                                goldQindoDiceAmount += 1
-                                stdscr.addstr(32, 0, "▌" + cent("These are getting kinda big already.") + "▐", YELLOW)
-                                
-                            stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", YELLOW)
-                            stdscr.refresh()
-                            stdscr.getch()
-                            
-                        else:
-                            stdscr.addstr(33, 0, "You don't have enough points!", YELLOW)
-                            stdscr.refresh()
-                            stdscr.getch()
+                        trade, amount = goldDiceTrade(stdscr, goldTrundoDiceAmount, 1_000_000, YELLOW)
+                        goldTrundoDiceAmount -= trade
+                        goldQindoDiceAmount += amount
+                    
+                    elif choice == "3":         # ENOUGH POINTS
+                        
+                        spent, regular, gold = pointTrade(stdscr, points, 120e18, YELLOW)
+                        points -= spent
+                        qindoDiceAmount += regular
+                        goldQindoDiceAmount += gold
+                        hasQindo = True
 
-                    elif choice == "3":         # CHOOSE HOW MANY DICE
+                    elif choice == "4":         # CHOOSE HOW MANY DICE
                         
                         dice, spent = chooseDiceAmount(stdscr, points, "Quintillion", 120e18, YELLOW)
                         points -= spent
                         for i in range(dice):
                             if random.randint(1, 50) != 1: qindoDiceAmount += 1
-                            else:                           goldQindoDiceAmount += 1
+                            else:                          goldQindoDiceAmount += 1
                         hasQindo = True
 
                     elif choice == "0":         # NOTHING
                         continue
-
-                    else:                       # INVALID
-                        stdscr.addstr(33, 0, "Invalid choice!", YELLOW)
-                        stdscr.refresh()
-                        stdscr.getch()
-
+                    
             else:                       # INVALID
                 stdscr.addstr(22, 0, "Invalid choice!", YELLOW)
                 stdscr.refresh()
