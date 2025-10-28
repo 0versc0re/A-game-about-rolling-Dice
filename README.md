@@ -15,7 +15,7 @@ pip install windows-curses
 
 ### Actually playing the game
 
-Download **main.py** from [here](https://github.com/0versc0re/A-game-about-rolling-Dice/releases/tag/v.1.8.4.2) and put it in a separate folder.</br>
+Download **main.py** from [here](https://github.com/0versc0re/A-game-about-rolling-Dice/releases/tag/v.1.8.5) and put it in a separate folder.</br>
 This is to make sure the save files don't get lost.</br>
 Play it by right clicking in the folder and clicking "Open in Terminal". Fullscreen the terminal with **F11** and then type this into the terminal:
 ```
@@ -40,11 +40,12 @@ A way to convert old save files to new save files is:
 + ~~Multiple save files~~
   + Option to see all saves
 + Larger dice
-  + Hundred
-  + Thousand
-  + Million
-  + Trillion
+  + ~~Hundred~~
+  + ~~Thousand~~
+  + ~~Million~~
+  + ~~Trillion~~
   + Quintillion (NEWEST)
 + ~~Colors~~
   + Only border colors
 + Modifications of existing cards (?)
++ OOP (I shouldn't do this)
