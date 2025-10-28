@@ -40,12 +40,12 @@ A way to convert old save files to new save files is:
 + ~~Multiple save files~~
   + Option to see all saves
 + Larger dice
-  + ~~Hundred~~
-  + ~~Thousand~~
-  + ~~Million~~
-  + ~~Trillion~~
+  + Hundred
+  + Thousand
+  + Million
+  + Trillion
   + Quintillion (NEWEST)
 + ~~Colors~~
   + Only border colors
 + Modifications of existing cards (?)
-+ OOP (I shouldn't do this)
++ OOP
