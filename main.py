@@ -56,7 +56,7 @@ hasQindo  = False
 hasTree   = False
 
 # MISC
-gameVersion = "1.8.5"
+gameVersion = "1.8.5.1"
 saveName    = "defaultsave"
 
 # CARDS
@@ -221,6 +221,99 @@ def rollDice(stdscr, regular: int, gold: int, sides: float, scale: float, offset
     
     return totalPoints
 
+def diceDisplay(stdscr, name: str, price: str, tradeName: str, COLOR):
+    
+    _, WIDTH = stdscr.getmaxyx() # 156
+    cent = lambda c: c.center(WIDTH - 2)
+         
+    stdscr.addstr(21, 0, "▌" + cent("WARNING!") + "▐", COLOR)
+    stdscr.addstr(22, 0, "▌" + cent("YOU'RE ABOUT TO TRADE OFF YOUR DICE") + "▐", COLOR)
+    stdscr.addstr(23, 0, "▌" + cent(f"OR PAY {price} POINTS") + "▐", COLOR)
+    stdscr.addstr(24, 0, "▌" + cent(f"FOR A {name} SIDED DIE") + "▐", COLOR)
+    stdscr.addstr(25, 0, "▛" + (WIDTH - 2) * "▀" + "▜", COLOR)
+    stdscr.addstr(26, 0, "▌" + cent(f"1 - Trade off my {tradeName} sided Dice") + "▐", COLOR)
+    stdscr.addstr(27, 0, "▌" + cent(f"2 - Trade off my Golden {tradeName} sided Dice") + "▐", COLOR)
+    stdscr.addstr(28, 0, "▌" + cent("3 - Pay for the Die") + "▐", COLOR)
+    stdscr.addstr(29, 0, "▌" + cent("4 - Choose how many Dice") + "▐", COLOR)
+    stdscr.addstr(30, 0, "▌" + cent("0 - I don't want to") + "▐", COLOR)
+    stdscr.addstr(31, 0, "▙" + (WIDTH - 2) * "▄" + "▟", COLOR)
+
+def diceTrade(stdscr, trade_amount: int, price: float, COLOR):
+    
+    _, WIDTH = stdscr.getmaxyx() # 156
+    cent = lambda c: c.center(WIDTH - 2)
+    
+    new_reg  = 0
+    new_gold = 0
+    if trade_amount >= price:
+        
+        if random.randint(1, 50) != 1:
+            new_reg += 1
+            stdscr.addstr(32, 0, "▌" + cent("Welcome your new Bigger Die!") + "▐", COLOR)
+        else:
+            new_gold += 1
+            stdscr.addstr(32, 0, "▌" + cent("Welcome your new Bigger Golden Die!") + "▐", COLOR)
+            
+        stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", COLOR)
+        stdscr.refresh()
+        stdscr.getch()
+        return price, new_reg, new_gold
+        
+    else:
+        stdscr.addstr(33, 0, "You don't have enough Dice!", COLOR)
+        stdscr.refresh()
+        stdscr.getch()
+        return 0, 0, 0
+
+def goldDiceTrade(stdscr, trade_amount: int, price: float, COLOR):
+    
+    _, WIDTH = stdscr.getmaxyx() # 156
+    cent = lambda c: c.center(WIDTH - 2)
+    
+    new_gold = 0
+    if trade_amount >= price:
+        
+        new_gold += 1
+        
+        stdscr.addstr(32, 0, "▌" + cent("Welcome your new Bigger Golden Die!") + "▐", COLOR)
+        stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", COLOR)
+        stdscr.refresh()
+        stdscr.getch()
+        return price, new_gold
+        
+    else:
+        stdscr.addstr(33, 0, "You don't have enough Dice!", COLOR)
+        stdscr.refresh()
+        stdscr.getch()
+        return 0, 0
+
+def pointTrade(stdscr, points: float, price: float, COLOR):
+    
+    _, WIDTH = stdscr.getmaxyx() # 156
+    cent = lambda c: c.center(WIDTH - 2)
+    
+    new_reg  = 0
+    new_gold = 0
+    if points >= price:
+        
+        if random.randint(1, 50) != 1:
+            new_reg += 1
+            stdscr.addstr(32, 0, "▌" + cent("Welcome your new Die!") + "▐", COLOR)
+        else:
+            new_gold += 1
+            stdscr.addstr(32, 0, "▌" + cent("Welcome your new Golden Die!") + "▐", COLOR)
+            
+        stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", COLOR)
+        stdscr.refresh()
+        stdscr.getch()
+        return price, new_reg, new_gold
+        
+    else:
+        stdscr.addstr(33, 0, "You don't have enough points!", COLOR)
+        stdscr.refresh()
+        stdscr.getch()
+        return 0, 0, 0
+
 def chooseDiceAmount(stdscr, point: float, name: str, price: float, COLOR):
     
     _, WIDTH = stdscr.getmaxyx() # 156
@@ -269,99 +362,6 @@ def chooseDiceAmount(stdscr, point: float, name: str, price: float, COLOR):
     stdscr.getch()
     
     return choice, choice * price
-
-def diceDisplay(stdscr, name: str, price: str, tradeName: str, COLOR):
-    
-    _, WIDTH = stdscr.getmaxyx() # 156
-    cent = lambda c: c.center(WIDTH - 2)
-         
-    stdscr.addstr(21, 0, "▌" + cent("WARNING!") + "▐", COLOR)
-    stdscr.addstr(22, 0, "▌" + cent("YOU'RE ABOUT TO TRADE OFF YOUR DICE") + "▐", COLOR)
-    stdscr.addstr(23, 0, "▌" + cent(f"OR PAY {price} POINTS") + "▐", COLOR)
-    stdscr.addstr(24, 0, "▌" + cent(f"FOR A {name} SIDED DIE") + "▐", COLOR)
-    stdscr.addstr(25, 0, "▛" + (WIDTH - 2) * "▀" + "▜", COLOR)
-    stdscr.addstr(26, 0, "▌" + cent(f"1 - Trade off my {tradeName} sided Dice") + "▐", COLOR)
-    stdscr.addstr(27, 0, "▌" + cent(f"2 - Trade off my Golden {tradeName} sided Dice") + "▐", COLOR)
-    stdscr.addstr(28, 0, "▌" + cent("3 - Pay for the Die") + "▐", COLOR)
-    stdscr.addstr(29, 0, "▌" + cent("4 - Choose how many Dice") + "▐", COLOR)
-    stdscr.addstr(30, 0, "▌" + cent("0 - I don't want to") + "▐", COLOR)
-    stdscr.addstr(31, 0, "▙" + (WIDTH - 2) * "▄" + "▟", COLOR)
-
-def diceTrade(stdscr, tradeAmount: int, price: float, COLOR):
-    
-    _, WIDTH = stdscr.getmaxyx() # 156
-    cent = lambda c: c.center(WIDTH - 2)
-    
-    newReg  = 0
-    newGold = 0
-    if tradeAmount >= price:
-        
-        if random.randint(1, 50) != 1:
-            newReg += 1
-            stdscr.addstr(32, 0, "▌" + cent("Welcome your new Bigger Die!") + "▐", COLOR)
-        else:
-            newGold += 1
-            stdscr.addstr(32, 0, "▌" + cent("Welcome your new Bigger Golden Die!") + "▐", COLOR)
-            
-        stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", COLOR)
-        stdscr.refresh()
-        stdscr.getch()
-        return price, newReg, newGold
-        
-    else:
-        stdscr.addstr(33, 0, "You don't have enough Dice!", COLOR)
-        stdscr.refresh()
-        stdscr.getch()
-        return 0, 0, 0
-
-def goldDiceTrade(stdscr, tradeAmount: int, price: float, COLOR):
-    
-    _, WIDTH = stdscr.getmaxyx() # 156
-    cent = lambda c: c.center(WIDTH - 2)
-    
-    newGold = 0
-    if tradeAmount >= price:
-        
-        newGold += 1
-        
-        stdscr.addstr(32, 0, "▌" + cent("Welcome your new Bigger Golden Die!") + "▐", COLOR)
-        stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", COLOR)
-        stdscr.refresh()
-        stdscr.getch()
-        return price, newGold
-        
-    else:
-        stdscr.addstr(33, 0, "You don't have enough Dice!", COLOR)
-        stdscr.refresh()
-        stdscr.getch()
-        return 0, 0
-
-def pointTrade(stdscr, point: float, price: float, COLOR):
-    
-    _, WIDTH = stdscr.getmaxyx() # 156
-    cent = lambda c: c.center(WIDTH - 2)
-    
-    newReg  = 0
-    newGold = 0
-    if point >= price:
-        
-        if random.randint(1, 50) != 1:
-            newReg += 1
-            stdscr.addstr(32, 0, "▌" + cent("Welcome your new Die!") + "▐", COLOR)
-        else:
-            newGold += 1
-            stdscr.addstr(32, 0, "▌" + cent("Welcome your new Golden Die!") + "▐", COLOR)
-            
-        stdscr.addstr(33, 0, "▙" + (WIDTH - 2) * "▄" + "▟", COLOR)
-        stdscr.refresh()
-        stdscr.getch()
-        return price, newReg, newGold
-        
-    else:
-        stdscr.addstr(33, 0, "You don't have enough points!", COLOR)
-        stdscr.refresh()
-        stdscr.getch()
-        return 0, 0, 0
 
 def main(stdscr):
     
@@ -1408,8 +1408,9 @@ def main(stdscr):
             stdscr.clear()
             stdscr.addstr(0, 0, "▛" + (WIDTH - 2) * "▀" + "▜", RED)
             stdscr.addstr(1, 0, "▌" + cent(f"Game version: {gameVersion}") + "▐", RED)
-            stdscr.addstr(2, 0, "▌" + cent("Any - Back to Menu") + "▐", RED)
-            stdscr.addstr(3, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
+            stdscr.addstr(2, 0, "▌" + cent(f"Developer: 0versc0re") + "▐", RED)
+            stdscr.addstr(3, 0, "▌" + cent("Any - Back to Menu") + "▐", RED)
+            stdscr.addstr(4, 0, "▙" + (WIDTH - 2) * "▄" + "▟", RED)
             stdscr.refresh()
             stdscr.getkey()
             Info = False
