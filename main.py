@@ -1,10 +1,11 @@
 # IMPORTS
-import json, sys
-import random, curses
+import json
+import sys
+import random
+import curses
 from curses import wrapper
 from curses.textpad import Textbox
 from os import popen, rename
-# from pprint import pprint
 
 
 # POINT VARIABLES
@@ -56,11 +57,11 @@ hasQindo  = False
 hasTree   = False
 
 # MISC
-gameVersion = "1.8.5.1"
+gameVersion = "1.8.6"
 saveName    = "defaultsave"
 
 # CARDS
-cardFour    = {
+regularCards     = {
     "0": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
     "1": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
     "2": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
@@ -71,7 +72,6 @@ cardFour    = {
     "7": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
     "8": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
     "9": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
-    "0": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
     "A": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
     "B": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
     "C": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
@@ -98,9 +98,50 @@ cardFour    = {
     "X": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
     "Y": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
     "Z": {"Club": False, "Diamond": False, "Heart": False, "Spade": False}}
-fourOfAKind = 0
-cardPrice   = 10_000_000
+regularFour      = 0
+regularCardPrice = 10_000_000
+goldCards        = {
+    "0": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "1": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "2": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "3": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "4": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "5": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "6": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "7": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "8": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "9": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "A": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "B": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "C": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "D": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "E": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "F": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "G": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "H": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "I": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "J": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "K": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "L": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "M": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "N": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "O": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "P": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "Q": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "R": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "S": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "T": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "U": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "V": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "W": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "X": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "Y": {"Club": False, "Diamond": False, "Heart": False, "Spade": False},
+    "Z": {"Club": False, "Diamond": False, "Heart": False, "Spade": False}}
+goldFour         = 0
+goldCardPrice    = 10_000_000_000
 
+
+# SAVE THE GAME (WOW)
 def saveGame(name: str):
     
     saveData = {
@@ -154,15 +195,23 @@ def saveGame(name: str):
             "hasTree":   hasTree
         },
         "playing_cards": {
-            "cardFour":    cardFour,
-            "fourOfAKind": fourOfAKind,
-            "cardPrice":   cardPrice
+            "regular": {
+                "regularCards":     regularCards,
+                "regularFour":      regularFour,
+                "regularCardPrice": regularCardPrice
+            },
+            "gold": {
+                "goldCards":        goldCards,
+                "goldFour":         goldFour,
+                "goldCardPrice":    goldCardPrice
+            }
         }
     }
     
     with open(f"{name}.json", "w") as f:
         json.dump(saveData, f, indent=4)
 
+# 1000000000 -> 1.0 B
 def bigNumber(number: float):
     
     numberSuffix = ["M",   "B",   "T",   "Qa",   "Qi",   "Sx",   "Sp",   "Oc",   "No",   "D",       # e006 - e033
@@ -180,6 +229,7 @@ def bigNumber(number: float):
 
     return str(round(number / (1000 ** len(numberSuffix)), 2)) + numberSuffix[-1]
 
+# PROGRESS BAR (WOW SEQUEL)
 def progressBar(percent: float, size: int):
     
     percent = 1 if percent >= 1 else percent
@@ -188,7 +238,9 @@ def progressBar(percent: float, size: int):
     bar = "█" * full + "░" * empty
     return f"{bar}"
 
-def rollDice(stdscr, regular: int, gold: int, sides: float, scale: float, offset: float, mult: float, luck: float, cards: float, four: float, COLOR):
+# ROLL DICE (WOW SEQUEL REMASTER)
+def rollDice(stdscr, regular: int, gold: int, sides: float, scale: float, offset: float, mult: float, luck: float,
+             regular_card: float, regular_four: float, gold_card: float, gold_four: float, COLOR):
     
     _, WIDTH = stdscr.getmaxyx() # 156
     cent = lambda c: c.center(WIDTH - 2)
@@ -198,7 +250,10 @@ def rollDice(stdscr, regular: int, gold: int, sides: float, scale: float, offset
     for _ in range(int(totalRolls)):
         roll = random.randint(int(luck), int(sides)) if luck < sides else sides
         total += roll
-    totalPoints = total * mult * cards * four * scale if regular < 1_000_000 else total * mult * cards * four * scale * 1_000_000
+    if regular < 1_000_000:
+        totalPoints = total * mult * regular_card * regular_four * gold_card * gold_four * scale
+    else:
+        totalPoints = total * mult * regular_card * regular_four * gold_card * gold_four * scale * 1_000_000
     
     if gold > 0:
         goldTotal = 0
@@ -206,14 +261,17 @@ def rollDice(stdscr, regular: int, gold: int, sides: float, scale: float, offset
         for _ in range(int(totalRolls)):
             roll = random.randint(int(luck), int(sides)) if luck < sides else sides
             goldTotal += roll
-        totalPoints += goldTotal * mult * cards * four * scale * 2 if gold < 1_000_000 else goldTotal * mult * cards * four * scale * 2 * 1_000_000
+        if gold < 1_000_000:
+            totalPoints += goldTotal * mult * regular_card * regular_four * gold_card * gold_four * scale * 2
+        else:
+            totalPoints += goldTotal * mult * regular_card * regular_four * gold_card * gold_four * scale * 2 * 1_000_000
         
     stdscr.addstr(30, 0, "▌" + cent(f"You rolled your Dice {bigNumber(round(regular * offset))} ({bigNumber(round(regular))}) times!") + "▐", COLOR)
     stdscr.addstr(31, 0, "▌" + cent(f"You rolled your Golden Dice {bigNumber(round(gold * offset))} ({bigNumber(round(gold))}) times!") + "▐", COLOR)
     stdscr.addstr(32, 0, "▛" + (WIDTH - 2) * "▀" + "▜", COLOR)
     stdscr.addstr(33, 0, "▌" + cent(f"You rolled this much: {bigNumber((total + goldTotal if gold > 0 else total) * scale)}") + "▐", COLOR)
     stdscr.addstr(34, 0, "▌" + cent(f"Your current Multiplier: {round(mult, 2)} MP") + "▐", COLOR)
-    stdscr.addstr(35, 0, "▌" + cent(f"Your Card and Four of a Kind Multipliers: {round(cards, 2)}, {round(four, 2)}") + "▐", COLOR)
+    stdscr.addstr(35, 0, "▌" + cent(f"Your Card and Four of a Kind Multipliers: {round(regular_card, 2)} RC, {round(regular_four, 2)} RF, {round(gold_card, 2)} GC, {round(gold_four, 2)} GF") + "▐", COLOR)
     stdscr.addstr(36, 0, "▌" + cent(f"You now have {bigNumber(totalPoints)} more points.") + "▐", COLOR)
     stdscr.addstr(37, 0, "▙" + (WIDTH - 2) * "▄" + "▟", COLOR)
     stdscr.refresh()
@@ -221,6 +279,7 @@ def rollDice(stdscr, regular: int, gold: int, sides: float, scale: float, offset
     
     return totalPoints
 
+# BIG DICE FUNCTIONS (ALL OF THEM)
 def diceDisplay(stdscr, name: str, price: str, tradeName: str, COLOR):
     
     _, WIDTH = stdscr.getmaxyx() # 156
@@ -363,15 +422,18 @@ def chooseDiceAmount(stdscr, point: float, name: str, price: float, COLOR):
     
     return choice, choice * price
 
+# MAIN (WOW SEQUEL REMASTER REMAKE)
 def main(stdscr):
     
     # BOOLEANS
-    Menu  = True
-    Play  = False
-    Store = False
-    Tree  = False
-    Info  = False
-    Cards = False
+    Menu    = True
+    Play    = False
+    Store   = False
+    Tree    = False
+    Info    = False
+    Cards   = False
+    Regular = True
+    Gold    = False
 
     # GLOBAL VARIABLES
     global diceSides, diceAmount, goldDiceSides, goldDiceAmount, points, pointsMult, pointsMultExpo
@@ -379,8 +441,8 @@ def main(stdscr):
     global hundoDiceAmount, thundoDiceAmount, mundoDiceAmount, trundoDiceAmount, qindoDiceAmount
     global goldHundoDiceAmount, goldThundoDiceAmount, goldMundoDiceAmount, goldTrundoDiceAmount, goldQindoDiceAmount
     global storePriceOffset, diceAmountOffset, luckOffset, multiplierOffset
-    global hasHundo, hasThundo, hasMundo, hasTrundo, hasQindo, hasTree
-    global gameVersion, saveName, cardFour, fourOfAKind, cardPrice
+    global hasHundo, hasThundo, hasMundo, hasTrundo, hasQindo, hasTree, gameVersion, saveName
+    global regularCards, regularFour, regularCardPrice, goldCards, goldFour, goldCardPrice
     
     # HIDE CURSOR
     curses.curs_set(0)
@@ -419,6 +481,7 @@ def main(stdscr):
     
     while True:
         
+        # RED COLOR
         while Menu:     # GAME MENU
             
             stdscr.clear()
@@ -501,9 +564,12 @@ def main(stdscr):
                     hasTree   = data["has"]["hasTree"]
                     
                     # CARDS
-                    cardFour    = data["playing_cards"]["cardFour"]
-                    fourOfAKind = data["playing_cards"]["fourOfAKind"]
-                    cardPrice   = data["playing_cards"]["cardPrice"]
+                    regularCards     = data["playing_cards"]["regular"]["regularCards"]
+                    regularFour      = data["playing_cards"]["regular"]["regularFour"]
+                    regularCardPrice = data["playing_cards"]["regular"]["regularCardPrice"]
+                    goldCards        = data["playing_cards"]["gold"]["goldCards"]
+                    goldFour         = data["playing_cards"]["gold"]["goldFour"]
+                    goldCardPrice    = data["playing_cards"]["gold"]["goldCardPrice"]
                     
                     # MISC
                     data["game_info"]["saveName"] = saveName
@@ -583,9 +649,9 @@ def main(stdscr):
                     hasQindo  = False
                     hasTree   = False
 
-                    fourOfAKind = 0
-                    cardPrice   = 10_000_000
-                    for i in cardFour.values():
+                    regularFour = 0
+                    regularCardPrice   = 10_000_000
+                    for i in regularCards.values():
                             for j in i:
                                 i[j] = False
                     
@@ -681,14 +747,20 @@ def main(stdscr):
                     stdscr.refresh()
                     stdscr.getch()
 
+        # BLUE COLOR
         while Play:     # GAME PLAY
             
             saveGame(saveName)
             stdscr.clear()
             
-            count = sum(v for k in cardFour.values() for v in k.values())
-            cardPoints = 1 + count / 100
-            fourPoints = 1 + fourOfAKind / 100
+            # REGULAR COUNT
+            countRegular = sum(v for k in regularCards.values() for v in k.values())
+            regularCardPoints = 1 + countRegular / 100
+            regularFourPoints = 1 + regularFour / 100
+            # GOLD COUNT
+            countGold = sum(v for k in goldCards.values() for v in k.values())
+            goldCardPoints = 1 + countGold / 50
+            goldFourPoints = 1 + goldFour / 50
             
             # DICE DISPLAY
             stdscr.addstr(0, 0, "▛" + (WIDTH - 2) * "▀" + "▜", BLUE)
@@ -717,7 +789,7 @@ def main(stdscr):
             
             # POINTS, CARDS, LUCK AND MULTIPLIER DISPLAY
             stdscr.addstr(7,  0, "▙" + (WIDTH - 2) * "▄" + "▟", BLUE)
-            stdscr.addstr(8,  0, "▌" + cent(f"You have {bigNumber(points)} points and you have {count}/{len(cardFour["0"]) * len(cardFour)} cards.") + "▐", BLUE)
+            stdscr.addstr(8,  0, "▌" + cent(f"You have {bigNumber(points)} points. You have {countRegular}/{len(regularCards["0"]) * len(regularCards)} Regular cards and {countGold}/{len(goldCards["0"]) * len(goldCards)} Gold cards") + "▐", BLUE)
             stdscr.addstr(9,  0, "▌" + (WIDTH - 2) * " " + "▐", BLUE)
             stdscr.addstr(10, 0, "▌" + cent(f"Your lowest Dice roll: {round(rollLuck)}") + "▐", BLUE)
             stdscr.addstr(11, 0, "▌" + centHalf(f"Your current Multiplier: {round(pointsMult, 2)} MP"), BLUE)
@@ -812,9 +884,9 @@ def main(stdscr):
                         upgradeLuck = 200
                         luckExpo = 1.1
                         
-                        cardPrice = 10_000_000
-                        fourOfAKind = 0
-                        for i in cardFour.values():
+                        regularCardPrice = 10_000_000
+                        regularFour = 0
+                        for i in regularCards.values():
                             for j in i:
                                 i[j] = False
                         
@@ -883,9 +955,9 @@ def main(stdscr):
                         upgradeLuck = 200
                         luckExpo = 1.1
                         
-                        cardPrice = 10_000_000
-                        fourOfAKind = 0
-                        for i in cardFour.values():
+                        regularCardPrice = 10_000_000
+                        regularFour = 0
+                        for i in regularCards.values():
                             for j in i:
                                 i[j] = False
                         
@@ -904,27 +976,33 @@ def main(stdscr):
                         stdscr.getch()
             
             elif choice == "4":     # ROLL DICE
-                points += rollDice(stdscr, diceAmount, goldDiceAmount, diceSides, 1, diceAmountOffset, pointsMult, rollLuck, cardPoints, fourPoints, BLUE)
+                points += rollDice(stdscr, diceAmount, goldDiceAmount, diceSides, 1, diceAmountOffset,
+                pointsMult, rollLuck, regularCardPoints, regularFourPoints, goldCardPoints, goldFourPoints, BLUE)
             
             elif choice == "5":     # ROLL HUNDO
                 if hundoDiceAmount > 0:
-                    points += rollDice(stdscr, hundoDiceAmount, goldHundoDiceAmount, 100, 1, diceAmountOffset, pointsMult, rollLuck, cardPoints, fourPoints, BLUE)
+                    points += rollDice(stdscr, hundoDiceAmount, goldHundoDiceAmount, 100, 1, diceAmountOffset,
+                    pointsMult, rollLuck, regularCardPoints, regularFourPoints, goldCardPoints, goldFourPoints, BLUE)
                     
             elif choice == "6":     # ROLL THUNDO
                 if thundoDiceAmount > 0:
-                    points += rollDice(stdscr, thundoDiceAmount, goldThundoDiceAmount, 1000, 1, diceAmountOffset, pointsMult, rollLuck, cardPoints, fourPoints, BLUE)
+                    points += rollDice(stdscr, thundoDiceAmount, goldThundoDiceAmount, 1000, 1, diceAmountOffset,
+                    pointsMult, rollLuck, regularCardPoints, regularFourPoints, goldCardPoints, goldFourPoints, BLUE)
             
             elif choice == "7":     # ROLL MUNDO
                 if mundoDiceAmount > 0:
-                    points += rollDice(stdscr, mundoDiceAmount, goldMundoDiceAmount, 1_000_000, 1, diceAmountOffset, pointsMult, rollLuck, cardPoints, fourPoints, BLUE)
+                    points += rollDice(stdscr, mundoDiceAmount, goldMundoDiceAmount, 1_000_000, 1, diceAmountOffset,
+                    pointsMult, rollLuck, regularCardPoints, regularFourPoints, goldCardPoints, goldFourPoints, BLUE)
                     
             elif choice == "8":     # ROLL TRUNDO
                 if trundoDiceAmount > 0:
-                    points += rollDice(stdscr, trundoDiceAmount, goldTrundoDiceAmount, 1_000_000, 1_000_000, diceAmountOffset, pointsMult, rollLuck, cardPoints, fourPoints, BLUE)
+                    points += rollDice(stdscr, trundoDiceAmount, goldTrundoDiceAmount, 1_000_000, 1_000_000, diceAmountOffset,
+                    pointsMult, rollLuck, regularCardPoints, regularFourPoints, goldCardPoints, goldFourPoints, BLUE)
             
             elif choice == "9":     # ROLL QINDO
                 if qindoDiceAmount > 0:
-                    points += rollDice(stdscr, qindoDiceAmount, goldQindoDiceAmount, 1_000_000, 1e12, diceAmountOffset, pointsMult, rollLuck, cardPoints, fourPoints, BLUE)
+                    points += rollDice(stdscr, qindoDiceAmount, goldQindoDiceAmount, 1_000_000, 1e12, diceAmountOffset,
+                    pointsMult, rollLuck, regularCardPoints, regularFourPoints, goldCardPoints, goldFourPoints, BLUE)
             
             elif choice == "t":     # UPGRADE TREE
                 if points >= 1e15 or hasTree:
@@ -945,6 +1023,7 @@ def main(stdscr):
                 stdscr.refresh()
                 stdscr.getch()
 
+        # YELLOW COLOR
         while Store:    # GAME STORE
             
             saveGame(saveName)
@@ -1280,6 +1359,7 @@ def main(stdscr):
                 stdscr.refresh()
                 stdscr.getch()
 
+        # GREEN COLOR
         while Tree:     # GAME TREE
             
             saveGame(saveName)
@@ -1403,6 +1483,7 @@ def main(stdscr):
                 stdscr.refresh()
                 stdscr.getch()
 
+        # RED COLOR
         while Info:     # GAME INFO
             
             stdscr.clear()
@@ -1416,95 +1497,190 @@ def main(stdscr):
             Info = False
             Menu = True
 
+        # MAGENTA COLOR
         while Cards:    # GAME CARDS
             
             saveGame(saveName)
             stdscr.clear()
             
-            countTrue = {k: sum(vv for vv in v.values()) for k, v in cardFour.items()}
-            allTrueKeys = [k for k, v in cardFour.items() if all(v.values())]
-            trueCards = sum(v for thing in cardFour.values() for v in thing.values())
-            falseCards = [(ok, ik) for ok, thing in cardFour.items() for ik, v in thing.items() if not v]
-            ableFour = False
-            
+            # ALL GET THIS
             stdscr.addstr(0, 0, "▛" + (WIDTH - 2) * "▀" + "▜", MAGENTA)
-            x, y = 1, 1
-            for thing in cardFour:
-                for suit in cardFour[thing]:
-                    if countTrue[thing] == 4: ableFour = True
-                    if   suit == "Club":    stdscr.addstr(x, y, f" {thing} of {suit}s  ▐{23 * "█" if countTrue[thing] == 4 else 23 * "▒" if cardFour[thing][suit] else 23 * "░"}▌ ", MAGENTA)
-                    elif suit == "Heart":   stdscr.addstr(x, y, f" {thing} of {suit}s  ▐{22 * "█" if countTrue[thing] == 4 else 22 * "▒" if cardFour[thing][suit] else 22 * "░"}▌ ", MAGENTA)
-                    elif suit == "Spade":   stdscr.addstr(x, y, f" {thing} of {suit}s  ▐{21 * "█" if countTrue[thing] == 4 else 21 * "▒" if cardFour[thing][suit] else 21 * "░"}▌ ", MAGENTA)
-                    elif suit == "Diamond": stdscr.addstr(x, y, f" {thing} of {suit}s  ▐{20 * "█" if countTrue[thing] == 4 else 20 * "▒" if cardFour[thing][suit] else 20 * "░"}▌ ", MAGENTA)
-                    y += int(WIDTH / 4)
-                x += 1
-                y = 1
-            
-            for i in range(37): stdscr.addstr(i + 1, WIDTH - 1, "▐", MAGENTA)
-            for j in range(37): stdscr.addstr(j + 1, 0, "▌", MAGENTA)
             stdscr.addstr(37, 0, "▙" + (WIDTH - 2) * "▄" + "▟", MAGENTA)
-            stdscr.addstr(38, 0, "▌" + cent(f"You have unlocked {trueCards}/{len(cardFour[thing]) * len(cardFour)} Cards and you have {bigNumber(points)} points.") + "▐", MAGENTA)
             stdscr.addstr(39, 0, "▛" + (WIDTH - 2) * "▀" + "▜", MAGENTA)
             stdscr.addstr(40, 0, "▌" + cent("0 - Stop looking at your Cards") + "▐", MAGENTA)
-            stdscr.addstr(41, 0, "▌" + cent(f"1 - Buy a random Card: {bigNumber(cardPrice)}") + "▐", MAGENTA)
-            if ableFour: stdscr.addstr(42, 0, "▌" + cent("2 - Trade away a Four of a Kind") + "▐", MAGENTA)
-            else:        stdscr.addstr(42, 0, "▌" + (WIDTH - 2) * " " + "▐", MAGENTA)
+            stdscr.addstr(42, 0, "▌" + cent("N - View your next set of Cards") + "▐", MAGENTA)
             stdscr.addstr(43, 0, "▙" + (WIDTH - 2) * "▄" + "▟", MAGENTA)
-            stdscr.refresh()
+
+            # REGULAR CARDS
+            if Regular:
             
-            choice = stdscr.getkey()
+                countRegularTrue = {k: sum(vv for vv in v.values()) for k, v in regularCards.items()}
+                trueRegularCards = sum(v for thing in regularCards.values() for v in thing.values())
+                ableRegularFour = False
             
-            if choice == "0":       # LEAVE
-                Cards = False
-                Play = True
+                x, y = 1, 1
+                for thing in regularCards:
+                    for suit in regularCards[thing]:
+                        if countRegularTrue[thing] == 4: ableRegularFour = True
+                        if   suit == "Club":    stdscr.addstr(x, y, f" {thing} of {suit}s  ▐{23 * "█" if countRegularTrue[thing] == 4 else 23 * "▒" if regularCards[thing][suit] else 23 * "░"}▌ ", MAGENTA)
+                        elif suit == "Heart":   stdscr.addstr(x, y, f" {thing} of {suit}s  ▐{22 * "█" if countRegularTrue[thing] == 4 else 22 * "▒" if regularCards[thing][suit] else 22 * "░"}▌ ", MAGENTA)
+                        elif suit == "Spade":   stdscr.addstr(x, y, f" {thing} of {suit}s  ▐{21 * "█" if countRegularTrue[thing] == 4 else 21 * "▒" if regularCards[thing][suit] else 21 * "░"}▌ ", MAGENTA)
+                        elif suit == "Diamond": stdscr.addstr(x, y, f" {thing} of {suit}s  ▐{20 * "█" if countRegularTrue[thing] == 4 else 20 * "▒" if regularCards[thing][suit] else 20 * "░"}▌ ", MAGENTA)
+                        y += int(WIDTH / 4)
+                    x += 1
+                    y = 1
+
+                for b in range(36): stdscr.addstr(b + 1, WIDTH - 1, "▐", MAGENTA)
+                for b in range(36): stdscr.addstr(b + 1, 0, "▌", MAGENTA)
+                stdscr.addstr(38, 0, "▌" + cent(f"You have unlocked {trueRegularCards}/{len(regularCards[thing]) * len(regularCards)} Regular Cards and you have {bigNumber(points)} points.") + "▐", MAGENTA)
+                stdscr.addstr(41, 0, "▌" + centHalf(f"1 - Buy a random Card: {bigNumber(regularCardPrice)}"), MAGENTA)
+                if ableRegularFour: stdscr.addstr(41, int(WIDTH/2 + 1), centHalf("2 - Trade away a Four of a Kind") + "▐", MAGENTA)
+                else:               stdscr.addstr(41, int(WIDTH/2 + 1), int(WIDTH/2 - 2) * " " + "▐", MAGENTA)
+                stdscr.refresh()
                 
-            elif choice == "1":     # RANDOM CARD
-                
-                if not trueCards == len(cardFour[thing]) * len(cardFour):
-                
-                    if points >= cardPrice:
-                        
-                        points -= cardPrice
-                        cardPrice = cardPrice * (1 + (trueCards/40))
-                        ok, ik = random.choice(falseCards)
-                        cardFour[ok][ik] = True
-                        
-                        stdscr.addstr(44, 0, "▌" + cent(f"You pulled a {ok} of {ik}s for {bigNumber(cardPrice)} points!") + "▐", MAGENTA)
+                choice = stdscr.getkey()
+            
+                if choice == "0":       # LEAVE
+                    Cards = False
+                    Play = True
+
+                elif choice == "1":     # RANDOM CARD
+
+                    if not trueRegularCards == len(regularCards[thing]) * len(regularCards):
+                    
+                        if points >= regularCardPrice:
+
+                            points -= regularCardPrice
+                            regularCardPrice = regularCardPrice * (1 + (trueRegularCards/40))
+                            ok, ik = random.choice([(ok, ik) for ok, thing in regularCards.items() for ik, v in thing.items() if not v])
+                            regularCards[ok][ik] = True
+
+                            stdscr.addstr(44, 0, "▌" + cent(f"You pulled a {ok} of {ik}s for {bigNumber(regularCardPrice)} points!") + "▐", MAGENTA)
+                            try: stdscr.addstr(45, 0, "▙" + (WIDTH - 2) * "▄" + "▟", MAGENTA)
+                            except curses.error: pass
+                            stdscr.refresh()
+                            stdscr.getkey()
+
+                        else:
+                            stdscr.addstr(45, 0, "You don't have enough points!", MAGENTA)
+                            stdscr.refresh()
+                            stdscr.getkey()
+
+                    else:
+                        stdscr.addstr(45, 0, "You have collected all the cards!", MAGENTA)
+                        stdscr.refresh()
+                        stdscr.getkey()
+
+                elif choice == "2":     # FOUR OF A KIND
+
+                    if ableRegularFour:
+
+                        randomFour = random.choice([k for k, v in regularCards.items() if all(v.values())])
+                        for suit in regularCards[randomFour]:
+                            regularCards[randomFour][suit] = False
+                        regularFour += 1
+
+                        stdscr.addstr(44, 0, "▌" + cent(f"Your Four of a Kind was: {randomFour}'s!") + "▐", MAGENTA)
                         try: stdscr.addstr(45, 0, "▙" + (WIDTH - 2) * "▄" + "▟", MAGENTA)
                         except curses.error: pass
                         stdscr.refresh()
                         stdscr.getkey()
+                        ableRegularFour = False
+
+                elif choice == "n":     # NEXT SET OF CARDS
+                    Regular = False
+                    Gold = True
+
+                else:                   # INVALID
+                    stdscr.addstr(44, 0, "Invalid choice!", MAGENTA)
+                    stdscr.refresh()
+                    stdscr.getkey()
+            
+            # GOLD CARDS
+            elif Gold:
+            
+                countGoldTrue = {k: sum(vv for vv in v.values()) for k, v in goldCards.items()}
+                trueGoldCards = sum(v for thing in goldCards.values() for v in thing.values())
+                ableGoldFour = False
+            
+                x, y = 1, 1
+                for thing in goldCards:
+                    for suit in goldCards[thing]:
+                        if countGoldTrue[thing] == 4: ableGoldFour = True
+                        if   suit == "Club":    stdscr.addstr(x, y, f" {thing} of {suit}s  ▐{23 * "█" if countGoldTrue[thing] == 4 else 23 * "▒" if goldCards[thing][suit] else 23 * "░"}▌ ", MAGENTA)
+                        elif suit == "Heart":   stdscr.addstr(x, y, f" {thing} of {suit}s  ▐{22 * "█" if countGoldTrue[thing] == 4 else 22 * "▒" if goldCards[thing][suit] else 22 * "░"}▌ ", MAGENTA)
+                        elif suit == "Spade":   stdscr.addstr(x, y, f" {thing} of {suit}s  ▐{21 * "█" if countGoldTrue[thing] == 4 else 21 * "▒" if goldCards[thing][suit] else 21 * "░"}▌ ", MAGENTA)
+                        elif suit == "Diamond": stdscr.addstr(x, y, f" {thing} of {suit}s  ▐{20 * "█" if countGoldTrue[thing] == 4 else 20 * "▒" if goldCards[thing][suit] else 20 * "░"}▌ ", MAGENTA)
+                        y += int(WIDTH / 4)
+                    x += 1
+                    y = 1
+
+                for b in range(36): stdscr.addstr(b + 1, WIDTH - 1, "▐", MAGENTA)
+                for b in range(36): stdscr.addstr(b + 1, 0, "▌", MAGENTA)
+                stdscr.addstr(38, 0, "▌" + cent(f"You have unlocked {trueGoldCards}/{len(goldCards[thing]) * len(goldCards)} Gold Cards and you have {bigNumber(points)} points.") + "▐", MAGENTA)
+                stdscr.addstr(41, 0, "▌" + centHalf(f"1 - Buy a random Card: {bigNumber(goldCardPrice)}"), MAGENTA)
+                if ableGoldFour: stdscr.addstr(41, int(WIDTH/2 + 1), centHalf("2 - Trade away a Four of a Kind") + "▐", MAGENTA)
+                else:            stdscr.addstr(41, int(WIDTH/2 + 1), int(WIDTH/2 - 2) * " " + "▐", MAGENTA)
+                stdscr.refresh()
+            
+                choice = stdscr.getkey()
+                
+                if choice == "0":       # LEAVE
+                    Cards = False
+                    Play = True
+                    
+                elif choice == "1":     # RANDOM CARD
+                    
+                    if not trueGoldCards == len(goldCards[thing]) * len(goldCards):
+                    
+                        if points >= goldCardPrice:
+                            
+                            points -= goldCardPrice
+                            goldCardPrice = goldCardPrice * (1 + (trueGoldCards/40))
+                            ok, ik = random.choice([(ok, ik) for ok, thing in goldCards.items() for ik, v in thing.items() if not v])
+                            goldCards[ok][ik] = True
+                            
+                            stdscr.addstr(44, 0, "▌" + cent(f"You pulled a {ok} of {ik}s for {bigNumber(goldCardPrice)} points!") + "▐", MAGENTA)
+                            try: stdscr.addstr(45, 0, "▙" + (WIDTH - 2) * "▄" + "▟", MAGENTA)
+                            except curses.error: pass
+                            stdscr.refresh()
+                            stdscr.getkey()
+                        
+                        else:
+                            stdscr.addstr(45, 0, "You don't have enough points!", MAGENTA)
+                            stdscr.refresh()
+                            stdscr.getkey()
                     
                     else:
-                        stdscr.addstr(45, 0, "You don't have enough points!", MAGENTA)
+                        stdscr.addstr(45, 0, "You have collected all the cards!", MAGENTA)
                         stdscr.refresh()
                         stdscr.getkey()
                 
-                else:
-                    stdscr.addstr(45, 0, "You have collected all the cards!", MAGENTA)
-                    stdscr.refresh()
-                    stdscr.getkey()
-            
-            elif choice == "2":     # FOUR OF A KIND
+                elif choice == "2":     # FOUR OF A KIND
+                    
+                    if ableGoldFour:
+                        
+                        randomFour = random.choice([k for k, v in goldCards.items() if all(v.values())])
+                        for suit in goldCards[randomFour]:
+                            goldCards[randomFour][suit] = False
+                        goldFour += 1
+                        
+                        stdscr.addstr(44, 0, "▌" + cent(f"Your Four of a Kind was: {randomFour}'s!") + "▐", MAGENTA)
+                        try: stdscr.addstr(45, 0, "▙" + (WIDTH - 2) * "▄" + "▟", MAGENTA)
+                        except curses.error: pass
+                        stdscr.refresh()
+                        stdscr.getkey()
+                        ableGoldFour = False
                 
-                if ableFour:
-                    
-                    randomFour = random.choice(allTrueKeys)
-                    for suit in cardFour[randomFour]:
-                        cardFour[randomFour][suit] = False
-                    fourOfAKind += 1
-                    
-                    stdscr.addstr(44, 0, "▌" + cent(f"Your Four of a Kind was: {randomFour}'s!") + "▐", MAGENTA)
-                    try: stdscr.addstr(45, 0, "▙" + (WIDTH - 2) * "▄" + "▟", MAGENTA)
-                    except curses.error: pass
+                elif choice == "n":     # NEXT SET OF CARDS
+                    Gold = False
+                    Regular = True
+                
+                else:                   # INVALID
+                    stdscr.addstr(44, 0, "Invalid choice!", MAGENTA)
                     stdscr.refresh()
                     stdscr.getkey()
-                    ableFour = False
-            
-            else:                   # INVALID
-                stdscr.addstr(44, 0, "Invalid choice!", MAGENTA)
-                stdscr.refresh()
-                stdscr.getkey()
 
+            # POSSIBLE FUTURE CARDS...
 
 wrapper(main)
