@@ -3,13 +3,6 @@
 Any feedback is appreciated, whether it be good or bad.</br>
 I'm not an excellent coder, and this is just a little passion project from me.
 
-## UPDATES
-
-THIS GAME WILL NOT RECIEVE UPDATES IN 2025</br>
-THIS IS NOT BECAUSE I DISLIKE CODING</br>
-I HAVE PERSONAL THINGS AND COLLEGE STUFF TO DEAL WITH</br>
-NO HARD FEELINGS
-
 ## Playing the game
 
 ### Prerequisities
