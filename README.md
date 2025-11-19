@@ -15,7 +15,7 @@ pip install windows-curses
 
 ### Actually playing the game
 
-Download **main.py** from [here](https://github.com/0versc0re/A-game-about-rolling-Dice/releases/tag/v.2.0.0) and put it in a separate folder.</br>
+Download **main.py** from [here](https://github.com/0versc0re/A-game-about-rolling-Dice/releases/tag/v.2.0.1) and put it in a separate folder.</br>
 This is to make sure the save files don't get lost.</br>
 Play it by right clicking in the folder and clicking "Open in Terminal". Fullscreen the terminal with **F11** and then type this into the terminal:
 ```
@@ -28,7 +28,7 @@ python3 main.py
 
 ### Save files
 
-Save files from before version ***2.0.0*** are not compatible with ***2.0.0***.</br>
+Save files from before version ***2.0.0*** are not compatible with ***2.0.1***.</br>
 A way to convert old save files to new save files is:
 + Copy the old save
 + Start a new game
@@ -49,7 +49,7 @@ A way to convert old save files to new save files is:
   + Nonillion (NEWEST)
 + ~~Colors~~
   + Only border colors
-+ Card variants
++ Card and Dice variants
   + ~~Regular~~
   + ~~Gold~~
   + Diamond (NEWEST)
