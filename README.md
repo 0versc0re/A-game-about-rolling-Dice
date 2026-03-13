@@ -2,6 +2,8 @@
 
 Any feedback is appreciated, whether it be good or bad.</br>
 I'm not an excellent coder, and this is just a little passion project from me.
+</br></br>
+**THIS GUIDE IS OUTDATED**
 
 ## Playing the game
 
